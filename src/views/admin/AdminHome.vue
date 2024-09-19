@@ -10,16 +10,18 @@
         <div class="chart" ref="memoryUsageChartBox"></div>
       </div>
       <div class="system-info">
-        <h1>系统信息</h1>
-        <h2>CPU 信息</h2>
-        <p>CPU 品牌: {{ systemInfo.cpuUsage.brand }}</p>
-        <p>CPU 速度: {{ systemInfo.cpuUsage.speed }} GHz</p>
-        <p>CPU 占用率: {{ systemInfo.cpuUsage.load }}%</p>
-
-        <h2>内存信息</h2>
-        <p>总内存: {{ formatMemory(systemInfo.memoryUsage.totalMemory) }}</p>
-        <p>已用内存: {{ formatMemory(systemInfo.memoryUsage.usedMemory) }}</p>
-        <p>内存占用率: {{ systemInfo.memoryUsage.usedPercentage }}%</p>
+        <div class="cpu-info">
+          <h2>CPU 信息</h2>
+          <p>CPU 品牌: {{ systemInfo.cpuUsage.brand }}</p>
+          <p>CPU 速度: {{ systemInfo.cpuUsage.speed }} GHz</p>
+          <p>CPU 占用率: {{ systemInfo.cpuUsage.load }}%</p>
+        </div>
+        <div class="memory-info">
+          <h2>内存信息</h2>
+          <p>总内存: {{ formatMemory(systemInfo.memoryUsage.totalMemory) }}</p>
+          <p>已用内存: {{ formatMemory(systemInfo.memoryUsage.usedMemory) }}</p>
+          <p>内存占用率: {{ systemInfo.memoryUsage.usedPercentage }}%</p>
+        </div>
       </div>
     </div>
     <router-view class="admin-body"></router-view>
@@ -260,9 +262,10 @@ export default {
   height: 100%;
   width: 100%;
   z-index: 0;
-  background: white;
+  background: var(--white-color);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .admin-body {
@@ -273,10 +276,19 @@ export default {
   transition: left 0.3s ease;
 }
 
-.charts-container {
-  height: 400px;
-  width: 100%;
+.home-body {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 85%;
+  left: 15%;
+  transition: left 0.4s ease;
+}
+
+.charts-container {
+  height: 50%;
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
@@ -286,26 +298,39 @@ export default {
 }
 
 .system-info {
-  position: absolute;
-  display: flex;
+  height:50%;
   width: 100%;
-  height: 500px;
-  padding: 20px;
   display: flex;
-  top: 350px;
-  flex-direction: column;
-  justify-content: left;
-  animation: fade-in 0.4s ease;
+  justify-content: space-around;
+  align-items: center;
+  bottom: 50px;
+  padding-bottom: 5%;
 }
 
-.home-body {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
+.cpu-info {
   height: 100%;
-  width: 85%;
-  left: 15%;
-  transition: left 0.4s ease;
+  width: 50%;
+  margin: 2%;
+  display: flex;
+  background: var(--body-color);
+  border-radius: 20px;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.memory-info {
+  height: 100%;
+  width: 50%;
+  margin: 2%;
+  display: flex;
+  background: var(--body-color);
+  border-radius: 20px;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes fade-in {

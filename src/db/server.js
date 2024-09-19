@@ -153,13 +153,20 @@ app.post('/api/login', (req, res) => {
         }
 
         if (result) {
-          // 使用 bcrypt.hashSync() 方法来添加时间戳生成唯一用户token
-          const usertoken = bcrypt.hashSync(Date.now().toString(), saltRounds);
-          res.status(200).json({
-            message: '登录成功',
-            userName: user.username,
-            userToken: usertoken
-          });
+          userState = user.state;
+          if (userState === 0) {
+            return res.status(401).json({
+              error: '用户已被封禁'
+            });
+          } else {
+            // 使用 bcrypt.hashSync() 方法来添加时间戳生成唯一用户token
+            const usertoken = bcrypt.hashSync(Date.now().toString(), saltRounds);
+            res.status(200).json({
+              message: '登录成功',
+              userName: user.username,
+              userToken: usertoken,
+            });
+          }
         } else {
           return res.status(401).json({
             error: '用户名或密码错误'
