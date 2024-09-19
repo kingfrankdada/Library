@@ -1,0 +1,66 @@
+{
+  "name": "solar",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "concurrently \"vue-cli-service serve\" \"npm run start-server\"",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "start-server": "nodemon --watch src/db/server.js src/db/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.4",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "concurrently": "^8.2.2",
+    "core-js": "^3.8.3",
+    "cors": "^2.8.5",
+    "echarts": "^5.5.1",
+    "express": "^4.19.2",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.2",
+    "less": "^4.2.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "sass": "^1.77.8",
+    "sass-loader": "11",
+    "scss": "^0.2.4",
+    "scss-loader": "^0.0.1",
+    "systeminformation": "^5.23.5",
+    "vue": "^2.6.14",
+    "vue-router": "3.6.5",
+    "vuex": "3",
+    "vuex-persistedstate": "^4.1.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "nodemon": "^3.0.1",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
