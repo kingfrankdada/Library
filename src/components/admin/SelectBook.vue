@@ -110,6 +110,7 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/api/selectBook"
         );
+        console.log(response);
         const books = response.data.books;
         this.books = books || [];
 
@@ -143,8 +144,8 @@ export default {
         );
         this.alertMsg = "更新图书数据成功";
       } catch (error) {
-        this.alertMsg =
-          "更新图书数据失败: " + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "更新图书数据失败";
       }
     },
 
@@ -153,8 +154,8 @@ export default {
         await axios.post(`http://localhost:3000/api/delBook/${book.id}`, book);
         this.alertMsg = "删除图书成功";
       } catch (error) {
-        this.alertMsg =
-          "删除图书失败: " + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "删除图书失败";
       }
       this.selectBooks();
     },

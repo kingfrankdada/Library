@@ -6,7 +6,7 @@
 
     <div class="reg-logo">
       <!-- <i class="ri-book-3-line"></i> -->
-      <span>S.O.L.A.R</span>
+      <span>在线高校图书管理系统</span>
     </div>
     <div class="reg-form" @keyup.enter="handleReg">
       <input

@@ -12,7 +12,7 @@
 
       <div class="login-logo">
         <!-- <i class="ri-book-3-line"></i> -->
-        <span>S.O.L.A.R</span>
+        <span>在线高校图书管理系统</span>
       </div>
 
       <div class="login-form" @keyup.enter="handleLogin">
@@ -74,7 +74,7 @@ export default {
     ...mapState("UserInfo", ["userInfo"]),
     ...mapState("NormalModal", ["isLoginModalVisible"]),
   },
-  
+
   methods: {
     ...mapMutations("NormalModal", [
       "setLoginModalVisible",
@@ -111,8 +111,8 @@ export default {
         });
         this.setLoginModalVisible(false);
       } catch (error) {
-        this.alertMsg =
-          "登录失败:" + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "登录失败:用户名或密码错误";
       }
     },
   },

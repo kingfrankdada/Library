@@ -95,7 +95,6 @@ app.get('/api/systemInfo', async (req, res) => {
     const cpuInfo = await si.cpu(); // 获取 CPU 信息
     const cpuLoad = await si.currentLoad(); // 获取 CPU 当前负载（占用率）
     const memoryUsage = await si.mem(); // 获取内存信息
-
     const systemInfo = {
       cpuUsage: {
         brand: cpuInfo.brand, // CPU 类型
@@ -108,7 +107,6 @@ app.get('/api/systemInfo', async (req, res) => {
         usedPercentage: ((memoryUsage.used / memoryUsage.total) * 100).toFixed(2), // 内存占用率
       },
     };
-
     res.json(systemInfo);
   } catch (error) {
     console.error("获取系统信息失败:", error);
@@ -124,13 +122,11 @@ app.post('/api/login', (req, res) => {
     username,
     password
   } = req.body;
-
   if (!username || !password) {
     return res.status(400).json({
       error: '用户名和密码不能为空'
     });
   }
-
   const query = 'SELECT * FROM user WHERE username = ?';
   connection.query(query, [username], (err, results) => {
     if (err) {
@@ -139,10 +135,8 @@ app.post('/api/login', (req, res) => {
         error: '服务器内部错误'
       });
     }
-
     if (results.length > 0) {
       const user = results[0];
-
       // 哈希验证
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
@@ -151,7 +145,6 @@ app.post('/api/login', (req, res) => {
             error: '服务器内部错误'
           });
         }
-
         if (result) {
           userState = user.state;
           if (userState === 0) {
@@ -199,7 +192,6 @@ app.post('/api/reg', (req, res) => {
     minute: undefined,
     second: undefined
   });
-
   // 后端数据二次验证
   if (!username || !password) {
     return res.status(400).json({
@@ -219,7 +211,6 @@ app.post('/api/reg', (req, res) => {
         error: '服务器内部错误'
       });
     }
-
     const query = 'INSERT INTO user (username, password, email, state, adddate) VALUES (?, ?, ?, ?, ?)';
     connection.query(query, [username, hash, email, state, adddate], (err, results) => {
       if (results) {
@@ -249,7 +240,6 @@ app.post('/api/reg', (req, res) => {
 // 图书查询api
 app.get('/api/selectBook', (req, res) => {
   const query = 'SELECT * FROM book';
-
   connection.query(query, (err, results) => {
     if (err) {
       console.error('查询失败:', err.stack);
@@ -257,7 +247,6 @@ app.get('/api/selectBook', (req, res) => {
         error: '服务器内部错误'
       });
     }
-
     if (results.length > 0) {
       res.status(200).json({
         message: '查询成功',
@@ -275,7 +264,6 @@ app.get('/api/selectBook', (req, res) => {
 app.post('/api/updateBook/:id', (req, res) => {
   const bookId = req.params.id;
   let bookData = req.body;
-
   const query = 'UPDATE book SET ? WHERE id = ?';
   connection.query(query, [bookData, bookId], (err, results) => {
     if (err) {
@@ -307,10 +295,8 @@ app.get('/api/menuTitles', (req, res) => {
 // 添加图书 API
 app.post('/api/addBook', (req, res) => {
   const newBook = req.body;
-
   const query = 'INSERT INTO book (name, author, menu, price, press, num, img, more, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
   const values = [newBook.name, newBook.author, newBook.menu, newBook.price, newBook.press, newBook.num, newBook.img, newBook.more, newBook.state, newBook.adddate];
-
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加图书失败:', err.stack);
@@ -328,7 +314,6 @@ app.post('/api/addBook', (req, res) => {
 // 上传图片
 const multer = require('multer');
 const path = require('path');
-
 // 设置 multer 存储配置
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -362,7 +347,6 @@ app.post('/api/uploadImage', upload.single('file'), (req, res) => {
 app.post('/api/delBook/:id', (req, res) => {
   const bookId = req.params.id;
   // let bookData = req.body;
-
   const query = 'DELETE FROM book WHERE id = ?';
   connection.query(query, [bookId], (err) => {
     if (err) {
@@ -379,10 +363,8 @@ app.post('/api/delBook/:id', (req, res) => {
 // 添加分类 API
 app.post('/api/addMenu', (req, res) => {
   const newMenu = req.body;
-
   const query = 'INSERT INTO menu (title, state) VALUES (?, ?)';
   const values = [newMenu.title, newMenu.state];
-
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加分类失败:', err.stack);
@@ -408,7 +390,6 @@ app.get('/api/selectMenu', (req, res) => {
         error: '服务器内部错误'
       });
     }
-
     if (results.length > 0) {
       res.status(200).json({
         message: '查询成功',
@@ -416,7 +397,7 @@ app.get('/api/selectMenu', (req, res) => {
       });
     } else {
       res.status(404).json({
-        error: '未找到图书记录'
+        error: '未找到分类记录'
       });
     }
   });
@@ -426,7 +407,6 @@ app.get('/api/selectMenu', (req, res) => {
 app.post('/api/updateMenu/:id', (req, res) => {
   const menuId = req.params.id;
   let menuData = req.body;
-
   const query = 'UPDATE menu SET ? WHERE id = ?';
   connection.query(query, [menuData, menuId], (err, results) => {
     if (err) {
@@ -444,7 +424,6 @@ app.post('/api/updateMenu/:id', (req, res) => {
 app.post('/api/delMenu/:id', (req, res) => {
   const menuId = req.params.id;
   const query = 'DELETE FROM menu WHERE id = ?';
-
   connection.query(query, [menuId], (err) => {
     if (err) {
       return res.status(500).json({
@@ -453,6 +432,46 @@ app.post('/api/delMenu/:id', (req, res) => {
     }
     res.json({
       message: '分类信息删除成功'
+    });
+  });
+});
+
+// 查找用户api
+app.get('/api/selectUser', (req, res) => {
+  const query = 'SELECT * FROM user';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        users: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到用户记录'
+      });
+    }
+  });
+});
+
+// 更新用户api
+app.post('/api/updateUser/:id', (req, res) => {
+  const userId = req.params.id;
+  let userState = req.body;
+  const query = 'UPDATE user SET ? WHERE id = ?';
+  connection.query(query, [userState, userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '用户信息更新成功'
     });
   });
 });

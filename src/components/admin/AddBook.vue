@@ -143,8 +143,8 @@ export default {
         );
         this.menuTitles = response.data.titles;
       } catch (error) {
-        this.alertMsg =
-          "获取分类信息失败：" + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "获取分类信息失败";
       }
     },
 
@@ -187,8 +187,8 @@ export default {
           );
           this.newBook.img = response.data.fileName;
         } catch (error) {
-          this.alertMsg =
-            "图片上传失败：" + (error.response?.data?.error || error.message);
+          console.error(error.response?.data?.error || error.message);
+          this.alertMsg = "图片上传失败";
         }
       }
     },
@@ -219,8 +219,8 @@ export default {
         this.alertMsg = "图书添加成功";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
-        this.alertMsg =
-          "图书添加失败：" + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "图书添加失败";
       }
     },
 

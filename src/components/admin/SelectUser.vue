@@ -1,28 +1,31 @@
 <template>
-  <div class="select-menu">
-    <table v-if="menus.length > 0">
+  <div class="select-user">
+    <table v-if="users.length > 0">
       <thead>
         <tr>
           <th>ID</th>
-          <th>分类*</th>
-          <!-- <th>状态*</th> -->
+          <th>用户*</th>
+          <th>状态*</th>
           <th>删除</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(menu, index) in menus" :key="index">
-          <td>{{ menu.id }}</td>
+        <tr v-for="(user, index) in users" :key="index">
+          <td>{{ user.id }}</td>
           <td>
-            <InputTag v-model="menu.title" @input="updateMenu(menu)"></InputTag>
+            <InputTag
+              v-model="user.username"
+              @input="updateUser(user)"
+            ></InputTag>
           </td>
-          <!-- <td>
-            <select v-model="menu.state" @change="updateMenu(menu)">
+          <td>
+            <select v-model="user.state" @change="updateUser(user)">
               <option value="1">正常</option>
               <option value="0">关闭</option>
             </select>
-          </td> -->
+          </td>
           <td>
-            <button class="del-btn" @click="delMenu(menu)">
+            <button class="del-btn" @click="delUser(user)">
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -45,7 +48,7 @@ import InputTag from "../InputTag.vue";
 import AlertBox from "../AlertBox.vue";
 
 export default {
-  name: "SelectMenu",
+  name: "SelectUser",
   components: {
     InputTag,
     AlertBox,
@@ -53,57 +56,57 @@ export default {
 
   data() {
     return {
-      menus: [],
+      users: [],
       alertMsg: "",
-      boxMsg: "正在加载分类数据...",
+      boxMsg: "正在加载用户数据...",
     };
   },
 
   methods: {
-    async selectMenus() {
+    async selectUsers() {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/selectMenu"
+          "http://localhost:3000/api/selectUser"
         );
-        const menus = response.data.menus;
-        this.menus = menus || [];
+        console.log(response);
+        const users = response.data.users;
+        this.users = users || [];
 
-        if (this.menus.length === 0) {
-          this.boxMsg = "未找到任何分类记录";
+        if (this.users.length === 0) {
+          this.boxMsg = "未找到任何用户记录";
         }
       } catch (error) {
-        this.boxMsg =
-          "获取分类数据失败: " + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取用户数据失败";
       }
     },
 
-    async updateMenu(menu) {
+    async updateUser(user) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/updateMenu/${menu.id}`,
-          menu
-        );
-        this.alertMsg = "更新分类数据成功";
+        await axios.post(`http://localhost:3000/api/updateUser/${user.id}`, {
+          state: user.state,
+        });
+        this.alertMsg = "更新用户数据成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新分类数据失败";
+        this.alertMsg = "更新用户数据失败";
       }
     },
 
-    async delMenu(menu) {
+    async delUser(user) {
       try {
-        await axios.post(`http://localhost:3000/api/delMenu/${menu.id}`, menu);
-        this.alertMsg = "删除分类成功";
+        await axios.post(`http://localhost:3000/api/delUser/${user.id}`, user);
+        this.alertMsg = "删除用户成功";
       } catch (error) {
-        this.alertMsg =
-          "删除分类失败: " + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "删除用户失败";
       }
-      this.selectMenus();
+      this.selectUsers();
     },
   },
 
   mounted() {
-    this.selectMenus();
+    this.selectUsers();
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="add-menu">
+  <div class="add-user">
     <table>
       <thead>
         <tr>
@@ -12,16 +12,16 @@
           <td>名称*</td>
           <td>
             <input
-              v-model="newMenu.title"
+              v-model="newUser.title"
               type="text"
-              placeholder="输入分类名称"
+              placeholder="输入用户名称"
             />
           </td>
         </tr>
         <!-- <tr>
           <td>状态*</td>
           <td>
-            <select v-model="newMenu.state">
+            <select v-model="newUser.state">
               <option value="1">正常</option>
               <option value="0">关闭</option>
             </select>
@@ -44,14 +44,14 @@ import axios from "axios";
 import AlertBox from "../AlertBox.vue";
 
 export default {
-  name: "AddMenu",
+  name: "AddUser",
   components: {
     AlertBox,
   },
 
   data() {
     return {
-      newMenu: {
+      newUser: {
         title: "",
         state: 1,
       },
@@ -60,22 +60,22 @@ export default {
   },
   methods: {
     async submitForm() {
-      if (!this.newMenu.title) {
-        this.alertMsg = "分类信息不完整";
+      if (!this.newUser.title) {
+        this.alertMsg = "用户信息不完整";
         return;
       }
       try {
-        await axios.post("http://localhost:3000/api/addMenu", this.newMenu);
-        this.alertMsg = "分类添加成功";
+        await axios.post("http://localhost:3000/api/addUser", this.newUser);
+        this.alertMsg = "用户添加成功";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "分类添加失败";
+        this.alertMsg = "用户添加失败";
       }
     },
 
     resetForm() {
-      this.newMenu = {
+      this.newUser = {
         title: "",
         state: 1,
       };
@@ -86,7 +86,7 @@ export default {
 </script>
 
 <style scoped>
-.add-menu {
+.add-user {
   height: 100%;
   width: 100%;
   margin-bottom: 20px;

@@ -3,14 +3,12 @@
     <div class="nav container">
       <router-link to="/home" class="nav__logo">
         <i class="ri-book-3-line"></i>
-        <span>S.O.L.A.R</span>
+        <span>在线高校图书管理系统</span>
       </router-link>
 
       <!-- 登陆后显示用户信息 -->
       <div class="nav__userinfo" v-if="userInfo.userToken">
-        Welcome to
-        <div class="nav__logo">&nbsp;SOLAR&nbsp;</div>
-        : {{ userInfo.userName }}
+        Welcome : {{ userInfo.userName }}
       </div>
 
       <!-- 导航列表 -->
