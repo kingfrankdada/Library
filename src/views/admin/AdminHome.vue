@@ -142,6 +142,9 @@ export default {
             type: "gauge",
             progress: {
               show: true,
+              itemStyle: {
+                color: "#4960d4",
+              },
             },
             detail: {
               valueAnimation: true,
@@ -169,6 +172,9 @@ export default {
             type: "gauge",
             progress: {
               show: true,
+              itemStyle: {
+                color: "#4960d4",
+              },
             },
             detail: {
               valueAnimation: true,
@@ -196,6 +202,9 @@ export default {
             type: "gauge",
             progress: {
               show: true,
+              itemStyle: {
+                color: "#4960d4",
+              },
             },
             detail: {
               valueAnimation: true,
@@ -262,7 +271,7 @@ export default {
   height: 100%;
   width: 100%;
   z-index: 0;
-  background: var(--white-color);
+  background: var(--background-color);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -298,7 +307,7 @@ export default {
 }
 
 .system-info {
-  height:50%;
+  height: 50%;
   width: 100%;
   display: flex;
   justify-content: space-around;
@@ -310,27 +319,25 @@ export default {
 .cpu-info {
   height: 100%;
   width: 50%;
-  margin: 2%;
+  margin: 10px;
   display: flex;
   background: var(--body-color);
-  border-radius: 20px;
+  border-radius: 2px;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .memory-info {
   height: 100%;
   width: 50%;
-  margin: 2%;
+  margin: 10px;
   display: flex;
   background: var(--body-color);
-  border-radius: 20px;
+  border-radius: 2px;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes fade-in {

@@ -138,6 +138,10 @@ export default {
   text-align: left;
 }
 
+.router-link-active {
+  color: var(--first-color);
+}
+
 .guide-list:hover {
   background-color: var(--border-color);
   animation: fade-in 0.5s;

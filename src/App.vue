@@ -92,6 +92,7 @@ export default {
   --text-color: hsl(230, 16%, 45%);
   --border-color: hsl(230, 50%, 90%);
   --white-color: hsl(0, 0%, 100%);
+  --background-color: #f3f3f3;
   /* --body-color: hsl(230, 100%, 96%); */
   --body-color: hsl(0, 0%, 100%);
   --grey-color: hsl(0, 0%, 95%);
