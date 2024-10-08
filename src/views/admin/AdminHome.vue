@@ -56,12 +56,22 @@
           </div>
         </div>
         <!-- 图书类型占比卡片 -->
-        <div class="card book-type-ratio">
+        <!-- <div class="card book-type-ratio">
           <div class="card-title">图书类型占比</div>
           <div class="card-body">
             <div
               class="menu-chart-container"
               ref="bookTypeChartContainer"
+            ></div>
+          </div>
+        </div> -->
+        <!-- 历史在线用户卡片 -->
+        <div class="card book-type-ratio">
+          <div class="card-title">历史在线记录</div>
+          <div class="card-body">
+            <div
+              class="history-count-chart-container"
+              ref="historyCountChartContainer"
             ></div>
           </div>
         </div>
@@ -108,11 +118,12 @@ export default {
       books: [],
       menuTitles: [],
       dailyUser: [],
+      typeCount: {},
       alertMsg: "",
       pollingInterval: null,
       cpuChart: null,
       memChart: null,
-      typeCount: {},
+      historyCountChart: null,
     };
   },
 
@@ -132,7 +143,7 @@ export default {
   mounted() {
     this.initCpuChart();
     this.initMemChart();
-    this.initBookMenusChart();
+    // this.initBookMenusChart();
     this.getDailyUser();
     this.pollingInterval = setInterval(() => {
       this.getSystemInfo();
@@ -149,9 +160,10 @@ export default {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
-    if (this.cpuChart || this.memChart) {
+    if (this.cpuChart || this.memChart || this.historyCountChart) {
       this.cpuChart.dispose();
       this.memChart.dispose();
+      this.historyCountChart.dispose();
     }
   },
 
@@ -174,23 +186,24 @@ export default {
       }
     },
 
-    // 获取历史在线人数
+    // 获取历史在线用户
     async getDailyUser() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/dailyUser"
-        );
-        console.log(response);
+        const response = await axios.get("http://localhost:3000/api/dailyUser");
+        // console.log(response);
         const dailyUser = response.data.dailyUser;
-        this.dailyUser = dailyUser || [];
+
+        this.dailyUser = (dailyUser || []).sort((a, b) => {
+          return new Date(a.sys_date) - new Date(b.sys_date);
+        });
 
         if (this.dailyUser.length === 0) {
           this.alertMsg = "未找到任何在线用户记录";
         } else {
           // 获取数据后，历史在线表
-          // this.$nextTick(() => {
-          //   this.updateBookMenusChart();
-          // });
+          this.$nextTick(() => {
+            this.initHistoryCountChart();
+          });
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -212,7 +225,7 @@ export default {
         } else {
           // 获取数据后，更新分类占比表
           this.$nextTick(() => {
-            this.updateBookMenusChart(); // 更新分类占比表
+            // this.updateBookMenusChart();
           });
         }
       } catch (error) {
@@ -221,7 +234,70 @@ export default {
       }
     },
 
-    // 初始化图书分类占比图表，使用默认或占位数据
+    // 初始化历史用户登录统计图表
+    initHistoryCountChart() {
+      const chartContainer = this.$refs.historyCountChartContainer;
+      this.historyCountChart = echarts.init(chartContainer);
+      const data = this.dailyUser.map((item) => [
+        new Date(item.sys_date),
+        Number(item.user_count),
+      ]);
+
+      const option = {
+        tooltip: {
+          trigger: "axis",
+          confine: true, // 限制悬浮框在图表内部
+          position(pt) {
+            return [pt[0], "10%"]; // 调整提示框的位置
+          },
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: data.map((item) => {
+            const date = new Date(item[0]);
+            return `${date.getFullYear()}-${
+              date.getMonth() + 1
+            }-${date.getDate()}`;
+          }),
+          axisLabel: {
+            formatter(value) {
+              return value;
+            },
+          },
+        },
+        yAxis: {
+          type: "value",
+          boundaryGap: [0, "100%"],
+          minInterval: 1,
+        },
+        series: [
+          {
+            name: "用户数量",
+            type: "line",
+            // smooth: true,
+            symbol: "none",
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgb(84, 112, 198)",
+                },
+                {
+                  offset: 1,
+                  color: "rgb(1, 191, 236)",
+                },
+              ]),
+            },
+            data: data.map((item) => item[1]),
+          },
+        ],
+      };
+
+      this.historyCountChart.setOption(option);
+    },
+
+    // 初始化图书分类占比图表
     initBookMenusChart() {
       const chartContainer = this.$refs.bookTypeChartContainer;
       this.bookTypeChart = echarts.init(chartContainer);
@@ -243,7 +319,16 @@ export default {
             type: "bar",
             data: [], // 初始化时为空
             itemStyle: {
-              color: "#5470c6",
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: "rgb(84, 112, 198)",
+                },
+                {
+                  offset: 1,
+                  color: "rgb(1, 191, 236)",
+                },
+              ]),
             },
           },
         ],
@@ -294,6 +379,7 @@ export default {
       }));
     },
 
+    // 初始化CPU图表
     initCpuChart() {
       const chartContainer = this.$refs.cpuChartContainer;
       this.cpuChart = echarts.init(chartContainer);
@@ -367,6 +453,7 @@ export default {
       this.cpuChart.setOption(option);
     },
 
+    // 更新CPU图表
     updateCpuChart() {
       this.cpuChart.setOption({
         series: [
@@ -388,6 +475,7 @@ export default {
       });
     },
 
+    // 初始化内存图表
     initMemChart() {
       const chartContainer = this.$refs.memChartContainer;
       this.memChart = echarts.init(chartContainer);
@@ -461,6 +549,7 @@ export default {
       this.memChart.setOption(option);
     },
 
+    // 更新内存图表
     updateMemChart() {
       this.memChart.setOption({
         series: [
@@ -574,6 +663,16 @@ export default {
   overflow: visible;
 }
 
+.history-count-chart-container {
+  top: -30px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 270px;
+  overflow: visible;
+}
+
+/*
 .menu-chart-container {
   justify-content: center;
   align-items: center;
@@ -581,6 +680,7 @@ export default {
   height: 250px;
   overflow: visible;
 }
+*/
 
 .real-time-data {
   grid-column: 1 / 2;

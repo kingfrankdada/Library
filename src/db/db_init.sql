@@ -8,4 +8,10 @@
 -- ALTER TABLE book MODIFY COLUMN menu VARCHAR(255);
 
 -- 添加外键约束，将 book 表的 menu 列与 menu 表的 title 列关联
-SELECT * FROM daily_user
+INSERT INTO daily_user (sys_date, user_count)
+VALUES 
+('2024-09-31', FLOOR(RAND() * 100 + 1)),
+('2024-10-01', FLOOR(RAND() * 100 + 1)),
+('2024-10-02', FLOOR(RAND() * 100 + 1)),
+('2024-10-03', FLOOR(RAND() * 100 + 1)),
+('2024-10-04', FLOOR(RAND() * 100 + 1))
