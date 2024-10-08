@@ -118,8 +118,8 @@ export default {
           this.boxMsg = "未找到任何图书记录";
         }
       } catch (error) {
-        this.boxMsg =
-          "获取图书数据失败: " + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取图书数据失败";
       }
     },
 
@@ -130,9 +130,8 @@ export default {
         );
         this.menuTitles = response.data.titles;
       } catch (error) {
-        this.boxMsg =
-          "获取分类信息数据失败: " +
-          (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取分类信息数据失败";
       }
     },
 
@@ -191,7 +190,7 @@ th {
 }
 
 img {
-  height: 75px;
+  height: 50px;
   width: auto;
 }
 

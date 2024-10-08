@@ -4,7 +4,7 @@ import createLocalStorage from 'vuex-persistedstate';
 import NormalModal from "./model/NormalModal.js";
 import UserInfo from "./model/UserInfo.js";
 import LeftGuide from "./model/LeftGuide.js";
-import WebSocket from "./model/WebSocket.js";
+import SysInfo from "./model/SysInfo.js";
 
 Vue.use(Vuex);
 
@@ -15,7 +15,7 @@ const store = new Vuex.Store({
     NormalModal,
     UserInfo,
     LeftGuide,
-    WebSocket
+    SysInfo
   },
   plugins: [createLocalStorage({
     storage: window.localStorage

@@ -4,28 +4,79 @@
       <HeaderGuide></HeaderGuide>
     </div>
     <div class="home-body">
-      <div class="charts-container">
-        <div class="chart" ref="userCountChartBox"></div>
-        <div class="chart" ref="cpuUsageChartBox"></div>
-        <div class="chart" ref="memoryUsageChartBox"></div>
-      </div>
-      <div class="system-info">
-        <div class="cpu-info">
-          <h2>CPU 信息</h2>
-          <p>CPU 品牌: {{ systemInfo.cpuUsage.brand }}</p>
-          <p>CPU 速度: {{ systemInfo.cpuUsage.speed }} GHz</p>
-          <p>CPU 占用率: {{ systemInfo.cpuUsage.load }}%</p>
+      <div class="dashboard">
+        <!-- 实时数据卡片 -->
+        <div class="card real-time-data">
+          <div class="card-title">实时数据</div>
+          <div class="card-body">
+            <div class="card-form-item">
+              <h4>在线用户数</h4>
+              <span class="card-form-count">{{ onlineUserCount }}</span>
+            </div>
+            <div class="card-form-item">
+              <h4>收录图书数</h4>
+              <span class="card-form-count">{{ books.length }}</span>
+            </div>
+          </div>
         </div>
-        <div class="memory-info">
-          <h2>内存信息</h2>
-          <p>总内存: {{ formatMemory(systemInfo.memoryUsage.totalMemory) }}</p>
-          <p>已用内存: {{ formatMemory(systemInfo.memoryUsage.usedMemory) }}</p>
-          <p>内存占用率: {{ systemInfo.memoryUsage.usedPercentage }}%</p>
+        <!-- CPU数据卡片 -->
+        <div class="card cpu-data">
+          <div class="card-title">服务器处理器数据</div>
+          <div class="card-body">
+            <div class="card-form-item">
+              <span class="card-form-text">
+                CPU型号:
+                <br />
+                {{ systemInfo.cpuUsage.brand }}
+                <br />
+                CPU频率:
+                <br />
+                {{ systemInfo.cpuUsage.speed }} GHz
+              </span>
+              <div class="sys-chart-container" ref="cpuChartContainer"></div>
+            </div>
+          </div>
         </div>
+        <!-- 内存数据卡片 -->
+        <div class="card book-data">
+          <div class="card-title">服务器内存数据</div>
+          <div class="card-body">
+            <div class="card-form-item">
+              <span class="card-form-text">
+                内存总大小:
+                <br />
+                {{ systemInfo.memoryUsage.totalMemory }}
+                <br />
+                已使用内存:
+                <br />
+                {{ systemInfo.memoryUsage.usedMemory }}
+              </span>
+              <div class="sys-chart-container" ref="memChartContainer"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 图书类型占比卡片 -->
+        <div class="card book-type-ratio">
+          <div class="card-title">图书类型占比</div>
+          <div class="card-body">
+            <div
+              class="menu-chart-container"
+              ref="bookTypeChartContainer"
+            ></div>
+          </div>
+        </div>
+        <!-- 账号活跃情况卡片 -->
+        <div class="card account-activity"></div>
       </div>
     </div>
     <router-view class="admin-body"></router-view>
     <LeftGuide class="left-guide-model"></LeftGuide>
+    <!-- 自定义弹窗捕获 -->
+    <AlertBox
+      v-if="alertMsg"
+      :message="alertMsg"
+      @close="alertMsg = ''"
+    ></AlertBox>
   </div>
 </template>
 
@@ -33,6 +84,7 @@
 import { mapState } from "vuex";
 import HeaderGuide from "@/components/HeaderGuide";
 import LeftGuide from "@/components/LeftGuide";
+import AlertBox from "@/components/AlertBox.vue";
 import * as echarts from "echarts";
 import axios from "axios";
 
@@ -43,9 +95,9 @@ export default {
     return {
       systemInfo: {
         cpuUsage: {
-          brand: "",
+          brand: "获取中...",
           speed: 0,
-          load: 0,
+          usedPercentage: 0,
         },
         memoryUsage: {
           totalMemory: 0,
@@ -53,13 +105,21 @@ export default {
           usedPercentage: 0,
         },
       },
-      pollingInterval: null, // 存储轮询的定时器
+      books: [],
+      menuTitles: [],
+      dailyUser: [],
+      alertMsg: "",
+      pollingInterval: null,
+      cpuChart: null,
+      memChart: null,
+      typeCount: {},
     };
   },
 
   components: {
     HeaderGuide,
     LeftGuide,
+    AlertBox,
   },
 
   created() {
@@ -70,11 +130,18 @@ export default {
   },
 
   mounted() {
-    this.initCharts();
-    this.updateBodyPosition(this.isLeftGuideVisible);
+    this.initCpuChart();
+    this.initMemChart();
+    this.initBookMenusChart();
+    this.getDailyUser();
     this.pollingInterval = setInterval(() => {
       this.getSystemInfo();
-    }, 1000);
+      this.selectBooks();
+      this.$nextTick(() => {
+        this.updateMemChart();
+        this.updateCpuChart();
+      });
+    }, 2000);
   },
 
   beforeDestroy() {
@@ -82,180 +149,332 @@ export default {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
+    if (this.cpuChart || this.memChart) {
+      this.cpuChart.dispose();
+      this.memChart.dispose();
+    }
   },
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
     ...mapState("LeftGuide", ["isLeftGuideVisible"]),
-    ...mapState("WebSocket", ["onlineUserCount"]),
-  },
-
-  watch: {
-    isLeftGuideVisible(newVal) {
-      this.updateBodyPosition(newVal);
-    },
+    ...mapState("SysInfo", ["onlineUserCount"]),
   },
 
   methods: {
-    updateBodyPosition(isVisible) {
-      this.$nextTick(() => {
-        const adminBody = document.querySelector(".admin-body");
-        const homeBody = document.querySelector(".home-body");
-        if (adminBody) {
-          adminBody.style.left = isVisible ? "15%" : "0";
-          adminBody.style.width = isVisible ? "85%" : "100%";
-        }
-        if (homeBody) {
-          homeBody.style.left = isVisible ? "15%" : "0";
-          homeBody.style.width = isVisible ? "85%" : "100%";
-        }
-      });
-    },
-
+    // 获取系统信息
     async getSystemInfo() {
       try {
         const response = await axios.get(
           "http://localhost:3000/api/systemInfo"
         );
         this.systemInfo = response.data;
-        this.updateCharts();
       } catch (error) {
         console.error("获取系统信息失败:", error);
       }
     },
 
-    formatMemory(bytes) {
-      const gb = bytes / (1024 * 1024 * 1024);
-      return gb.toFixed(2) + " GB";
+    // 获取历史在线人数
+    async getDailyUser() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/dailyUser"
+        );
+        console.log(response);
+        const dailyUser = response.data.dailyUser;
+        this.dailyUser = dailyUser || [];
+
+        if (this.dailyUser.length === 0) {
+          this.alertMsg = "未找到任何在线用户记录";
+        } else {
+          // 获取数据后，历史在线表
+          // this.$nextTick(() => {
+          //   this.updateBookMenusChart();
+          // });
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "获取历史在线数据失败";
+      }
     },
 
-    initCharts() {
-      // 初始化在线用户图表
-      this.userCountChart = echarts.init(this.$refs.userCountChartBox);
-      this.userCountChart.setOption({
-        tooltip: {
-          formatter: "{a} <br/>{b} : {c}",
+    // 获取所有图书
+    async selectBooks() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/selectBook"
+        );
+        const books = response.data.books;
+        this.books = books || [];
+
+        if (this.books.length === 0) {
+          this.alertMsg = "未找到任何图书记录";
+        } else {
+          // 获取数据后，更新分类占比表
+          this.$nextTick(() => {
+            this.updateBookMenusChart(); // 更新分类占比表
+          });
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "获取图书数据失败";
+      }
+    },
+
+    // 初始化图书分类占比图表，使用默认或占位数据
+    initBookMenusChart() {
+      const chartContainer = this.$refs.bookTypeChartContainer;
+      this.bookTypeChart = echarts.init(chartContainer);
+
+      const option = {
+        xAxis: {
+          type: "category",
+          data: [], // 初始化时为空
+          axisLabel: {
+            interval: 0,
+          },
+        },
+        yAxis: {
+          type: "value",
         },
         series: [
           {
-            name: "在线用户",
+            name: "图书数量",
+            type: "bar",
+            data: [], // 初始化时为空
+            itemStyle: {
+              color: "#5470c6",
+            },
+          },
+        ],
+      };
+
+      this.bookTypeChart.setOption(option);
+    },
+
+    // 更新图书分类占比图表
+    updateBookMenusChart() {
+      const bookTypes = this.getBookMenus();
+      const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
+
+      const option = {
+        xAxis: {
+          type: "category",
+          data: bookTypes.map((item) => item.name),
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            name: "图书数量",
+            type: "bar",
+            data: bookTypes.map((item) => (item.value / totalBooks) * 100),
+          },
+        ],
+      };
+
+      this.bookTypeChart.setOption(option);
+    },
+
+    // 统计每种分类的图书数量
+    getBookMenus() {
+      this.typeCount = {}; // 重置分类计数
+      this.books.forEach((book) => {
+        if (this.typeCount[book.menu]) {
+          this.typeCount[book.menu]++;
+        } else {
+          this.typeCount[book.menu] = 1;
+        }
+      });
+
+      return Object.entries(this.typeCount).map(([name, value]) => ({
+        name,
+        value,
+      }));
+    },
+
+    initCpuChart() {
+      const chartContainer = this.$refs.cpuChartContainer;
+      this.cpuChart = echarts.init(chartContainer);
+
+      const gaugeData = [
+        {
+          value: this.systemInfo.cpuUsage.usedPercentage,
+          name: "CPU使用率",
+          title: {
+            show: true,
+          },
+          detail: {
+            show: true,
+          },
+        },
+      ];
+
+      const option = {
+        series: [
+          {
             type: "gauge",
+            startAngle: 90,
+            endAngle: -270,
+            pointer: {
+              show: false,
+            },
             progress: {
               show: true,
+              overlap: false,
+              roundCap: true,
+              clip: false,
               itemStyle: {
-                color: "#4960d4",
+                borderWidth: 1,
+                borderColor: "#464646",
               },
             },
-            detail: {
-              valueAnimation: true,
-              formatter: "{value}",
+            axisLine: {
+              lineStyle: {
+                width: 20,
+              },
             },
+            splitLine: {
+              show: false,
+              distance: 0,
+              length: 10,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              show: false,
+              distance: 50,
+            },
+            data: gaugeData,
+            title: {
+              show: true,
+              fontSize: 20,
+            },
+            detail: {
+              width: 40,
+              height: 14,
+              fontSize: 20,
+              color: "#464646",
+              formatter: "{value}%",
+              offsetCenter: ["0%", "0%"],
+            },
+          },
+        ],
+      };
+
+      this.cpuChart.setOption(option);
+    },
+
+    updateCpuChart() {
+      this.cpuChart.setOption({
+        series: [
+          {
             data: [
               {
-                value: this.onlineUserCount,
-                name: "Online Users",
+                value: this.systemInfo.cpuUsage.usedPercentage,
+                name: "CPU使用率",
+                title: {
+                  show: true,
+                },
+                detail: {
+                  show: true,
+                },
               },
             ],
           },
         ],
       });
+    },
 
-      // 初始化 CPU 使用率图表
-      this.cpuUsageChart = echarts.init(this.$refs.cpuUsageChartBox);
-      this.cpuUsageChart.setOption({
-        tooltip: {
-          formatter: "{a} <br/>{b} : {c}%",
+    initMemChart() {
+      const chartContainer = this.$refs.memChartContainer;
+      this.memChart = echarts.init(chartContainer);
+
+      const gaugeData = [
+        {
+          value: this.systemInfo.memoryUsage.usedPercentage,
+          name: "内存使用率",
+          title: {
+            show: true,
+          },
+          detail: {
+            show: true,
+          },
         },
+      ];
+
+      const option = {
         series: [
           {
-            name: "CPU 占用率",
             type: "gauge",
+            startAngle: 90,
+            endAngle: -270,
+            pointer: {
+              show: false,
+            },
             progress: {
               show: true,
+              overlap: false,
+              roundCap: true,
+              clip: false,
               itemStyle: {
-                color: "#4960d4",
+                borderWidth: 1,
+                borderColor: "#464646",
               },
+            },
+            axisLine: {
+              lineStyle: {
+                width: 20,
+              },
+            },
+            splitLine: {
+              show: false,
+              distance: 0,
+              length: 10,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              show: false,
+              distance: 50,
+            },
+            data: gaugeData,
+            title: {
+              show: true,
+              fontSize: 20,
             },
             detail: {
-              valueAnimation: true,
+              width: 40,
+              height: 14,
+              fontSize: 20,
+              color: "#464646",
               formatter: "{value}%",
+              offsetCenter: ["0%", "0%"],
             },
-            data: [
-              {
-                value: this.systemInfo.cpuUsage.load,
-                name: "CPU Load",
-              },
-            ],
           },
         ],
-      });
+      };
 
-      // 初始化内存使用率图表
-      this.memoryUsageChart = echarts.init(this.$refs.memoryUsageChartBox);
-      this.memoryUsageChart.setOption({
-        tooltip: {
-          formatter: "{a} <br/>{b} : {c}%",
-        },
+      this.memChart.setOption(option);
+    },
+
+    updateMemChart() {
+      this.memChart.setOption({
         series: [
           {
-            name: "内存占用率",
-            type: "gauge",
-            progress: {
-              show: true,
-              itemStyle: {
-                color: "#4960d4",
-              },
-            },
-            detail: {
-              valueAnimation: true,
-              formatter: "{value}%",
-            },
             data: [
               {
                 value: this.systemInfo.memoryUsage.usedPercentage,
-                name: "Memory Usage",
-              },
-            ],
-          },
-        ],
-      });
-    },
-
-    updateCharts() {
-      // 更新图表数据
-      this.cpuUsageChart.setOption({
-        series: [
-          {
-            data: [
-              {
-                value: this.systemInfo.cpuUsage.load,
-                name: "CPU Load",
-              },
-            ],
-          },
-        ],
-      });
-
-      this.memoryUsageChart.setOption({
-        series: [
-          {
-            data: [
-              {
-                value: this.systemInfo.memoryUsage.usedPercentage,
-                name: "Memory Usage",
-              },
-            ],
-          },
-        ],
-      });
-
-      this.userCountChart.setOption({
-        series: [
-          {
-            data: [
-              {
-                value: this.onlineUserCount,
-                name: "Online Users",
+                name: "内存使用率",
+                title: {
+                  show: true,
+                },
+                detail: {
+                  show: true,
+                },
               },
             ],
           },
@@ -286,65 +505,112 @@ export default {
 }
 
 .home-body {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
+  position: fixed;
+  left: 15%;
   height: 100%;
   width: 85%;
-  left: 15%;
-  transition: left 0.4s ease;
+  padding: 20px;
+  overflow-y: auto;
 }
 
-.charts-container {
-  height: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-
-.chart {
-  width: 30%;
-}
-
-.system-info {
-  height: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  bottom: 50px;
-  padding-bottom: 5%;
-}
-
-.cpu-info {
+.dashboard {
+  display: grid;
+  grid-template-columns: 48% 25% 25%;
+  grid-template-rows: 20% 40% 25%;
+  gap: 20px;
   height: 100%;
-  width: 50%;
-  margin: 10px;
-  display: flex;
-  background: var(--body-color);
-  border-radius: 2px;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
 }
 
-.memory-info {
-  height: 100%;
-  width: 50%;
-  margin: 10px;
+.card {
+  background-color: var(--body-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.card-title {
   display: flex;
-  background: var(--body-color);
-  border-radius: 2px;
-  flex-direction: column;
-  justify-content: space-around;
+  font-weight: var(--font-semi-bold);
+  font-size: 20px;
+  padding: 0 0 5px 0;
+}
+
+.card-body {
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
+  gap: 20px;
+  padding: 0 5px 5px 0;
+  width: 100%;
+}
+
+.card-body > * {
+  margin-right: auto;
+}
+
+.card-form-item {
+  width: 100%;
+}
+
+.card-form-count {
+  font-weight: var(--font-semi-bold);
+  position: sticky;
+  font-size: 20px;
+  color: black;
+  padding: 0 5px 5px 0;
+}
+
+.card-form-text {
+  position: absolute;
+  padding: 0 5px 5px 0;
+}
+
+.sys-chart-container {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 450px;
+  overflow: visible;
+}
+
+.menu-chart-container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 250px;
+  overflow: visible;
+}
+
+.real-time-data {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.cpu-data {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+}
+
+.book-data {
+  grid-column: 3 / 4;
+  grid-row: 1 / 3;
+}
+
+.book-type-ratio {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.account-activity {
+  grid-column: 1 / 4;
+  grid-row: 3 / 4;
 }
 
 @keyframes fade-in {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }

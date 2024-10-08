@@ -12,7 +12,7 @@
 
       <div class="login-logo">
         <!-- <i class="ri-book-3-line"></i> -->
-        <span>在线高校图书管理系统</span>
+        <span>高校图书管理系统</span>
       </div>
 
       <div class="login-form" @keyup.enter="handleLogin">

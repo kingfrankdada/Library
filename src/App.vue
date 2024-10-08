@@ -42,7 +42,7 @@ export default {
       "setAddModalVisible",
       "setUpdateModalVisible",
     ]),
-    ...mapMutations("WebSocket", ["setOnlineUserCount"]),
+    ...mapMutations("SysInfo", ["setOnlineUserCount"]),
 
     // 获取在线用户数
     connectWebSocket() {

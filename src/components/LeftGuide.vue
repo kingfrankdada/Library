@@ -15,9 +15,9 @@
         </div>
       </div>
     </div>
-    <div class="hide-btn" @click="toggleGuide">
+    <!-- <div class="hide-btn" @click="toggleGuide">
       <i class="ri-list-check"></i>
-    </div>
+    </div> -->
     <!-- <div class="right-box"></div> -->
   </div>
 </template>

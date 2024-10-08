@@ -88,7 +88,7 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-// 获取系统信息的 API
+// 获取系统信息的api
 app.get('/api/systemInfo', async (req, res) => {
   try {
     // 获取 CPU 和内存信息
@@ -99,7 +99,7 @@ app.get('/api/systemInfo', async (req, res) => {
       cpuUsage: {
         brand: cpuInfo.brand, // CPU 类型
         speed: cpuInfo.speed, // CPU 速度
-        load: cpuLoad.currentLoad.toFixed(2), // CPU 占用率
+        usedPercentage: cpuLoad.currentLoad.toFixed(2), // CPU 占用率
       },
       memoryUsage: {
         totalMemory: memoryUsage.total, // 总内存
@@ -114,6 +114,23 @@ app.get('/api/systemInfo', async (req, res) => {
       error: "获取系统信息失败"
     });
   }
+});
+
+// 获取历史在线人数api
+app.get('/api/dailyUser', (req, res) => {
+  const query = 'SELECT * FROM daily_user';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '查询成功',
+      dailyUser: results
+    });
+  });
 });
 
 // 登录请求api

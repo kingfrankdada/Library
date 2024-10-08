@@ -8,7 +8,4 @@
 -- ALTER TABLE book MODIFY COLUMN menu VARCHAR(255);
 
 -- 添加外键约束，将 book 表的 menu 列与 menu 表的 title 列关联
-ALTER TABLE book
-ADD CONSTRAINT fk_book_menu
-FOREIGN KEY (menu) REFERENCES menu(title)
-ON DELETE SET NULL ON UPDATE CASCADE;
+SELECT * FROM daily_user

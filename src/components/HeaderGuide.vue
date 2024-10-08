@@ -3,7 +3,7 @@
     <div class="nav container">
       <router-link to="/home" class="nav__logo">
         <i class="ri-book-3-line"></i>
-        <span>在线高校图书管理系统</span>
+        <span>高校图书管理系统</span>
       </router-link>
 
       <!-- 登陆后显示用户信息 -->

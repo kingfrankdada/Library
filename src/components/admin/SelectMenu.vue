@@ -72,8 +72,8 @@ export default {
           this.boxMsg = "未找到任何分类记录";
         }
       } catch (error) {
-        this.boxMsg =
-          "获取分类数据失败: " + (error.response?.data?.error || error.message);
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取分类数据失败";
       }
     },
 

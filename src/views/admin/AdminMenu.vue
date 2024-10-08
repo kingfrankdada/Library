@@ -123,7 +123,7 @@ export default {
   flex-wrap: wrap;
   justify-content: space-between;
   overflow-y: scroll;
-  background: var(--body-color);
+  background: var(--background-color);
 }
 
 .select-modal {
