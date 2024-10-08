@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const WebSocket = require('ws');
 const os = require('os');
 const si = require('systeminformation');
+const schedule = require('node-schedule'); // 定时任务
 
 const app = express();
 const port = 3000;
@@ -42,20 +43,15 @@ const wss = new WebSocket.Server({
 
 // 处理 WebSocket 连接
 wss.on('connection', (ws) => {
-  // 新连接，添加用户
   onlineUsers.add(ws);
   console.log(`新用户连接，当前在线用户数: ${onlineUsers.size}`);
 
-  // 向所有客户端广播当前在线用户数
   broadcastOnlineUsers();
 
-  // 处理客户端消息
   ws.on('message', (message) => {
     console.log(`收到消息: ${message}`);
-    // 根据需要处理消息
   });
 
-  // 处理连接关闭
   ws.on('close', () => {
     onlineUsers.delete(ws);
     console.log(`用户断开连接，当前在线用户数: ${onlineUsers.size}`);
@@ -91,20 +87,19 @@ server.on('upgrade', (request, socket, head) => {
 // 获取系统信息的api
 app.get('/api/systemInfo', async (req, res) => {
   try {
-    // 获取 CPU 和内存信息
-    const cpuInfo = await si.cpu(); // 获取 CPU 信息
-    const cpuLoad = await si.currentLoad(); // 获取 CPU 当前负载（占用率）
-    const memoryUsage = await si.mem(); // 获取内存信息
+    const cpuInfo = await si.cpu();
+    const cpuLoad = await si.currentLoad();
+    const memoryUsage = await si.mem();
     const systemInfo = {
       cpuUsage: {
-        brand: cpuInfo.brand, // CPU 类型
-        speed: cpuInfo.speed, // CPU 速度
-        usedPercentage: cpuLoad.currentLoad.toFixed(2), // CPU 占用率
+        brand: cpuInfo.brand,
+        speed: cpuInfo.speed,
+        usedPercentage: cpuLoad.currentLoad.toFixed(2),
       },
       memoryUsage: {
-        totalMemory: memoryUsage.total, // 总内存
-        usedMemory: memoryUsage.used, // 已用内存
-        usedPercentage: ((memoryUsage.used / memoryUsage.total) * 100).toFixed(2), // 内存占用率
+        totalMemory: memoryUsage.total,
+        usedMemory: memoryUsage.used,
+        usedPercentage: ((memoryUsage.used / memoryUsage.total) * 100).toFixed(2),
       },
     };
     res.json(systemInfo);
@@ -117,7 +112,7 @@ app.get('/api/systemInfo', async (req, res) => {
 });
 
 // 获取历史在线人数api
-app.get('/api/dailyUser', (req, res) => {
+app.get('/api/selectDailyUser', (req, res) => {
   const query = 'SELECT * FROM daily_user';
   connection.query(query, (err, results) => {
     if (err) {
@@ -132,6 +127,41 @@ app.get('/api/dailyUser', (req, res) => {
     });
   });
 });
+
+// 定时任务：每天中午12点插入当日在线人数
+schedule.scheduleJob('0 12 * * *', () => {
+  logOnlineUsers();
+});
+
+// 查询当天数据，如果没有则写入 0
+function logOnlineUsers() {
+  const today = new Date();
+  const sysDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
+  // 查询当天是否已有数据
+  const query = 'SELECT * FROM daily_user WHERE sys_date = ?';
+  connection.query(query, [sysDate], (err, results) => {
+    if (err) {
+      console.error('查询每日记录失败:', err.stack);
+      return;
+    }
+
+    // 如果当天没有记录，插入默认数据
+    if (results.length === 0) {
+      const onlineUserCount = onlineUsers.size || 0; // 获取当前在线人数，如果没有在线则为 0
+      const insertQuery = 'INSERT INTO daily_user (sys_date, user_count) VALUES (?, ?)';
+      connection.query(insertQuery, [sysDate, onlineUserCount], (insertErr) => {
+        if (insertErr) {
+          console.error('插入每日记录失败:', insertErr.stack);
+        } else {
+          console.log(`已插入当日(${sysDate})在线人数: ${onlineUserCount}`);
+        }
+      });
+    } else {
+      console.log(`当日(${sysDate})已有记录，不插入数据`);
+    }
+  });
+}
 
 // 登录请求api
 app.post('/api/login', (req, res) => {

@@ -55,18 +55,8 @@
             </div>
           </div>
         </div>
-        <!-- 图书类型占比卡片 -->
-        <!-- <div class="card book-type-ratio">
-          <div class="card-title">图书类型占比</div>
-          <div class="card-body">
-            <div
-              class="menu-chart-container"
-              ref="bookTypeChartContainer"
-            ></div>
-          </div>
-        </div> -->
-        <!-- 历史在线用户卡片 -->
-        <div class="card book-type-ratio">
+        <!-- 账号活跃情况卡片 -->
+        <div class="card account-activity">
           <div class="card-title">历史在线记录</div>
           <div class="card-body">
             <div
@@ -75,8 +65,16 @@
             ></div>
           </div>
         </div>
-        <!-- 账号活跃情况卡片 -->
-        <div class="card account-activity"></div>
+        <!-- 图书类型占比卡片 -->
+        <div class="card book-type-ratio">
+          <div class="card-title">图书类型占比</div>
+          <div class="card-body">
+            <div
+              class="menu-chart-container"
+              ref="bookTypeChartContainer"
+            ></div>
+          </div>
+        </div>
       </div>
     </div>
     <router-view class="admin-body"></router-view>
@@ -143,20 +141,24 @@ export default {
   mounted() {
     this.initCpuChart();
     this.initMemChart();
-    // this.initBookMenusChart();
     this.getDailyUser();
+    this.selectBooks();
+
+    window.addEventListener("resize", this.resizeCharts);
+
     this.pollingInterval = setInterval(() => {
       this.getSystemInfo();
-      this.selectBooks();
       this.$nextTick(() => {
         this.updateMemChart();
         this.updateCpuChart();
+        this.updateBookMenusChart();
       });
     }, 2000);
   },
 
   beforeDestroy() {
     // 防止内存泄漏
+    window.removeEventListener("resize", this.resizeCharts);
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
@@ -174,6 +176,13 @@ export default {
   },
 
   methods: {
+    // 动态调整图表
+    resizeCharts() {
+      if (this.cpuChart) this.cpuChart.resize();
+      if (this.memChart) this.memChart.resize();
+      if (this.historyCountChart) this.historyCountChart.resize();
+    },
+
     // 获取系统信息
     async getSystemInfo() {
       try {
@@ -189,7 +198,9 @@ export default {
     // 获取历史在线用户
     async getDailyUser() {
       try {
-        const response = await axios.get("http://localhost:3000/api/dailyUser");
+        const response = await axios.get(
+          "http://localhost:3000/api/selectDailyUser"
+        );
         // console.log(response);
         const dailyUser = response.data.dailyUser;
 
@@ -225,7 +236,7 @@ export default {
         } else {
           // 获取数据后，更新分类占比表
           this.$nextTick(() => {
-            // this.updateBookMenusChart();
+            this.initBookMenusChart();
           });
         }
       } catch (error) {
@@ -302,34 +313,38 @@ export default {
       const chartContainer = this.$refs.bookTypeChartContainer;
       this.bookTypeChart = echarts.init(chartContainer);
 
+      const bookTypes = this.getBookMenus();
+      const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
+
+      const data = bookTypes.map((item) => ({
+        name: item.name,
+        value: (item.value / totalBooks) * 100, // 计算占比
+      }));
+
       const option = {
-        xAxis: {
-          type: "category",
-          data: [], // 初始化时为空
-          axisLabel: {
-            interval: 0,
-          },
-        },
-        yAxis: {
-          type: "value",
-        },
         series: [
           {
-            name: "图书数量",
-            type: "bar",
-            data: [], // 初始化时为空
+            name: "图书分类",
+            type: "pie",
+            radius: ["50%", "70%"], // 设置环形图的内外半径
+            avoidLabelOverlap: false,
             itemStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: "rgb(84, 112, 198)",
-                },
-                {
-                  offset: 1,
-                  color: "rgb(1, 191, 236)",
-                },
-              ]),
+              borderRadius: 10,
+              borderColor: "#fff",
+              borderWidth: 2,
             },
+            label: {
+              show: true,
+              position: "outside",
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: "16",
+                fontWeight: "bold",
+              },
+            },
+            data: data,
           },
         ],
       };
@@ -342,19 +357,35 @@ export default {
       const bookTypes = this.getBookMenus();
       const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
 
+      const data = bookTypes.map((item) => ({
+        name: item.name,
+        value: (item.value / totalBooks) * 100, // 计算占比
+      }));
+
       const option = {
-        xAxis: {
-          type: "category",
-          data: bookTypes.map((item) => item.name),
-        },
-        yAxis: {
-          type: "value",
-        },
         series: [
           {
-            name: "图书数量",
-            type: "bar",
-            data: bookTypes.map((item) => (item.value / totalBooks) * 100),
+            name: "图书分类",
+            type: "pie",
+            radius: ["50%", "70%"], // 设置环形图的内外半径
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: "#fff",
+              borderWidth: 2,
+            },
+            label: {
+              show: true,
+              position: "outside",
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: "16",
+                fontWeight: "bold",
+              },
+            },
+            data: data, // 更新数据
           },
         ],
       };
@@ -604,7 +635,7 @@ export default {
 
 .dashboard {
   display: grid;
-  grid-template-columns: 48% 25% 25%;
+  grid-template-columns: 50% 22% 22%;
   grid-template-rows: 20% 40% 25%;
   gap: 20px;
   height: 100%;
@@ -672,15 +703,13 @@ export default {
   overflow: visible;
 }
 
-/*
 .menu-chart-container {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 250px;
+  height: 100px;
   overflow: visible;
 }
-*/
 
 .real-time-data {
   grid-column: 1 / 2;
@@ -698,13 +727,13 @@ export default {
 }
 
 .book-type-ratio {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
+  grid-column: 1 / 4;
+  grid-row: 3 / 4;
 }
 
 .account-activity {
-  grid-column: 1 / 4;
-  grid-row: 3 / 4;
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
 }
 
 @keyframes fade-in {
