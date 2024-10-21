@@ -14,7 +14,9 @@ const state = {
   // 书籍修改模态框
   isUpdateModalVisible: false,
   // 书籍删除模态框
-  isDeleteModalVisible: false
+  isDeleteModalVisible: false,
+  // 公告展示模态框
+  isNoticeModalVisible: false,
 };
 
 const mutations = {
@@ -49,7 +51,11 @@ const mutations = {
   // 删除模态框方法
   setkDeleteModalVisible(state, visible) {
     state.isDeleteModalVisible = visible;
-  }
+  },
+  // 公告展示模态框方法
+  setNoticeModalVisible(state, visible) {
+    state.isNoticeModalVisible = visible;
+  },
 };
 
 const actions = {};

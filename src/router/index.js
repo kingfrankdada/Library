@@ -7,7 +7,7 @@ import PublicHome from '@/views/PublicHome.vue'
 
 import UserBook from '@/views/user/UserBook.vue'
 import UserForum from '@/views/user/UserForum.vue'
-import UserHelp from '@/views/user/UserHelp.vue'
+// import Usernotice from '@/views/user/UserNotice.vue'
 import UserSetting from '@/views/user/UserSetting.vue'
 import AdminHome from '@/views/admin/AdminHome.vue'
 
@@ -15,6 +15,7 @@ import AdminBook from '@/views/admin/AdminBook.vue'
 import AdminBorrow from '@/views/admin/AdminBorrow.vue'
 import AdminMenu from '@/views/admin/AdminMenu.vue'
 import AdminForum from '@/views/admin/AdminForum.vue'
+import Adminnotice from '@/views/admin/AdminNotice.vue'
 import AdminUser from '@/views/admin/AdminUser.vue'
 
 Vue.use(VueRouter)
@@ -41,11 +42,11 @@ const router = new VueRouter({
           name: 'userForum',
           component: UserForum
         },
-        {
-          path: 'help',
-          name: 'userHelp',
-          component: UserHelp
-        },
+        // {
+        //   path: 'notice',
+        //   name: 'usernotice',
+        //   component: Usernotice
+        // },
         {
           path: 'setting',
           name: 'userSetting',
@@ -76,6 +77,11 @@ const router = new VueRouter({
           path: 'forum',
           name: 'adminForum',
           component: AdminForum
+        },
+        {
+          path: 'notice',
+          name: 'adminnotice',
+          component: Adminnotice
         },
         {
           path: 'user',

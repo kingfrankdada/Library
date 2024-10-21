@@ -1,5 +1,5 @@
 <template>
-  <div class="add-user">
+  <div class="add-notice">
     <table>
       <thead>
         <tr>
@@ -9,32 +9,38 @@
       </thead>
       <tbody>
         <tr>
-          <td>名称*</td>
+          <td>标题*</td>
           <td>
             <input
-              v-model="newUser.username"
+              v-model="newNotice.title"
               type="text"
-              placeholder="输入用户名称"
+              placeholder="输入公告标题"
             />
           </td>
         </tr>
-        <!-- <tr>
-          <td>状态*</td>
-          <td>
-            <select v-model="newUser.state">
-              <option value="1">正常</option>
-              <option value="0">关闭</option>
-            </select>
-          </td>
-        </tr> -->
         <tr>
-          <td>预设邮箱*</td>
+          <td>详情内容*</td>
           <td>
             <input
-              v-model="newUser.email"
+              v-model="newNotice.info"
               type="text"
-              placeholder="输入预设用户邮箱"
+              placeholder="输入公告内容"
             />
+          </td>
+        </tr>
+        <tr>
+          <td>是否置顶*</td>
+          <td>
+            <select v-model="newNotice.top">
+              <option value="1">置顶</option>
+              <option value="0">正常</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>添加用户</td>
+          <td>
+            {{ userInfo.userName }}
           </td>
         </tr>
         <tr>
@@ -52,58 +58,62 @@
       :message="alertMsg"
       @close="alertMsg = ''"
     ></AlertBox>
-    <MessageBox v-if="message" :message="message" @close="message = ''"></MessageBox>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import AlertBox from "../AlertBox.vue";
-import MessageBox from "../MessageBox.vue";
+import { mapState } from "vuex";
 
 export default {
-  name: "AddUser",
+  name: "AddNotice",
+
   components: {
     AlertBox,
-    MessageBox,
+  },
+
+  computed: {
+    ...mapState("UserInfo", ["userInfo"]),
   },
 
   data() {
     return {
-      newUser: {
-        username: "",
-        password: "",
-        email: "",
+      newNotice: {
+        title: "",
+        info: "",
+        adduser: "",
         adddate: "",
-        state: 1,
       },
       alertMsg: "",
-      message: "",
     };
   },
   methods: {
     async submitForm() {
-      this.newUser.adddate = new Date().toISOString().split("T")[0];
-      this.newUser.password = Math.random().toString(36).slice(-8);
-      if (!this.newUser.username || !this.newUser.email) {
-        this.alertMsg = "用户信息不完整";
+      this.newNotice.adduser = this.userInfo.userName;
+      this.newNotice.adddate = new Date().toISOString().split("T")[0];
+      if (!this.newNotice.title || !this.newNotice.info || !this.newNotice.top) {
+        this.alertMsg = "公告信息不完整";
         return;
       }
       try {
-        await axios.post("http://localhost:3000/api/reg", this.newUser);
-        // this.alertMsg = "用户添加成功";
-        this.message = "用户添加成功，初始密码为：" + this.newUser.password;
+        await axios.post("http://localhost:3000/api/addNotice", this.newNotice);
+        // this.alertMsg = "公告添加成功";
+        this.alertMsg = "公告添加成功，请前往公告管理查看";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "用户添加失败";
+        this.alertMsg = "公告添加失败";
       }
     },
 
     resetForm() {
-      this.newUser = {
-        username: "",
-        state: 1,
+      this.newNotice = {
+        title: "",
+        info: "",
+        adduser: "",
+        adddate: "",
+        top: 0, // 默认不置顶
       };
     },
   },
@@ -112,7 +122,7 @@ export default {
 </script>
 
 <style scoped>
-.add-user {
+.add-notice {
   height: 100%;
   width: 100%;
   margin-bottom: 20px;

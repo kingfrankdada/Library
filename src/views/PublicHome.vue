@@ -7,17 +7,17 @@
       <h1 class="title">高校图书管理系统</h1>
       <h4 class="subtitle">Smart Organizational Library Assistant Resource</h4>
     </div>
-    <router-view></router-view>
+    <div class="content">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
-
 
 <script>
 import HeaderGuide from "@/components/HeaderGuide.vue";
 
 export default {
   name: "PublicHome",
-  
   components: {
     HeaderGuide,
   },
@@ -26,8 +26,22 @@ export default {
 
 <style scoped>
 .app {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  flex-shrink: 0;
+}
+
+.body {
+  margin: 20px 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }

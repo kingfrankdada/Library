@@ -35,8 +35,9 @@ export default {
         { id: 1, name: "book", title: "图书管理", path: "/admin/book" },
         { id: 2, name: "menu", title: "分类管理", path: "/admin/menu" },
         { id: 3, name: "borrow", title: "借阅管理", path: "/admin/borrow" },
-        { id: 4, name: "forum", title: "论坛管理", path: "/admin/forum" },
-        { id: 5, name: "user", title: "用户管理", path: "/admin/user" },
+        { id: 4, name: "notice", title: "公告管理", path: "/admin/notice" },
+        { id: 5, name: "forum", title: "论坛管理", path: "/admin/forum" },
+        { id: 6, name: "user", title: "用户管理", path: "/admin/user" },
       ],
     };
   },

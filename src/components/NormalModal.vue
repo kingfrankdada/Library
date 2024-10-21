@@ -54,7 +54,8 @@ export default {
       "setSearchModalVisible",
       "setSelectModalVisible",
       "setAddModalVisible",
-      "setUpdateModalVisible"
+      "setUpdateModalVisible",
+      "setNoticeModalVisible",
     ]),
     close() {
       this.setLoginModalVisible(false);
@@ -63,6 +64,7 @@ export default {
       this.setSearchModalVisible(false);
       this.setSelectModalVisible(false);
       this.setAddModalVisible(false);
+      this.setNoticeModalVisible(false);
     },
     handleClickOutside(event) {
       if (event.target.classList.contains("modal")) {

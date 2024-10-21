@@ -23,7 +23,7 @@
           所有图书
           <div class="select-tips">*双击图书属性可进行编辑</div>
         </div>
-        <SelectBook class="select-book"></SelectBook>
+        <SelectBook></SelectBook>
       </NormalModal>
 
       <!-- 书籍添加 -->

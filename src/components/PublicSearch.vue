@@ -8,12 +8,12 @@
     <div class="search-content">
       <NormalModal :size="modalSize" v-if="isSearchModalVisible">
         <!-- 搜索框 -->
-        <div class="search-form">Search</div>
+        <div class="search-form">SEARCH</div>
         <div class="g-container">
           <input
             v-model="inputText"
             type="text"
-            placeholder="输入你想查询的内容"
+            placeholder="输入你想查询的书籍"
             class="g-input-search"
           />
           <button type="button" class="g-button-search">GO</button>
@@ -71,7 +71,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .search {
   height: 100%;
   width: 100%;

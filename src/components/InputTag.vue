@@ -26,6 +26,7 @@
 import AlertBox from "./AlertBox.vue";
 
 export default {
+  name: "InputTag",
   props: {
     value: [String, Number],
   },
@@ -67,7 +68,7 @@ export default {
   outline: none;
   border: 1px solid var(--first-color);
   border-radius: 3px;
-  width: 100px;
+  width: 100%;
   height: 27px;
   box-sizing: border-box;
   padding: 10px;

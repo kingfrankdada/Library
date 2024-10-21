@@ -257,9 +257,9 @@ export default {
       const option = {
         tooltip: {
           trigger: "axis",
-          confine: true, // 限制悬浮框在图表内部
+          confine: true,
           position(pt) {
-            return [pt[0], "10%"]; // 调整提示框的位置
+            return [pt[0], "10%"];
           },
         },
         xAxis: {
@@ -337,13 +337,6 @@ export default {
               show: true,
               position: "outside",
             },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: "16",
-                fontWeight: "bold",
-              },
-            },
             data: data,
           },
         ],
@@ -377,13 +370,6 @@ export default {
             label: {
               show: true,
               position: "outside",
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: "16",
-                fontWeight: "bold",
-              },
             },
             data: data, // 更新数据
           },
@@ -445,6 +431,16 @@ export default {
               itemStyle: {
                 borderWidth: 1,
                 borderColor: "#464646",
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: "rgb(84, 112, 198)",
+                  },
+                  {
+                    offset: 1,
+                    color: "rgb(1, 191, 236)",
+                  },
+                ]),
               },
             },
             axisLine: {
@@ -541,6 +537,16 @@ export default {
               itemStyle: {
                 borderWidth: 1,
                 borderColor: "#464646",
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: "rgb(84, 112, 198)",
+                  },
+                  {
+                    offset: 1,
+                    color: "rgb(1, 191, 236)",
+                  },
+                ]),
               },
             },
             axisLine: {
@@ -579,7 +585,6 @@ export default {
 
       this.memChart.setOption(option);
     },
-
     // 更新内存图表
     updateMemChart() {
       this.memChart.setOption({
@@ -635,7 +640,7 @@ export default {
 
 .dashboard {
   display: grid;
-  grid-template-columns: 50% 22% 22%;
+  grid-template-columns: 50% 23% 23%;
   grid-template-rows: 20% 40% 25%;
   gap: 20px;
   height: 100%;
@@ -675,7 +680,7 @@ export default {
   font-weight: var(--font-semi-bold);
   position: sticky;
   font-size: 20px;
-  color: black;
+  color: var(--text-color);
   padding: 0 5px 5px 0;
 }
 

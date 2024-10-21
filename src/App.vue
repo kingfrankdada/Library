@@ -11,7 +11,11 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css"
     />
-    <link rel="stylesheet" href="../src/assets/css/swiper-bundle.min.css" />
+    <!-- <link
+      rel="stylesheet"
+      href="../public/assets/css/remixicon.css"
+    /> -->
+    <link rel="stylesheet" href="../public/assets/css/swiper-bundle.min.css" />
     <router-view class="app__content"></router-view>
   </div>
 </template>
@@ -46,7 +50,7 @@ export default {
 
     // 获取在线用户数
     connectWebSocket() {
-      const ws = new WebSocket("ws://localhost:3001");
+      const ws = new WebSocket("ws://localhost:8081");
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);

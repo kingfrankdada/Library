@@ -44,6 +44,9 @@
           <PublicSearch></PublicSearch>
         </div>
 
+        <!-- 站内通知 -->
+        <PublicNotice></PublicNotice>
+
         <!-- 检测到token为非空条件时，判断用户已登陆隐藏登陆按钮-->
         <!-- 登录模态框，包含NormalModal与PublicLogin组件 -->
         <div v-if="!userInfo.userToken" title="登陆">
@@ -60,9 +63,9 @@
           <PublicLogout></PublicLogout>
         </div>
 
-        <div class="nav__darkmode" title="夜间模式">
+        <!-- <div class="nav__darkmode" title="夜间模式">
           <i class="ri-moon-line change-theme" id="theme-button"></i>
-        </div>
+        </div> -->
       </div>
     </div>
   </header>
@@ -75,6 +78,7 @@ import PublicLogin from "./PublicLogin";
 import PublicLogout from "./PublicLogout.vue";
 import PublicReg from "./PublicReg.vue";
 import PublicSearch from "./PublicSearch.vue";
+import PublicNotice from "./PublicNotice.vue";
 
 export default {
   name: "HeaderGuide",
@@ -85,6 +89,7 @@ export default {
     PublicLogout,
     PublicReg,
     PublicSearch,
+    PublicNotice,
   },
 
   data() {
@@ -113,13 +118,13 @@ export default {
           path: "/home/forum",
           icon: "ri-chat-new-line",
         },
-        {
-          id: 4,
-          name: "Help",
-          title: "用户帮助",
-          path: "/home/help",
-          icon: "ri-question-line",
-        },
+        // {
+        //   id: 4,
+        //   name: "Notice",
+        //   title: "用户帮助",
+        //   path: "/home/notice",
+        //   icon: "ri-question-line",
+        // },
       ],
     };
   },
@@ -183,7 +188,7 @@ export default {
 .nav__userinfo {
   position: absolute;
   height: var(--header-height);
-  width: 20%px;
+  width: 20%;
   display: flex;
   align-items: center;
   right: 130px;

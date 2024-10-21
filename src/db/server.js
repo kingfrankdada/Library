@@ -4,13 +4,12 @@ const mysql = require('mysql');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const WebSocket = require('ws');
-const os = require('os');
-const si = require('systeminformation');
+const system = require('systeminformation');
 const schedule = require('node-schedule'); // 定时任务
 
 const app = express();
 const port = 3000;
-const wsport = 3001;
+const wsport = 8081;
 const saltRounds = 10;
 
 app.use(cors());
@@ -87,9 +86,9 @@ server.on('upgrade', (request, socket, head) => {
 // 获取系统信息的api
 app.get('/api/systemInfo', async (req, res) => {
   try {
-    const cpuInfo = await si.cpu();
-    const cpuLoad = await si.currentLoad();
-    const memoryUsage = await si.mem();
+    const cpuInfo = await system.cpu();
+    const cpuLoad = await system.currentLoad();
+    const memoryUsage = await system.mem();
     const systemInfo = {
       cpuUsage: {
         brand: cpuInfo.brand,
@@ -149,8 +148,8 @@ function logOnlineUsers() {
     // 如果当天没有记录，插入默认数据
     if (results.length === 0) {
       const onlineUserCount = onlineUsers.size || 0; // 获取当前在线人数，如果没有在线则为 0
-      const insertQuery = 'INSERT INTO daily_user (sys_date, user_count) VALUES (?, ?)';
-      connection.query(insertQuery, [sysDate, onlineUserCount], (insertErr) => {
+      const query = 'INSERT INTO daily_user (sys_date, user_count) VALUES (?, ?)';
+      connection.query(query, [sysDate, onlineUserCount], (insertErr) => {
         if (insertErr) {
           console.error('插入每日记录失败:', insertErr.stack);
         } else {
@@ -519,6 +518,172 @@ app.post('/api/updateUser/:id', (req, res) => {
     }
     res.json({
       message: '用户信息更新成功'
+    });
+  });
+});
+
+// 删除用户api
+app.post('/api/delUser/:id', (req, res) => {
+  const userId = req.params.id;
+  const query = 'DELETE FROM user WHERE id = ?';
+  connection.query(query, [userId], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '用户信息删除成功'
+    });
+  });
+});
+
+// 添加公告api
+app.post('/api/addNotice', (req, res) => {
+  const newNotice = req.body;
+  const query = 'INSERT INTO notice (title, info, adduser, adddate, top) VALUES (?, ?, ?, ?, ?)';
+  const values = [newNotice.title, newNotice.info, newNotice.adduser, newNotice.adddate, newNotice.top];
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('添加公告失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '公告添加成功',
+      noticeId: results.insertId
+    });
+  });
+});
+
+// 公告查询api
+app.get('/api/selectNotice', (req, res) => {
+  const query = 'SELECT * FROM notice';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        notice: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到公告记录'
+      });
+    }
+  });
+});
+
+// 更新公告api
+app.post('/api/updateNotice/:id', (req, res) => {
+  const noticeId = req.params.id;
+  let noticeData = req.body;
+  const query = 'UPDATE notice SET ? WHERE id = ?';
+  connection.query(query, [noticeData, noticeId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '公告信息更新成功'
+    });
+  });
+});
+
+// 删除公告api
+app.post('/api/delNotice/:id', (req, res) => {
+  const noticeId = req.params.id;
+  const query = 'DELETE FROM notice WHERE id = ?';
+  connection.query(query, [noticeId], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '公告信息删除成功'
+    });
+  });
+});
+
+// 添加论坛留言api
+app.post('/api/addMessage', (req, res) => {
+  const newMessage = req.body;
+  const query = 'INSERT INTO message (title, info, adduser, adddate, views, likes) VALUES (?, ?, ?, ?, ?, ?)';
+  const values = [newMessage.title, newMessage.info, newMessage.adduser, newMessage.adddate, newMessage.views, newMessage.likes];
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('添加论坛留言失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '论坛留言添加成功',
+      messageId: results.insertId
+    });
+  });
+});
+
+// 论坛留言查询api
+app.get('/api/selectMessage', (req, res) => {
+  const query = 'SELECT * FROM message';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        message: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到论坛留言记录'
+      });
+    }
+  });
+});
+
+// 更新论坛留言api
+app.post('/api/updateMessage/:id', (req, res) => {
+  const messageId = req.params.id;
+  let messageData = req.body;
+  const query = 'UPDATE message SET ? WHERE id = ?';
+  connection.query(query, [messageData, messageId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '论坛留言信息更新成功'
+    });
+  });
+});
+
+// 删除论坛留言api
+app.post('/api/delMessage/:id', (req, res) => {
+  const messageId = req.params.id;
+  const query = 'DELETE FROM message WHERE id = ?';
+  connection.query(query, [messageId], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '论坛留言信息删除成功'
     });
   });
 });

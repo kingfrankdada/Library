@@ -1,13 +1,211 @@
 <template>
-  <div>论坛管理</div>
+  <div class="admin-message">
+    <div class="message-box">
+      <!-- 论坛留言查看 -->
+      <div @click="openSelectModal">
+        <NormalViewBox class="message-box-item">
+          <div class="title-container">
+            <h1>PREVIEW</h1>
+            <h3>查看并编辑所有论坛留言</h3>
+          </div>
+          <div class="img-container">
+            <img src="/assets/images/background9.png" alt="message" />
+          </div>
+        </NormalViewBox>
+      </div>
+      <!-- 论坛留言查看模态框 -->
+      <NormalModal
+        v-if="isSelectModalVisible"
+        class="select-modal"
+        size="large"
+      >
+        <div class="select-text">
+          所有论坛留言
+          <div class="select-tips">*双击论坛留言属性可进行编辑</div>
+        </div>
+        <SelectMessage></SelectMessage>
+      </NormalModal>
+
+      <!-- 论坛留言添加 -->
+      <div @click="openAddModal">
+        <NormalViewBox class="message-box-item">
+          <div class="title-container">
+            <h1>INCREASE</h1>
+            <h3>添加新的论坛留言</h3>
+          </div>
+          <div class="img-container">
+            <img src="/assets/images/background10.png" alt="message" />
+          </div>
+        </NormalViewBox>
+      </div>
+      <!-- 论坛留言添加模态框 -->
+      <NormalModal v-if="isAddModalVisible" class="select-modal" size="large">
+        <div class="select-text">添加论坛留言</div>
+        <AddMessage></AddMessage>
+      </NormalModal>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
+import { mapState, mapMutations } from "vuex";
+import NormalViewBox from "@/components/NormalViewBox.vue";
+import NormalModal from "@/components/NormalModal.vue";
+import SelectMessage from "@/components/admin/SelectMessage.vue";
+import AddMessage from "@/components/admin/AddMessage.vue";
 
-}
+export default {
+  components: {
+    NormalViewBox,
+    NormalModal,
+    SelectMessage,
+    AddMessage,
+  },
+
+  computed: {
+    ...mapState("NormalModal", [
+      "isSelectModalVisible",
+      "isAddModalVisible",
+      "isUpdateModalVisible",
+    ]),
+    ...mapState("LeftGuide", ["isLeftGuideVisible"]),
+  },
+
+  watch: {
+    isLeftGuideVisible(newVal) {
+      this.updateModalPosition(newVal);
+    },
+  },
+
+  methods: {
+    ...mapMutations("NormalModal", [
+      "setSelectModalVisible",
+      "setAddModalVisible",
+      "setUpdateModalVisible",
+    ]),
+
+    updateModalPosition(isVisible) {
+      this.$nextTick(() => {
+        const selectModal = document.querySelector(".select-modal");
+        if (selectModal) {
+          selectModal.style.left = isVisible ? "0%" : "-7.5%";
+        }
+      });
+    },
+
+    openSelectModal() {
+      this.setSelectModalVisible(true);
+      this.syncPosition();
+    },
+
+    openAddModal() {
+      this.setAddModalVisible(true);
+      this.syncPosition();
+    },
+
+    syncPosition() {
+      this.updateModalPosition(this.isLeftGuideVisible);
+    },
+  },
+
+  mounted() {
+    this.updateModalPosition(this.isLeftGuideVisible);
+    this.setAddModalVisible(false);
+    this.setSelectModalVisible(false);
+  },
+};
 </script>
 
-<style>
+<style scoped>
+.admin-message {
+  height: 95%;
+  width: 85%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  overflow-y: scroll;
+  background: var(--background-color);
+}
 
+.select-modal {
+  width: 115%;
+  height: 110%;
+  transition: left 0.4s ease;
+}
+
+.select-text {
+  left: 20px;
+  width: 100%;
+  height: 50px;
+  text-align: left;
+  font-size: 20px;
+  font-weight: var(--font-semi-bold);
+  color: var(--first-color);
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 100%;
+  transition: all 0.4s ease;
+  background: var(--white-color);
+}
+
+.message-box-item {
+  justify-content: left;
+  align-items: center;
+  text-align: left;
+  transition: all 0.4s ease;
+}
+
+.message-box-item:hover .title-container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.message-box-item:hover h1,
+.message-box-item:hover h3 {
+  text-align: center;
+  margin: 0;
+}
+
+.message-box-item h1 {
+  font-family: var(--body-font);
+  font-size: 40px;
+  color: var(--first-color);
+  margin-bottom: 10px;
+  transition: all 1s ease;
+}
+
+.message-box-item h3 {
+  font-family: var(--body-font);
+  font-size: 20px;
+  color: var(--first-color);
+  text-align: left;
+  margin-left: 10px;
+  transition: all 1s ease;
+}
+
+.select-tips {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  margin-right: 20px;
+  width: 100%;
+  text-align: right;
+  font-size: 15px;
+  color: var(--text-color);
+}
+
+.select-message {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
 </style>

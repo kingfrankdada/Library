@@ -1,47 +1,47 @@
 <template>
-  <div class="admin-user">
-    <div class="user-box">
-      <!-- 用户查看 -->
+  <div class="admin-notice">
+    <div class="notice-box">
+      <!-- 公告查看 -->
       <div @click="openSelectModal">
-        <NormalViewBox class="user-box-item">
+        <NormalViewBox class="notice-box-item">
           <div class="title-container">
             <h1>PREVIEW</h1>
-            <h3>查看所有用户</h3>
+            <h3>查看并编辑所有公告</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background5.png" alt="user" />
+            <img src="/assets/images/background7.png" alt="notice" />
           </div>
         </NormalViewBox>
       </div>
-      <!-- 用户查看模态框 -->
+      <!-- 公告查看模态框 -->
       <NormalModal
         v-if="isSelectModalVisible"
         class="select-modal"
         size="large"
       >
         <div class="select-text">
-          用户列表
-          <div class="select-tips">*双击用户属性可进行编辑</div>
+          所有公告
+          <div class="select-tips">*双击公告属性可进行编辑</div>
         </div>
-        <SelectUser class="select-user"></SelectUser>
+        <SelectNotice></SelectNotice>
       </NormalModal>
 
-      <!-- 用户添加 -->
+      <!-- 公告添加 -->
       <div @click="openAddModal">
-        <NormalViewBox class="user-box-item">
+        <NormalViewBox class="notice-box-item">
           <div class="title-container">
             <h1>INCREASE</h1>
-            <h3>添加新的用户</h3>
+            <h3>添加新的公告</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background6.png" alt="user" />
+            <img src="/assets/images/background8.png" alt="notice" />
           </div>
         </NormalViewBox>
       </div>
-      <!-- 用户添加模态框 -->
+      <!-- 公告添加模态框 -->
       <NormalModal v-if="isAddModalVisible" class="select-modal" size="large">
-        <div class="select-text">添加用户</div>
-        <AddUser></AddUser>
+        <div class="select-text">添加公告</div>
+        <AddNotice></AddNotice>
       </NormalModal>
     </div>
   </div>
@@ -51,15 +51,15 @@
 import { mapState, mapMutations } from "vuex";
 import NormalViewBox from "@/components/NormalViewBox.vue";
 import NormalModal from "@/components/NormalModal.vue";
-import SelectUser from "@/components/admin/SelectUser.vue";
-import AddUser from "@/components/admin/AddUser.vue";
+import SelectNotice from "@/components/admin/SelectNotice.vue";
+import AddNotice from "@/components/admin/AddNotice.vue";
 
 export default {
   components: {
     NormalViewBox,
     NormalModal,
-    SelectUser,
-    AddUser,
+    SelectNotice,
+    AddNotice,
   },
 
   computed: {
@@ -117,7 +117,7 @@ export default {
 </script>
 
 <style scoped>
-.admin-user {
+.admin-notice {
   height: 95%;
   width: 85%;
   flex-wrap: wrap;
@@ -155,27 +155,27 @@ export default {
   background: var(--white-color);
 }
 
-.user-box-item {
+.notice-box-item {
   justify-content: left;
   align-items: center;
   text-align: left;
   transition: all 0.4s ease;
 }
 
-.user-box-item:hover .title-container {
+.notice-box-item:hover .title-container {
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
 }
 
-.user-box-item:hover h1,
-.user-box-item:hover h3 {
+.notice-box-item:hover h1,
+.notice-box-item:hover h3 {
   text-align: center;
   margin: 0;
 }
 
-.user-box-item h1 {
+.notice-box-item h1 {
   font-family: var(--body-font);
   font-size: 40px;
   color: var(--first-color);
@@ -183,7 +183,7 @@ export default {
   transition: all 1s ease;
 }
 
-.user-box-item h3 {
+.notice-box-item h3 {
   font-family: var(--body-font);
   font-size: 20px;
   color: var(--first-color);
@@ -203,7 +203,7 @@ export default {
   color: var(--text-color);
 }
 
-.select-user {
+.select-notice {
   width: 100%;
   height: 100%;
   overflow-y: scroll;
