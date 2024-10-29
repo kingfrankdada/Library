@@ -1,17 +1,17 @@
 <template>
   <div class="notice">
     <!-- 公告按钮，点击后显示公告框 -->
-    <i
+    <!-- <i
       class="ri-mail-line"
       id="notice-button"
       @click="setNoticeModalVisible(true)"
-    ></i>
+    ></i> -->
 
     <!-- 公告内容区域 -->
     <div class="notice-content">
       <NormalModal size="large" v-if="isNoticeModalVisible">
         <!-- 公告标题 -->
-        <div class="notice-form">NOTICE</div>
+        <div class="notice-form">站内公告</div>
 
         <!-- 公告列表 -->
         <div class="g-container">

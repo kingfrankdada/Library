@@ -80,8 +80,8 @@ export default {
 
 .search-form {
   position: relative;
+  margin-bottom: 20px;
   display: flex;
-  height: 30%;
   width: 100%;
   text-align: center;
   align-items: center;
@@ -95,14 +95,13 @@ export default {
 
 .g-container {
   position: fixed;
-  margin: 10% auto;
+  margin: 20px;
   display: flex;
   flex-wrap: wrap;
   width: 30%;
   height: 7.5%;
   overflow: hidden;
   transition: 0.3s;
-  bottom: 20%;
   overflow: hidden;
 }
 

@@ -39,8 +39,8 @@ export default {
       this.setLogoutModalVisible(false);
       this.setUserInfo({
         isAdmin: false,
-        userName: "",
-        userToken: "",
+        username: "",
+        usertoken: "",
       });
       if (this.$route.path !== "/home") {
         this.$router.push({ path: "/" });

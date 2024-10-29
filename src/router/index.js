@@ -11,12 +11,17 @@ import UserForum from '@/views/user/UserForum.vue'
 import UserSetting from '@/views/user/UserSetting.vue'
 import AdminHome from '@/views/admin/AdminHome.vue'
 
+// 管理员二级路由
 import AdminBook from '@/views/admin/AdminBook.vue'
 import AdminBorrow from '@/views/admin/AdminBorrow.vue'
 import AdminMenu from '@/views/admin/AdminMenu.vue'
 import AdminForum from '@/views/admin/AdminForum.vue'
 import Adminnotice from '@/views/admin/AdminNotice.vue'
 import AdminUser from '@/views/admin/AdminUser.vue'
+
+// 用户三级路由
+import UserCollection from '@/views/user/UserCollection.vue'
+import UserBorrow from '@/views/user/UserBorrow.vue'
 
 Vue.use(VueRouter)
 
@@ -42,15 +47,19 @@ const router = new VueRouter({
           name: 'userForum',
           component: UserForum
         },
-        // {
-        //   path: 'notice',
-        //   name: 'usernotice',
-        //   component: Usernotice
-        // },
         {
-          path: 'setting',
+          path: '/home/user',
           name: 'userSetting',
-          component: UserSetting
+          component: UserSetting,
+          children: [{
+            path: 'collection',
+            name: 'userSettingCollection',
+            component: UserCollection
+          }, {
+            path: 'borrow',
+            name: 'userSettingBorrow',
+            component: UserBorrow
+          }]
         }
       ]
     },

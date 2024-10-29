@@ -68,7 +68,7 @@ export default {
       "isAddModalVisible",
       "isUpdateModalVisible",
     ]),
-    ...mapState("LeftGuide", ["isLeftGuideVisible"]),
+    ...mapState("AdminLeftGuide", ["isLeftGuideVisible"]),
   },
 
   watch: {
@@ -118,7 +118,7 @@ export default {
 
 <style scoped>
 .admin-notice {
-  height: 95%;
+  height: 100%;
   width: 85%;
   flex-wrap: wrap;
   justify-content: space-between;

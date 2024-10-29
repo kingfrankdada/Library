@@ -18,7 +18,7 @@
             />
           </td>
         </tr>
-        <!-- <tr>
+        <tr>
           <td>状态*</td>
           <td>
             <select v-model="newUser.state">
@@ -26,7 +26,7 @@
               <option value="0">关闭</option>
             </select>
           </td>
-        </tr> -->
+        </tr>
         <tr>
           <td>预设邮箱*</td>
           <td>
@@ -38,7 +38,7 @@
           </td>
         </tr>
         <tr>
-          <td>添加日期</td>
+          <td>注册日期</td>
           <td>
             {{ new Date().toLocaleDateString() }}
           </td>
@@ -52,7 +52,11 @@
       :message="alertMsg"
       @close="alertMsg = ''"
     ></AlertBox>
-    <MessageBox v-if="message" :message="message" @close="message = ''"></MessageBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = ''"
+    ></MessageBox>
   </div>
 </template>
 
@@ -73,9 +77,10 @@ export default {
       newUser: {
         username: "",
         password: "",
-        email: "",
-        adddate: "",
+        creditCount: 100,
         state: 1,
+        adddate: "",
+        email: "",
       },
       alertMsg: "",
       message: "",
@@ -107,7 +112,6 @@ export default {
       };
     },
   },
-  mounted() {},
 };
 </script>
 

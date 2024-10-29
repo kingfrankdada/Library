@@ -1,8 +1,8 @@
 const state = {
   userInfo: {
     isAdmin: false,
-    userName: '',
-    userToken: '',
+    username: '',
+    usertoken: '',
   }
 };
 

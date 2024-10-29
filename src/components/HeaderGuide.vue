@@ -1,55 +1,58 @@
 <template>
   <header class="header" id="header">
     <div class="nav container">
-      <router-link to="/home" class="nav__logo">
+      <router-link to="/home" class="nav-logo">
         <i class="ri-book-3-line"></i>
         <span>高校图书管理系统</span>
       </router-link>
 
       <!-- 登陆后显示用户信息 -->
-      <div class="nav__userinfo" v-if="userInfo.userToken">
-        Welcome : {{ userInfo.userName }}
+      <div class="nav-userinfo" v-if="userInfo.usertoken">
+        Welcome : {{ userInfo.username }}
       </div>
 
       <!-- 导航列表 -->
-      <div class="nav__menu">
-        <ul class="nav__list">
+      <div class="nav-menu">
+        <ul class="nav-list">
           <li
             v-for="item in menuList"
             :title="item.title"
             :key="item.id"
-            class="nav__item"
+            class="nav-item"
           >
             <i :class="item.icon"></i>
             <router-link :to="item.path">{{ item.name }}</router-link>
           </li>
 
           <!-- 登陆后显示用户设置 -->
-          <li v-if="userInfo.userToken" title="用户设置" class="nav__item">
+          <li v-if="userInfo.usertoken" title="用户设置" class="nav-item">
             <i class="ri-user-line login-button"></i>
-            <router-link to="/home/setting">Account</router-link>
+            <router-link to="/home/user">Account</router-link>
           </li>
 
           <!-- 管理员设置 -->
-          <li v-if="userInfo.isAdmin" title="系统设置" class="nav__item">
+          <li v-if="userInfo.isAdmin" title="系统设置" class="nav-item">
             <i class="ri-settings-line"></i>
             <router-link to="/admin">System</router-link>
           </li>
         </ul>
       </div>
 
-      <div class="nav__actions">
+      <div class="nav-actions">
         <!-- 搜索 -->
-        <div class="nav__search" title="搜索">
+        <div class="nav-search" title="搜索">
           <PublicSearch></PublicSearch>
         </div>
 
         <!-- 站内通知 -->
-        <PublicNotice></PublicNotice>
+        <div class="nav-notice" title="站内通知">
+          <i class="ri-mail-line" id="notice-button" @click="openNotice"></i>
+          <PublicNotice ref="notice"></PublicNotice>
+        </div>
 
         <!-- 检测到token为非空条件时，判断用户已登陆隐藏登陆按钮-->
         <!-- 登录模态框，包含NormalModal与PublicLogin组件 -->
-        <div v-if="!userInfo.userToken" title="登陆">
+        <div v-if="!userInfo.usertoken" title="登陆">
           <PublicLogin></PublicLogin>
         </div>
 
@@ -59,11 +62,11 @@
         </NormalModal>
 
         <!-- 登出模态框 -->
-        <div v-if="userInfo.userToken" title="登出">
+        <div v-if="userInfo.usertoken" title="登出">
           <PublicLogout></PublicLogout>
         </div>
 
-        <!-- <div class="nav__darkmode" title="夜间模式">
+        <!-- <div class="nav-darkmode" title="夜间模式">
           <i class="ri-moon-line change-theme" id="theme-button"></i>
         </div> -->
       </div>
@@ -150,6 +153,14 @@ export default {
     checkWindowSize() {
       this.modalSize = window.innerWidth < 1150 ? "large" : "normal";
     },
+    setNoticeModalVisible(value) {
+      this.$refs.notice.setNoticeModalVisible(value);
+    },
+
+    openNotice() {
+      this.setNoticeModalVisible(true);
+      this.$refs.notice.selectNotice();
+    },
   },
 
   mounted() {
@@ -185,26 +196,25 @@ export default {
   align-items: center;
 }
 
-.nav__userinfo {
+.nav-userinfo {
   position: absolute;
   height: var(--header-height);
-  width: 20%;
   display: flex;
   align-items: center;
   right: 130px;
   animation: fadeInFromRight 0.5s ease;
 }
 
-.nav__item {
+.nav-item {
   display: flex;
   padding: 0 10px 0 10px;
 }
 
-.nav__item:hover {
+.nav-item:hover {
   color: var(--first-color);
 }
 
-.nav__logo {
+.nav-logo {
   display: inline-flex;
   align-items: center;
   column-gap: 0.5rem;
@@ -212,7 +222,7 @@ export default {
   font-weight: var(--font-medium);
 }
 
-.nav__logo i {
+.nav-logo i {
   font-size: 1.25rem;
 }
 
@@ -227,58 +237,58 @@ export default {
   }
 }
 
-.nav__list {
+.nav-list {
   display: flex;
   justify-content: space-between;
 }
 
-.nav__link {
+.nav-link {
   color: var(--text-color);
   transition: color 0.4s;
 }
 
-.nav__link span {
+.nav-link span {
   display: none;
   padding: 0 20px 0 0;
 }
 
-.nav__link:hover {
+.nav-link:hover {
   color: var(--first-color);
 }
 
-.nav__link i {
+.nav-link i {
   font-size: 1.25rem;
 }
 
-.nav__link.active-link {
+.nav-link.active-link {
   color: var(--first-color);
 }
 
-.nav__actions {
+.nav-actions {
   display: flex;
   align-items: center;
   column-gap: 1rem;
 }
-.nav__actions i {
+.nav-actions i {
   font-size: 1.25rem;
   color: var(--title-color);
   cursor: pointer;
   transition: color 0.4s;
 }
 
-.nav__actions i:hover {
+.nav-actions i:hover {
   color: var(--first-color);
 }
 
 @media screen and (min-width: 768px) {
-  .nav__link span {
+  .nav-link span {
     display: inline;
   }
 }
 
 /* 移动端适配 */
 @media screen and (max-width: 1150px) {
-  .nav__menu {
+  .nav-menu {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -291,13 +301,13 @@ export default {
     overflow: auto;
   }
 
-  .nav__userinfo {
+  .nav-userinfo {
     opacity: 0;
   }
 }
 
 @media screen and (min-width: 1150px) {
-  .nav__menu {
+  .nav-menu {
     position: static;
     display: flex;
     background-color: transparent;

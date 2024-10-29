@@ -62,7 +62,7 @@ export default {
 .alert-content {
   width: 30%;
   height: 20%;
-  background-color: #fff; /* 设置模态框背景颜色 */
+  background-color: #fff;
   border-radius: 10px;
   position: relative;
   display: flex;
@@ -97,7 +97,7 @@ export default {
   height: 7%;
   display: flex;
   background: red;
-  animation: loading 2s;
+  animation: loading 1.5s;
 }
 
 .close-form:hover {

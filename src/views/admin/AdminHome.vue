@@ -66,7 +66,7 @@
           </div>
         </div>
         <!-- 图书类型占比卡片 -->
-        <div class="card book-type-ratio">
+        <!-- <div class="card book-type-ratio">
           <div class="card-title">图书类型占比</div>
           <div class="card-body">
             <div
@@ -74,11 +74,50 @@
               ref="bookTypeChartContainer"
             ></div>
           </div>
+        </div> -->
+        <!-- 公告卡片 -->
+        <div class="card notice-ratio">
+          <div class="card-title">站内公告</div>
+          <div class="card-body">
+            <div class="notice-chart-container">
+              <ul class="notice-list">
+                <li
+                  v-for="notice in pinnedNotices"
+                  :key="notice.id"
+                  class="notice-item"
+                  @click="openNotice(notice)"
+                >
+                  <span class="top-notice">[置顶]</span>
+                  {{ notice.title }} - {{ notice.adddate }}
+                </li>
+              </ul>
+
+              <!-- 普通公告列表 -->
+              <ul class="notice-list">
+                <li
+                  v-for="notice in regularNotices"
+                  :key="notice.id"
+                  class="notice-item"
+                  @click="openNotice(notice)"
+                >
+                  {{ notice.title }} - {{ notice.adddate }}
+                </li>
+              </ul>
+            </div>
+
+            <!-- 公告详情展示区域 -->
+            <NoticeBox
+              class="notice-box"
+              v-if="selectedNotice"
+              :notice="selectedNotice"
+              @close="selectedNotice = null"
+            ></NoticeBox>
+          </div>
         </div>
       </div>
     </div>
     <router-view class="admin-body"></router-view>
-    <LeftGuide class="left-guide-model"></LeftGuide>
+    <AdminLeftGuide class="left-guide-model"></AdminLeftGuide>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -89,11 +128,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import HeaderGuide from "@/components/HeaderGuide";
-import LeftGuide from "@/components/LeftGuide";
+import AdminLeftGuide from "@/components/admin/AdminLeftGuide";
 import AlertBox from "@/components/AlertBox.vue";
 import * as echarts from "echarts";
+import { mapState, mapMutations } from "vuex";
+import NoticeBox from "@/components/NoticeBox.vue";
 import axios from "axios";
 
 export default {
@@ -116,6 +156,8 @@ export default {
       books: [],
       menuTitles: [],
       dailyUser: [],
+      notices: [], // 存储公告数据
+      selectedNotice: null, // 存储当前选中的公告
       typeCount: {},
       alertMsg: "",
       pollingInterval: null,
@@ -127,8 +169,9 @@ export default {
 
   components: {
     HeaderGuide,
-    LeftGuide,
+    AdminLeftGuide,
     AlertBox,
+    NoticeBox,
   },
 
   created() {
@@ -143,6 +186,7 @@ export default {
     this.initMemChart();
     this.getDailyUser();
     this.selectBooks();
+    this.selectNotice();
 
     window.addEventListener("resize", this.resizeCharts);
 
@@ -151,7 +195,7 @@ export default {
       this.$nextTick(() => {
         this.updateMemChart();
         this.updateCpuChart();
-        this.updateBookMenusChart();
+        // this.updateBookMenusChart();
       });
     }, 2000);
   },
@@ -171,11 +215,46 @@ export default {
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
-    ...mapState("LeftGuide", ["isLeftGuideVisible"]),
+    ...mapState("AdminLeftGuide", ["isLeftGuideVisible"]),
     ...mapState("SysInfo", ["onlineUserCount"]),
+    ...mapState("NormalModal", ["isNoticeModalVisible"]),
+
+    // 置顶公告
+    pinnedNotices() {
+      return this.notices.filter((notice) => notice.top);
+    },
+
+    // 普通公告
+    regularNotices() {
+      return this.notices.filter((notice) => !notice.top);
+    },
   },
 
   methods: {
+    ...mapMutations("NormalModal", ["setNoticeModalVisible"]),
+
+    // 选择公告时，传递数据给 NoticeBox 组件
+    openNotice(notice) {
+      this.selectedNotice = notice;
+    },
+
+    // 获取公告数据
+    async selectNotice() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/selectNotice"
+        );
+        this.notices = response.data.notice || [];
+
+        if (this.notices.length === 0) {
+          this.selectedNotice = { info: "未找到任何公告记录" };
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.selectedNotice = { info: "获取公告数据失败" };
+      }
+    },
+
     // 动态调整图表
     resizeCharts() {
       if (this.cpuChart) this.cpuChart.resize();
@@ -236,7 +315,7 @@ export default {
         } else {
           // 获取数据后，更新分类占比表
           this.$nextTick(() => {
-            this.initBookMenusChart();
+            // this.initBookMenusChart();
           });
         }
       } catch (error) {
@@ -308,93 +387,93 @@ export default {
       this.historyCountChart.setOption(option);
     },
 
-    // 初始化图书分类占比图表
-    initBookMenusChart() {
-      const chartContainer = this.$refs.bookTypeChartContainer;
-      this.bookTypeChart = echarts.init(chartContainer);
+    // // 初始化图书分类占比图表
+    // initBookMenusChart() {
+    //   const chartContainer = this.$refs.bookTypeChartContainer;
+    //   this.bookTypeChart = echarts.init(chartContainer);
 
-      const bookTypes = this.getBookMenus();
-      const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
+    //   const bookTypes = this.getBookMenus();
+    //   const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
 
-      const data = bookTypes.map((item) => ({
-        name: item.name,
-        value: (item.value / totalBooks) * 100, // 计算占比
-      }));
+    //   const data = bookTypes.map((item) => ({
+    //     name: item.name,
+    //     value: (item.value / totalBooks) * 100, // 计算占比
+    //   }));
 
-      const option = {
-        series: [
-          {
-            name: "图书分类",
-            type: "pie",
-            radius: ["50%", "70%"], // 设置环形图的内外半径
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: "#fff",
-              borderWidth: 2,
-            },
-            label: {
-              show: true,
-              position: "outside",
-            },
-            data: data,
-          },
-        ],
-      };
+    //   const option = {
+    //     series: [
+    //       {
+    //         name: "图书分类",
+    //         type: "pie",
+    //         radius: ["50%", "70%"], // 设置环形图的内外半径
+    //         avoidLabelOverlap: false,
+    //         itemStyle: {
+    //           borderRadius: 10,
+    //           borderColor: "#fff",
+    //           borderWidth: 2,
+    //         },
+    //         label: {
+    //           show: true,
+    //           position: "outside",
+    //         },
+    //         data: data,
+    //       },
+    //     ],
+    //   };
 
-      this.bookTypeChart.setOption(option);
-    },
+    //   this.bookTypeChart.setOption(option);
+    // },
 
-    // 更新图书分类占比图表
-    updateBookMenusChart() {
-      const bookTypes = this.getBookMenus();
-      const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
+    // // 更新图书分类占比图表
+    // updateBookMenusChart() {
+    //   const bookTypes = this.getBookMenus();
+    //   const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
 
-      const data = bookTypes.map((item) => ({
-        name: item.name,
-        value: (item.value / totalBooks) * 100, // 计算占比
-      }));
+    //   const data = bookTypes.map((item) => ({
+    //     name: item.name,
+    //     value: (item.value / totalBooks) * 100, // 计算占比
+    //   }));
 
-      const option = {
-        series: [
-          {
-            name: "图书分类",
-            type: "pie",
-            radius: ["50%", "70%"], // 设置环形图的内外半径
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: "#fff",
-              borderWidth: 2,
-            },
-            label: {
-              show: true,
-              position: "outside",
-            },
-            data: data, // 更新数据
-          },
-        ],
-      };
+    //   const option = {
+    //     series: [
+    //       {
+    //         name: "图书分类",
+    //         type: "pie",
+    //         radius: ["50%", "70%"], // 设置环形图的内外半径
+    //         avoidLabelOverlap: false,
+    //         itemStyle: {
+    //           borderRadius: 10,
+    //           borderColor: "#fff",
+    //           borderWidth: 2,
+    //         },
+    //         label: {
+    //           show: true,
+    //           position: "outside",
+    //         },
+    //         data: data, // 更新数据
+    //       },
+    //     ],
+    //   };
 
-      this.bookTypeChart.setOption(option);
-    },
+    //   this.bookTypeChart.setOption(option);
+    // },
 
-    // 统计每种分类的图书数量
-    getBookMenus() {
-      this.typeCount = {}; // 重置分类计数
-      this.books.forEach((book) => {
-        if (this.typeCount[book.menu]) {
-          this.typeCount[book.menu]++;
-        } else {
-          this.typeCount[book.menu] = 1;
-        }
-      });
+    // // 统计每种分类的图书数量
+    // getBookMenus() {
+    //   this.typeCount = {}; // 重置分类计数
+    //   this.books.forEach((book) => {
+    //     if (this.typeCount[book.menu]) {
+    //       this.typeCount[book.menu]++;
+    //     } else {
+    //       this.typeCount[book.menu] = 1;
+    //     }
+    //   });
 
-      return Object.entries(this.typeCount).map(([name, value]) => ({
-        name,
-        value,
-      }));
-    },
+    //   return Object.entries(this.typeCount).map(([name, value]) => ({
+    //     name,
+    //     value,
+    //   }));
+    // },
 
     // 初始化CPU图表
     initCpuChart() {
@@ -708,12 +787,30 @@ export default {
   overflow: visible;
 }
 
-.menu-chart-container {
+/* .menu-chart-container {
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100px;
   overflow: visible;
+} */
+
+.notice-chart-container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.notice-box{
+  margin-left: 7.5%;
+}
+
+.notice-chart-container::-webkit-scrollbar {
+  display: none;
 }
 
 .real-time-data {
@@ -731,7 +828,12 @@ export default {
   grid-row: 1 / 3;
 }
 
-.book-type-ratio {
+/* .book-type-ratio {
+  grid-column: 1 / 4;
+  grid-row: 3 / 4;
+} */
+
+.notice-ratio {
   grid-column: 1 / 4;
   grid-row: 3 / 4;
 }
@@ -739,6 +841,40 @@ export default {
 .account-activity {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
+}
+
+.notice-form {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  font-size: 30px;
+  color: var(--first-color);
+  font-weight: var(--font-medium);
+  top: 20px;
+  z-index: 0;
+}
+
+.notice-list {
+  list-style: none;
+  padding: 0;
+}
+
+.notice-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.notice-item:hover {
+  background-color: #f0f0f0;
+}
+
+.top-notice {
+  color: red;
+  font-weight: bold;
+  margin-right: 5px;
 }
 
 @keyframes fade-in {

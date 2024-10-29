@@ -40,7 +40,7 @@
         <tr>
           <td>添加用户</td>
           <td>
-            {{ userInfo.userName }}
+            {{ userInfo.username }}
           </td>
         </tr>
         <tr>
@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     async submitForm() {
-      this.newNotice.adduser = this.userInfo.userName;
+      this.newNotice.adduser = this.userInfo.username;
       this.newNotice.adddate = new Date().toISOString().split("T")[0];
       if (!this.newNotice.title || !this.newNotice.info || !this.newNotice.top) {
         this.alertMsg = "公告信息不完整";

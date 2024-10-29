@@ -68,7 +68,7 @@ export default {
       "isAddModalVisible",
       "isUpdateModalVisible",
     ]),
-    ...mapState("LeftGuide", ["isLeftGuideVisible"]),
+    ...mapState("AdminLeftGuide", ["isLeftGuideVisible"]),
   },
 
   watch: {

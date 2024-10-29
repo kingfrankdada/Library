@@ -101,13 +101,13 @@ export default {
           password: this.password,
         });
         // 返回数据
-        const userName = response.data.userName || this.username;
-        const userToken = response.data.userToken;
+        const username = response.data.username || this.username;
+        const usertoken = response.data.usertoken;
 
         this.setUserInfo({
-          isAdmin: userName === "admin",
-          userName,
-          userToken,
+          isAdmin: username === "admin",
+          username,
+          usertoken,
         });
         this.setLoginModalVisible(false);
       } catch (error) {

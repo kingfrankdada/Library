@@ -6,6 +6,8 @@
           <th>ID</th>
           <th>用户*</th>
           <th>状态*</th>
+          <th>信誉分*</th>
+          <th>注册日期</th>
           <th>删除</th>
         </tr>
       </thead>
@@ -24,6 +26,13 @@
               <option value="0">关闭</option>
             </select>
           </td>
+          <td>
+            <InputTag
+              v-model="user.creditCount"
+              @input="updateUser(user)"
+            ></InputTag>
+          </td>
+          <td>{{ formatDate(user.adddate) }}</td>
           <td>
             <button class="del-btn" @click="delUser(user)">
               <i class="ri-delete-bin-5-fill"></i>
@@ -70,7 +79,11 @@ export default {
         );
         console.log(response);
         const users = response.data.users;
-        this.users = users || [];
+        this.users =
+          users.map((user) => ({
+            ...user,
+            creditCount: user.credit_count,
+          })) || [];
 
         if (this.users.length === 0) {
           this.boxMsg = "未找到任何用户记录";
@@ -81,10 +94,21 @@ export default {
       }
     },
 
+    // 日期格式化
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    },
+
     async updateUser(user) {
       try {
         await axios.post(`http://localhost:3000/api/updateUser/${user.id}`, {
           state: user.state,
+          credit_count: user.creditCount,
+          username: user.username,
         });
         this.alertMsg = "更新用户数据成功";
       } catch (error) {

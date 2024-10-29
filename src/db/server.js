@@ -5,7 +5,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const WebSocket = require('ws');
 const system = require('systeminformation');
-const schedule = require('node-schedule'); // 定时任务
+const schedule = require('node-schedule');
 
 const app = express();
 const port = 3000;
@@ -144,7 +144,6 @@ function logOnlineUsers() {
       console.error('查询每日记录失败:', err.stack);
       return;
     }
-
     // 如果当天没有记录，插入默认数据
     if (results.length === 0) {
       const onlineUserCount = onlineUsers.size || 0; // 获取当前在线人数，如果没有在线则为 0
@@ -202,8 +201,8 @@ app.post('/api/login', (req, res) => {
             const usertoken = bcrypt.hashSync(Date.now().toString(), saltRounds);
             res.status(200).json({
               message: '登录成功',
-              userName: user.username,
-              userToken: usertoken,
+              username: user.username,
+              usertoken: usertoken,
             });
           }
         } else {
@@ -221,23 +220,16 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-
 // 注册请求api
 app.post('/api/reg', (req, res) => {
   let {
     username,
     password,
-    email
+    email,
+    creditCount,
+    state,
+    adddate
   } = req.body;
-  const state = 1; // 默认为1，封禁账户为0
-  const adddate = new Date().toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: undefined,
-    minute: undefined,
-    second: undefined
-  });
   // 后端数据二次验证
   if (!username || !password) {
     return res.status(400).json({
@@ -257,15 +249,15 @@ app.post('/api/reg', (req, res) => {
         error: '服务器内部错误'
       });
     }
-    const query = 'INSERT INTO user (username, password, email, state, adddate) VALUES (?, ?, ?, ?, ?)';
-    connection.query(query, [username, hash, email, state, adddate], (err, results) => {
+    const query = 'INSERT INTO user (username, password, email, credit_count, state, adddate) VALUES (?, ?, ?, ?, ?, ?)';
+    connection.query(query, [username, hash, email, creditCount, state, adddate], (err, results) => {
       if (results) {
         // 使用 bcrypt.hashSync() 方法来添加时间戳生成唯一用户token
         const usertoken = bcrypt.hashSync(Date.now().toString(), saltRounds);
         res.status(200).json({
           message: '注册成功',
-          userName: username,
-          userToken: usertoken
+          username: username,
+          usertoken: usertoken
         });
       } else if (err) {
         if (err.code === 'ER_DUP_ENTRY') {
@@ -279,6 +271,86 @@ app.post('/api/reg', (req, res) => {
           });
         }
       }
+    });
+  });
+});
+
+// 查找用户api
+app.get('/api/selectUser', (req, res) => {
+  const query = 'SELECT * FROM user';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        users: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到用户记录'
+      });
+    }
+  });
+});
+
+// 按用户名查找用户api
+app.get('/api/selectUser/:username', (req, res) => {
+  const username = req.params.username;
+  const query = 'SELECT * FROM user WHERE username = ?';
+  connection.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        users: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到用户记录'
+      });
+    }
+  });
+});
+
+// 更新用户api
+app.post('/api/updateUser/:id', (req, res) => {
+  const userId = req.params.id;
+  let userState = req.body;
+  const query = 'UPDATE user SET ? WHERE id = ?';
+  connection.query(query, [userState, userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '用户信息更新成功'
+    });
+  });
+});
+
+// 删除用户api
+app.post('/api/delUser/:id', (req, res) => {
+  const userId = req.params.id;
+  const query = 'DELETE FROM user WHERE id = ?';
+  connection.query(query, [userId], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '用户信息删除成功'
     });
   });
 });
@@ -478,62 +550,6 @@ app.post('/api/delMenu/:id', (req, res) => {
     }
     res.json({
       message: '分类信息删除成功'
-    });
-  });
-});
-
-// 查找用户api
-app.get('/api/selectUser', (req, res) => {
-  const query = 'SELECT * FROM user';
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('查询失败:', err.stack);
-      return res.status(500).json({
-        error: '服务器内部错误'
-      });
-    }
-    if (results.length > 0) {
-      res.status(200).json({
-        message: '查询成功',
-        users: results
-      });
-    } else {
-      res.status(404).json({
-        error: '未找到用户记录'
-      });
-    }
-  });
-});
-
-// 更新用户api
-app.post('/api/updateUser/:id', (req, res) => {
-  const userId = req.params.id;
-  let userState = req.body;
-  const query = 'UPDATE user SET ? WHERE id = ?';
-  connection.query(query, [userState, userId], (err, results) => {
-    if (err) {
-      return res.status(500).json({
-        error: err.message
-      });
-    }
-    res.json({
-      message: '用户信息更新成功'
-    });
-  });
-});
-
-// 删除用户api
-app.post('/api/delUser/:id', (req, res) => {
-  const userId = req.params.id;
-  const query = 'DELETE FROM user WHERE id = ?';
-  connection.query(query, [userId], (err) => {
-    if (err) {
-      return res.status(500).json({
-        error: err.message
-      });
-    }
-    res.json({
-      message: '用户信息删除成功'
     });
   });
 });

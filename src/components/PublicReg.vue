@@ -68,15 +68,18 @@ export default {
       username: "",
       password: "",
       currentPassword: "",
+      creditCount: 100,
+      state: 1,
       email: "",
       alertMsg: "",
+      adddate: "",
     };
   },
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
   },
-  
+
   methods: {
     ...mapMutations("NormalModal", [
       "setLoginModalVisible",
@@ -104,21 +107,25 @@ export default {
         // alert("两次密码不一致");
         this.alertMsg = "两次密码不一致";
       } else {
+        this.adddate = new Date().toISOString().split("T")[0];
         try {
           const response = await axios.post("http://localhost:3000/api/reg", {
             username: this.username,
             usertoken: this.usertoken,
             password: this.password,
             email: this.email,
+            creditCount: this.creditCount,
+            state: this.state,
+            adddate: this.adddate,
           });
           // console.log(response);
-          // alert(`注册成功：用户 ${response.data.userName}`);
-          this.alertMsg = `注册成功：用户 ${response.data.userName}`;
+          // alert(`注册成功：用户 ${response.data.username}`);
+          this.alertMsg = `注册成功：用户 ${response.data.username}`;
 
           this.setUserInfo({
             isAdmin: false,
-            userName: response.data.userName,
-            userToken: response.data.userToken,
+            username: response.data.username,
+            usertoken: response.data.usertoken,
           });
           this.setRegModalVisible(false);
         } catch (error) {

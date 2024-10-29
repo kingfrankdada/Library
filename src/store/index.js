@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import createLocalStorage from 'vuex-persistedstate';
 import NormalModal from "./model/NormalModal.js";
 import UserInfo from "./model/UserInfo.js";
-import LeftGuide from "./model/LeftGuide.js";
+import AdminLeftGuide from "./model/AdminLeftGuide.js";
 import SysInfo from "./model/SysInfo.js";
 
 Vue.use(Vuex);
@@ -14,7 +14,7 @@ const store = new Vuex.Store({
   modules: {
     NormalModal,
     UserInfo,
-    LeftGuide,
+    AdminLeftGuide,
     SysInfo
   },
   plugins: [createLocalStorage({
