@@ -41,7 +41,7 @@
       <AlertBox
         v-if="alertMsg"
         :message="alertMsg"
-        @close="alertMsg = ''"
+        @close="alertMsg = null"
       ></AlertBox>
     </NormalModal>
   </div>

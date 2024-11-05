@@ -1,6 +1,6 @@
 <template>
   <div class="select-menu">
-    <table v-if="menus.length > 0">
+    <table v-if="filteredMenus.length > 0">
       <thead>
         <tr>
           <th>ID</th>
@@ -10,7 +10,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(menu, index) in menus" :key="index">
+        <tr v-for="(menu, index) in filteredMenus" :key="index">
           <td>{{ menu.id }}</td>
           <td>
             <InputTag v-model="menu.title" @input="updateMenu(menu)"></InputTag>
@@ -34,7 +34,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -51,12 +51,28 @@ export default {
     AlertBox,
   },
 
+  props: {
+    searchText: {
+      type: String,
+      default: "",
+    },
+  },
+
   data() {
     return {
       menus: [],
       alertMsg: "",
-      boxMsg: "正在加载分类数据...",
+      boxMsg: "暂无数据...",
     };
+  },
+
+  computed: {
+    filteredMenus() {
+      const filterList = this.searchText.toLowerCase();
+      return this.menus.filter((menu) =>
+        menu.title.toLowerCase().includes(filterList)
+      );
+    },
   },
 
   methods: {
@@ -65,9 +81,7 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/api/selectMenu"
         );
-        const menus = response.data.menus;
-        this.menus = menus || [];
-
+        this.menus = response.data.menus || [];
         if (this.menus.length === 0) {
           this.boxMsg = "未找到任何分类记录";
         }

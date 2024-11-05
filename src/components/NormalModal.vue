@@ -26,6 +26,12 @@ export default {
             width: "var(--small-modal-content-weight)",
             height: "var(--small-modal-content-height)",
           };
+        case "mid": {
+          return {
+            width: "var(--mid-modal-content-weight)",
+            height: "var(--mid-modal-content-height)",
+          };
+        }
         case "normal":
           return {
             width: "var(--normal-modal-content-weight)",
@@ -40,6 +46,11 @@ export default {
           return {
             width: "var(--search-modal-content-weight)",
             height: "var(--search-modal-content-height)",
+          };
+        case "edit":
+          return {
+            width: "var(--edit-modal-content-weight)",
+            height: "var(--edit-modal-content-height)",
           };
         default:
           return {};
@@ -56,6 +67,9 @@ export default {
       "setAddModalVisible",
       "setUpdateModalVisible",
       "setNoticeModalVisible",
+      "setEditUserModalVisible",
+      "setDelUserModalVisible",
+      "setEditNoticeModalVisible",
     ]),
     close() {
       this.setLoginModalVisible(false);
@@ -65,6 +79,9 @@ export default {
       this.setSelectModalVisible(false);
       this.setAddModalVisible(false);
       this.setNoticeModalVisible(false);
+      this.setEditUserModalVisible(false);
+      this.setDelUserModalVisible(false);
+      this.setEditNoticeModalVisible(false);
     },
     handleClickOutside(event) {
       if (event.target.classList.contains("modal")) {

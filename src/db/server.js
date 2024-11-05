@@ -91,13 +91,13 @@ app.get('/api/systemInfo', async (req, res) => {
     const memoryUsage = await system.mem();
     const systemInfo = {
       cpuUsage: {
-        brand: cpuInfo.brand,
-        speed: cpuInfo.speed,
+        brand: cpuInfo.brand || "暂无数据",
+        speed: cpuInfo.speed || "暂无数据",
         usedPercentage: cpuLoad.currentLoad.toFixed(2),
       },
       memoryUsage: {
-        totalMemory: memoryUsage.total,
-        usedMemory: memoryUsage.used,
+        totalMemory: memoryUsage.total || "暂无数据",
+        usedMemory: memoryUsage.used || "暂无数据",
         usedPercentage: ((memoryUsage.used / memoryUsage.total) * 100).toFixed(2),
       },
     };
@@ -336,6 +336,63 @@ app.post('/api/updateUser/:id', (req, res) => {
     res.json({
       message: '用户信息更新成功'
     });
+  });
+});
+
+// 重置密码api
+app.post('/api/resetPassword/:id', async (req, res) => {
+  let user = req.body;
+  const selectQuery = 'SELECT password FROM user WHERE id = ?';
+  connection.query(selectQuery, [user.id], async (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      const returnUser = results[0];
+      // 哈希验证
+      bcrypt.compare(user.oldPassword, returnUser.password, async (err, result) => {
+        if (err) {
+          console.error('密码验证失败:', err.stack);
+          return res.status(500).json({
+            error: '服务器内部错误'
+          });
+        }
+        if (!result) {
+          return res.status(401).json({
+            error: '旧密码不正确'
+          });
+        }
+        // 哈希加密
+        if (user.password) {
+          try {
+            user.password = await bcrypt.hash(user.password, 10);
+          } catch (error) {
+            return res.status(500).json({
+              error: '密码加密失败'
+            });
+          }
+        }
+        const query = 'UPDATE user SET password = ? WHERE id = ?';
+        const values = [user.password, user.id];
+        connection.query(query, values, (err, results) => {
+          if (err) {
+            return res.status(500).json({
+              error: err.message
+            });
+          }
+          res.json({
+            message: '用户信息更新成功'
+          });
+        });
+      });
+    } else {
+      return res.status(404).json({
+        error: '用户不存在'
+      });
+    }
   });
 });
 

@@ -23,8 +23,8 @@
         placeholder="Enter your password"
       />
       <input
-        v-model="currentPassword"
-        class="currentPassword"
+        v-model="confirmPassword"
+        class="confirmPassword"
         type="password"
         placeholder="Enter your password again"
       />
@@ -46,7 +46,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -67,7 +67,7 @@ export default {
     return {
       username: "",
       password: "",
-      currentPassword: "",
+      confirmPassword: "",
       creditCount: 100,
       state: 1,
       email: "",
@@ -97,13 +97,13 @@ export default {
       // 前端数据验证
       this.username = this.username.trim();
       this.email = this.email.trim();
-      if (this.username === "" || this.password === "") {
+      if (this.username === "" || this.password === "" || this.email === "") {
         // alert("用户名和密码不能为空");
-        this.alertMsg = "用户名和密码不能为空";
+        this.alertMsg = "用户名，密码和邮箱不能为空";
       } else if (this.password.length < 6) {
         // alert("密码不能少于6位");
         this.alertMsg = "密码不能少于6位";
-      } else if (this.password !== this.currentPassword) {
+      } else if (this.password !== this.confirmPassword) {
         // alert("两次密码不一致");
         this.alertMsg = "两次密码不一致";
       } else {

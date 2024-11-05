@@ -1,5 +1,5 @@
 <template>
-  <div class="input-tag">
+  <div class="input-tag" title="双击可进入编辑模式，回车可确认提交">
     <input
       v-if="isEdit"
       v-focus
@@ -17,7 +17,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -50,7 +50,6 @@ export default {
         this.alertMsg = "标签不能为空";
         return;
       }
-
       this.$emit("input", e.target.value);
       this.isEdit = false;
     },

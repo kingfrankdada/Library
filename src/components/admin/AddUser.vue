@@ -50,12 +50,12 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
     <MessageBox
       v-if="message"
       :message="message"
-      @close="message = ''"
+      @close="message = null"
     ></MessageBox>
   </div>
 </template>

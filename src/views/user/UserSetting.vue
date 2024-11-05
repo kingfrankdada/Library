@@ -1,88 +1,147 @@
 <template>
-  <div class="user-user">
-    <!-- 用户设置容器 -->
-    <div class="user-body">
-      <div class="dashboard">
-        <!-- 实时数据卡片 -->
-        <div class="card user-info">
-          <div class="card-title">账户信息</div>
-          <div class="card-body"></div>
-        </div>
-        <!-- 内存数据卡片 -->
-        <div class="card user-credit">
-          <div class="card-title">用户信誉分</div>
-          <div class="card-body"></div>
-        </div>
-        <!-- 公告卡片 -->
-        <div class="card notice-ratio">
-          <div class="card-title">站内公告</div>
-          <div class="card-body">
-            <div class="notice-chart-container">
-              <ul class="notice-list">
-                <li
-                  v-for="notice in pinnedNotices"
-                  :key="notice.id"
-                  class="notice-item"
-                  @click="openNotice(notice)"
-                >
-                  <span class="top-notice">[置顶]</span>
-                  {{ notice.title }} - {{ notice.adddate }}
-                </li>
-              </ul>
-              <!-- 普通公告列表 -->
-              <ul class="notice-list">
-                <li
-                  v-for="notice in regularNotices"
-                  :key="notice.id"
-                  class="notice-item"
-                  @click="openNotice(notice)"
-                >
-                  {{ notice.title }} - {{ notice.adddate }}
-                </li>
-              </ul>
-            </div>
-            <!-- 公告详情展示区域 -->
-            <NoticeBox
-              class="notice-box"
-              v-if="selectedNotice"
-              :notice="selectedNotice"
-              @close="selectedNotice = null"
-            ></NoticeBox>
+  <div class="user">
+    <div v-show="this.$route.path === '/home/user'" class="user-body">
+      <div class="user-title">
+        <p>用户中心</p>
+      </div>
+      <div class="user-container">
+        <div class="user-info">
+          <p class="user-info-title">
+            用户基本信息<i
+              class="ri-question-line"
+              title="您在注册时候提供的基本信息,包含用户名称，邮箱，注册日期等"
+            ></i>
+          </p>
+          <p class="user-info-content">
+            用户名：{{ userInfo.username }}
+            <span v-if="userInfo.isAdmin" style="color: red">[管理员]</span>
+            <span v-else style="color: green">[用户]</span>
+          </p>
+          <p class="user-info-content">邮箱：{{ users[0].email }}</p>
+          <p class="user-info-content">
+            注册日期：{{ formatDate(users[0].adddate) }}
+          </p>
+          <button class="user-info-button" @click="editUser">
+            修改帐户信息
+          </button>
+          <div class="line"></div>
+          <div class="account-security">
+            <p class="account-security-title">账户安全信息</p>
+            <p class="account-security-description">
+              为了保护您的账户安全，建议定期更改密码，并妥善管理您的账户信息。
+            </p>
+            <button class="user-info-button" @click="changePassword">
+              修改密码
+            </button>
+            <button class="user-info-button red-button" @click="delAccount">
+              注销账户
+            </button>
           </div>
+        </div>
+        <!-- 用户信誉分 -->
+        <div class="user-credit">
+          <p class="user-credit-title">
+            用户信誉分<i
+              class="ri-question-line"
+              title="您的用户行为会影响您的信誉分，当信誉分过低将会禁用用户使用部分功能"
+            ></i>
+          </p>
+          <!-- echarts -->
+          <div class="user-credit-echarts" ref="creditChartRef"></div>
+          <p>
+            <strong
+              >当前信誉分：
+              <span :style="{ color: creditCountColor }">
+                {{ users[0].credit_count }}
+              </span></strong
+            >
+          </p>
+          <p class="user-credit-content">
+            &nbsp;&nbsp;&nbsp;&nbsp;在本系统中，信誉分机制旨在激励用户遵守规则并维护良好的使用环境。用户的信誉分会基于其行为表现进行动态调整，例如，若用户在借书时逾期未还，每逾期一次将扣除20分。此外，在社区论坛中发布违规言论也会导致信誉分减少，每次违规将扣除5分。
+            <br /><br />
+            &nbsp;&nbsp;&nbsp;&nbsp;信誉分的高低将直接影响用户的借书和发言权限。信誉分过低的用户可能会被限制借书次数或无法在论坛中发言，从而确保系统的公平性与安全性。通过这种机制，图书管理系统鼓励用户积极参与，遵守规定，共同营造一个良好的学习和交流氛围。
+          </p>
         </div>
       </div>
     </div>
+    <!-- 路由 -->
     <router-view class="user-body"></router-view>
-    <UserLeftGuide class="left-guide-model"></UserLeftGuide>
+    <!-- 左侧导航 -->
+    <UserLeftGuide
+      class="left-guide-model"
+      :guideTitle="'用户中心'"
+      :guideList="guideList"
+      @handleTitle="handleTitle"
+    ></UserLeftGuide>
+    <!-- 修改用户信息模态框 -->
+    <NormalModal v-if="isEditUserModalVisible" class="select-modal" size="mid">
+      <div v-if="isEditUser" class="select-text">修改帐户信息</div>
+      <div v-else class="select-text">修改帐户密码</div>
+      <EditUser
+        v-if="isEditUser"
+        :user="users[0]"
+        @close="handleEditUserModalClose"
+      ></EditUser>
+      <EditPassword
+        v-else
+        :userId="users[0].id"
+        @logout="logout"
+      ></EditPassword>
+    </NormalModal>
+    <!-- 注销账户模态框 -->
+    <DelUser :userId="users[0].id"></DelUser>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
     <MessageBox
       v-if="message"
       :message="message"
-      @close="message = ''"
+      @close="message = null"
     ></MessageBox>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import AlertBox from "@/components/AlertBox.vue";
-import NoticeBox from "@/components/NoticeBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
-import { mapState } from "vuex";
+import NormalModal from "@/components/NormalModal.vue";
+import EditUser from "@/components/user/EditUser.vue";
+import EditPassword from "@/components/user/EditPassword.vue";
+import DelUser from "@/components/user/DelUser.vue";
+import { mapState, mapMutations } from "vuex";
 import UserLeftGuide from "@/components/user/UserLeftGuide.vue";
+import axios from "axios";
+import * as echarts from "echarts";
 
 export default {
   name: "UserSetting",
   data() {
     return {
-      users: [],
-      notices: [], // 存储公告数据
-      selectedNotice: null, // 存储当前选中的公告
+      users: [
+        {
+          id: 0,
+          username: "",
+          email: "",
+          password: "",
+          credit_count: 0,
+          state: 0,
+          adddate: "",
+        },
+      ],
+      guideList: [
+        {
+          id: 1,
+          name: "collection",
+          title: "我的收藏",
+          path: "/home/user/collection",
+        },
+        { id: 2, name: "borrow", title: "我的借阅", path: "/home/user/borrow" },
+      ],
+      isEditUser: true, // 修改用户信息还是修改密码
+      creditChart: null,
       alertMsg: "",
       message: "",
     };
@@ -92,229 +151,340 @@ export default {
     UserLeftGuide,
     AlertBox,
     MessageBox,
-    NoticeBox,
+    NormalModal,
+    EditUser,
+    EditPassword,
+    DelUser,
   },
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
+    ...mapState("NormalModal", ["isEditUserModalVisible"]),
 
-    // 置顶公告
-    pinnedNotices() {
-      return this.notices.filter((notice) => notice.top);
-    },
-
-    // 普通公告
-    regularNotices() {
-      return this.notices.filter((notice) => !notice.top);
+    creditCountColor() {
+      const creditCount = this.users[0].credit_count;
+      if (creditCount >= 50) {
+        return "green";
+      } else if (creditCount > 0) {
+        return "orange";
+      } else {
+        return "red";
+      }
     },
   },
 
   mounted() {
-    this.selectUsersByUserName();
-    this.selectNotice();
+    if (!this.userInfo.usertoken) {
+      this.$router.push("/home");
+    }
+    window.addEventListener("resize", this.resizeCharts);
+    this.selectUsersByUserName().then(() => {
+      this.initCreditChart();
+      this.setEditUserModalVisible(false);
+      this.setDelUserModalVisible(false);
+    });
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.resizeCharts);
+    if (this.creditChart) {
+      this.creditChart.dispose();
+    }
   },
 
   methods: {
+    ...mapMutations("NormalModal", [
+      "setEditUserModalVisible",
+      "setDelUserModalVisible",
+    ]),
+    ...mapMutations("UserInfo", ["setUserInfo"]),
+
     async selectUsersByUserName() {
       try {
         const response = await axios.get(
           `http://localhost:3000/api/selectUser/${this.userInfo.username}`
         );
-        console.log("response", response);
         const users = response.data.users;
         this.users =
           users.map((user) => ({
             ...user,
             creditCount: user.credit_count,
-          })) || [];
-
+          })) || {};
         if (this.users.length === 0) {
-          this.boxMsg = "未找到任何用户记录";
+          this.alertMsg = "未找到任何用户记录";
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取用户数据失败";
+        this.alertMsg = "获取用户数据失败";
       }
     },
 
-    // 选择公告时，传递数据给 NoticeBox 组件
-    openNotice(notice) {
-      this.selectedNotice = notice;
+    // 日期格式化
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
     },
 
-    // 获取公告数据
-    async selectNotice() {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectNotice"
-        );
-        this.notices = response.data.notice || [];
+    // 动态调整图表
+    resizeCharts() {
+      if (this.creditChart) this.creditChart.resize();
+    },
 
-        if (this.notices.length === 0) {
-          this.selectedNotice = { info: "未找到任何公告记录" };
+    editUser() {
+      this.isEditUser = true;
+      this.setEditUserModalVisible(true);
+    },
+
+    handleEditUserModalClose() {
+      this.setEditUserModalVisible(false);
+      this.selectUsersByUserName();
+    },
+
+    logout() {
+      this.setEditUserModalVisible(false);
+      this.setUserInfo({
+        isAdmin: false,
+        username: "",
+        usertoken: "",
+      });
+      if (this.$route.path !== "/home") {
+        this.$router.push({ path: "/" });
+      }
+    },
+
+    changePassword() {
+      this.isEditUser = false;
+      this.setEditUserModalVisible(true);
+    },
+
+    delAccount() {
+      this.setDelUserModalVisible(true);
+    },
+
+    handleTitle() {
+      if (this.$route.path !== "/home/user") {
+        this.$router.push({ path: "/home/user" });
+      }
+    },
+
+    // 初始化信誉分图表
+    initCreditChart() {
+      const chartContainer = this.$refs.creditChartRef;
+      this.creditChart = echarts.init(chartContainer);
+      const creditCount = this.users[0].credit_count;
+      // 动态设置颜色，根据信誉分高低设置绿->红
+      const getColor = (count) => {
+        if (count >= 50) {
+          return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: "rgb(84, 198, 84)" },
+            { offset: 1, color: "rgb(198, 236, 1)" },
+          ]);
+        } else {
+          return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: "rgb(236, 99, 1)" },
+            { offset: 1, color: "rgb(236, 1, 1)" },
+          ]);
         }
-      } catch (error) {
-        console.error(error.response?.data?.error || error.message);
-        this.selectedNotice = { info: "获取公告数据失败" };
-      }
+      };
+
+      const gaugeData = [
+        {
+          value: creditCount,
+        },
+      ];
+
+      const option = {
+        series: [
+          {
+            type: "gauge",
+            startAngle: 90,
+            endAngle: -270,
+            pointer: {
+              show: false,
+            },
+            progress: {
+              show: true,
+              width: 20,
+              overlap: false,
+              roundCap: true,
+              clip: false,
+              itemStyle: {
+                color: getColor(creditCount),
+              },
+            },
+            axisLine: {
+              lineStyle: {
+                width: 20,
+                color: [[1, "#E0E0E0"]],
+              },
+            },
+            splitLine: {
+              show: false,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              show: false,
+            },
+            data: gaugeData,
+            title: {
+              show: true,
+              fontSize: 20,
+            },
+            detail: {
+              width: 40,
+              height: 14,
+              fontSize: 20,
+              color: creditCount >= 50 ? "rgb(84, 198, 84)" : "rgb(236, 1, 1)", // 内部文字颜色
+              formatter: "{value}",
+              offsetCenter: ["0%", "0%"],
+            },
+          },
+        ],
+      };
+      this.creditChart.setOption(option);
     },
   },
 };
 </script>
 
 <style scoped>
-.user-user {
+.user {
   height: 100%;
   width: 100%;
   z-index: 0;
   background: var(--background-color);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .user-body {
   position: fixed;
+  background: var(--background-color);
   height: 100%;
   width: 85%;
   left: 15%;
   transition: left 0.3s ease;
 }
 
-.user-body {
-  position: fixed;
-  height: 100%;
-  width: 85%;
-  left: 15%;
-  transition: left 0.3s ease;
+.user-title {
+  width: 100%;
+  height: 40px;
+  padding: 10px 0 0 20px;
+  text-align: left;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--first-color);
 }
 
-.card {
-  background-color: var(--body-color);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.user-container {
+  display: flex;
+  background-color: var(--white-color);
+  width: calc(100% - 40px);
+  height: calc(100% - 80px - var(--header-height));
+  margin: 20px;
   padding: 20px;
-}
-
-.card-title {
-  display: flex;
-  font-weight: var(--font-semi-bold);
-  font-size: 20px;
-  padding: 0 0 5px 0;
-}
-
-.card-body {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   gap: 20px;
-  padding: 0 5px 5px 0;
-  width: 100%;
 }
 
-.card-body > * {
-  margin-right: auto;
-}
-
-.card-form-item {
-  width: 100%;
-}
-
-.card-form-count {
-  font-weight: var(--font-semi-bold);
-  position: sticky;
-  font-size: 20px;
-  color: var(--text-color);
-  padding: 0 5px 5px 0;
-}
-
-.notice-chart-container {
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100px;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.notice-box {
-  margin-left: 7.5%;
-}
-
-.notice-chart-container::-webkit-scrollbar {
-  display: none;
-}
-
-.dashboard {
-  display: grid;
-  grid-template-columns: 70% 30%; /* 左70%，右30% */
-  grid-template-rows: 70% 30%; /* 上70%，下30% */
-  gap: 20px;
-  padding: 20px; 
-  width: calc(100% - 20px);
-  height: 90%;
-  box-sizing: border-box;
-}
-
-.user-info {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
-  height: 100%;
-}
-
+.user-info,
 .user-credit {
-  grid-column: 2 / 3; 
-  grid-row: 1 / 2;
-  height: 100%;
+  flex: 1;
+  background-color: var(--white-color);
+  padding: 20px;
+  border-radius: 8px;
 }
 
-.notice-ratio {
-  grid-column: 1 / 3; 
-  grid-row: 2 / 3;
-  width: 100%;
-  height: 100%;
+.user-info-title,
+.user-credit-title,
+.account-security-title {
+  font-weight: bold;
+  font-size: 20px;
 }
 
-.notice-form {
-  position: absolute;
-  display: flex;
+.account-security-description {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.user-info-content,
+.user-credit-content {
+  margin-top: 10px;
+}
+
+.user-credit-echarts {
   width: 100%;
-  justify-content: center;
-  font-size: 30px;
+  height: 250px;
+}
+
+.user-info-button {
+  margin-top: 20px;
+  margin-right: 20px;
+  padding: 5px 10px;
+  border: 1px solid var(--first-color);
+  border-radius: 5px;
+  background-color: var(--white-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
-  top: 20px;
-  z-index: 0;
 }
 
-.notice-list {
-  list-style: none;
-  padding: 0;
-}
-
-.notice-item {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.notice-item:hover {
-  background-color: #f0f0f0;
-}
-
-.top-notice {
+.red-button {
+  border: 1px solid red;
   color: red;
-  font-weight: bold;
-  margin-right: 5px;
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.user-info-button:hover {
+  cursor: pointer;
+  background-color: var(--first-color);
+  color: var(--white-color);
+  transition: 0.4s;
+}
+
+.red-button:hover {
+  cursor: pointer;
+  background-color: red;
+  color: var(--white-color);
+  transition: 0.4s;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 20px 0;
+}
+
+.select-modal {
+  width: 100%;
+  height: 100%;
+  transition: left 0.4s ease;
+}
+
+.select-text {
+  left: 20px;
+  width: 100%;
+  height: 50px;
+  text-align: left;
+  font-size: 20px;
+  font-weight: var(--font-semi-bold);
+  color: var(--first-color);
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.ri-question-line {
+  font-weight: normal;
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+.ri-question-line:hover {
+  color: var(--first-color);
 }
 </style>

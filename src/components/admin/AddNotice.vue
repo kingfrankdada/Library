@@ -21,7 +21,7 @@
         <tr>
           <td>详情内容*</td>
           <td>
-            <input
+            <textarea
               v-model="newNotice.info"
               type="text"
               placeholder="输入公告内容"
@@ -56,7 +56,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -82,6 +82,7 @@ export default {
       newNotice: {
         title: "",
         info: "",
+        top: "",
         adduser: "",
         adddate: "",
       },
@@ -92,7 +93,11 @@ export default {
     async submitForm() {
       this.newNotice.adduser = this.userInfo.username;
       this.newNotice.adddate = new Date().toISOString().split("T")[0];
-      if (!this.newNotice.title || !this.newNotice.info || !this.newNotice.top) {
+      if (
+        !this.newNotice.title ||
+        !this.newNotice.info ||
+        !this.newNotice.top
+      ) {
         this.alertMsg = "公告信息不完整";
         return;
       }
@@ -108,13 +113,7 @@ export default {
     },
 
     resetForm() {
-      this.newNotice = {
-        title: "",
-        info: "",
-        adduser: "",
-        adddate: "",
-        top: 0, // 默认不置顶
-      };
+      this.newNotice = {};
     },
   },
   mounted() {},
@@ -170,11 +169,22 @@ button:hover {
 
 input[type="text"],
 input[type="number"],
+textarea[type="text"],
 select {
   width: 100%;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+textarea[type="text"] {
+  height: 100px;
+  font-family: var(--body-font);
+  font-size: 16px;
 }
 
 .close-button {

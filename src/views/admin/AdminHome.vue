@@ -3,7 +3,7 @@
     <div class="header">
       <HeaderGuide></HeaderGuide>
     </div>
-    <div class="home-body">
+    <div v-show="this.$route.path === '/admin'" class="home-body">
       <div class="dashboard">
         <!-- 实时数据卡片 -->
         <div class="card real-time-data">
@@ -29,9 +29,9 @@
                 <br />
                 {{ systemInfo.cpuUsage.brand }}
                 <br />
-                CPU频率:
+                CPU频率(GHz):
                 <br />
-                {{ systemInfo.cpuUsage.speed }} GHz
+                {{ systemInfo.cpuUsage.speed.toFixed(2) }}
               </span>
               <div class="sys-chart-container" ref="cpuChartContainer"></div>
             </div>
@@ -45,11 +45,11 @@
               <span class="card-form-text">
                 内存总大小:
                 <br />
-                {{ systemInfo.memoryUsage.totalMemory }}
+                {{ formatSpeed(systemInfo.memoryUsage.totalMemory) }}
                 <br />
                 已使用内存:
                 <br />
-                {{ systemInfo.memoryUsage.usedMemory }}
+                {{ formatSpeed(systemInfo.memoryUsage.usedMemory) }}
               </span>
               <div class="sys-chart-container" ref="memChartContainer"></div>
             </div>
@@ -122,7 +122,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -321,6 +321,20 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "获取图书数据失败";
+      }
+    },
+
+    // 格式化速度
+    formatSpeed(speed) {
+      if (isNaN(speed) || speed === undefined || speed === null || speed < 0) {
+        return "获取中...";
+      }
+      if (speed < 1024 * 1024) {
+        return `${(speed / 1024).toFixed(2)} Kb`;
+      } else if (speed < 1024) {
+        return `${(speed / 1024 / 1024).toFixed(2)} MB`;
+      } else {
+        return `${(speed / 1024 / 1024 / 1024).toFixed(2)} GB`;
       }
     },
 
@@ -805,7 +819,7 @@ export default {
   -ms-overflow-style: none;
 }
 
-.notice-box{
+.notice-box {
   margin-left: 7.5%;
 }
 

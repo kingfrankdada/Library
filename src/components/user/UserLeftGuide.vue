@@ -1,21 +1,30 @@
 <template>
   <div class="guide">
     <div class="left-guide">
-      <div class="guide-title" @click="handleUser">
-        <span>用户中心</span>
+      <div class="guide-title" @click="handleTitle">
+        <span>{{ guideTitle }}</span>
         <div class="line"></div>
       </div>
-      <div v-for="item in menuList" :key="item.id" class="guide-list">
+      <div v-for="item in guideList" :key="item.id" class="guide-list">
         <div class="guide-item">
-          <router-link :title="item.title" class="guide-link" :to="item.path">
+          <!-- 如果存在.path，则启用路径 -->
+          <router-link
+            v-if="item.path"
+            :title="item.title"
+            class="guide-link"
+            :to="item.path"
+          >
             {{ item.title }}
           </router-link>
+          <!-- 展示为普通导航 -->
+          <span v-else class="guide-link" @click="handleInfo(item)">{{
+            item.title
+          }}</span>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import { mapState, mapMutations } from "vuex";
@@ -23,12 +32,23 @@ import { mapState, mapMutations } from "vuex";
 export default {
   name: "UserLeftGuide",
 
+  props: {
+    guideList: {
+      type: Array,
+      default: () => [],
+    },
+    guideTitle: {
+      type: String,
+      default: "",
+    },
+  },
+
   data() {
     return {
-      menuList: [
-        { id: 1, name: "collection", title: "我的收藏", path: "/home/user/collection" },
-        { id: 2, name: "borrow", title: "我的借阅", path: "/home/user/borrow" },
-      ],
+      // guideList: [
+      //   { id: 1, name: "collection", title: "我的收藏", path: "/home/user/collection" },
+      //   { id: 2, name: "borrow", title: "我的借阅", path: "/home/user/borrow" },
+      // ],
     };
   },
 
@@ -41,10 +61,15 @@ export default {
   methods: {
     ...mapMutations("NormalModal", ["setSelectModalVisible"]),
 
-    handleUser() {
-      if (this.$route.path !== "/home/user") {
-        this.$router.push("/home/user");
-      }
+    handleTitle() {
+      this.$emit("handleTitle");
+      // if (this.$route.path !== "/home/user") {
+      //   this.$router.push("/home/user");
+      // }
+    },
+
+    handleInfo(item) {
+      this.$emit("handleInfo", item);
     },
   },
 
@@ -62,6 +87,7 @@ export default {
   background-color: var(--body-color);
   animation: fade-in 0.5s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow: auto;
 }
 
 .guide-title {
@@ -109,11 +135,13 @@ export default {
 }
 
 .guide-link {
+  cursor: pointer;
   display: block;
   width: 100%;
   height: 100%;
   padding: 5% 0;
   text-align: left;
+  color: var(--text-color);
 }
 
 .router-link-active {

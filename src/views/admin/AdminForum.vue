@@ -21,9 +21,20 @@
       >
         <div class="select-text">
           所有论坛留言
+          <div class="search-box">
+            <i class="ri-search-line" @click="toggleSearch"></i>
+            <input
+              v-if="isSearch"
+              v-model="searchText"
+              ref="searchRef"
+              class="search-input"
+              type="text"
+              placeholder="搜索标题，内容或发布者"
+            />
+          </div>
           <div class="select-tips">*双击论坛留言属性可进行编辑</div>
         </div>
-        <SelectMessage></SelectMessage>
+        <SelectMessage :searchText="searchText"></SelectMessage>
       </NormalModal>
 
       <!-- 论坛留言添加 -->
@@ -62,6 +73,13 @@ export default {
     AddMessage,
   },
 
+  data() {
+    return {
+      isSearch: false, // 搜索框是否处于激活状态
+      searchText: "", // 搜索框的值
+    };
+  },
+
   computed: {
     ...mapState("NormalModal", [
       "isSelectModalVisible",
@@ -91,6 +109,17 @@ export default {
           selectModal.style.left = isVisible ? "0%" : "-7.5%";
         }
       });
+    },
+
+    toggleSearch() {
+      this.isSearch = !this.isSearch;
+      if (this.isSearch) {
+        this.$nextTick(() => {
+          this.$refs.searchRef.focus();
+        });
+      } else {
+        this.searchText = "";
+      }
     },
 
     openSelectModal() {
@@ -133,15 +162,37 @@ export default {
 }
 
 .select-text {
+  display: flex;
+  align-items: center;
   left: 20px;
   width: 100%;
   height: 50px;
-  text-align: left;
   font-size: 20px;
   font-weight: var(--font-semi-bold);
   color: var(--first-color);
   margin-top: 20px;
   margin-left: 20px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.ri-search-line::before {
+  cursor: pointer;
+}
+
+.search-input {
+  border: 1px solid var(--first-color);
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 10px;
+  color: var(--first-color);
+  font-size: 15px;
+  font-weight: var(--font-medium);
+  outline: none;
 }
 
 .title-container {
@@ -194,10 +245,9 @@ export default {
 
 .select-tips {
   position: absolute;
-  right: 0;
+  right: 20px;
   transform: translateY(-50%);
   margin-right: 20px;
-  width: 100%;
   text-align: right;
   font-size: 15px;
   color: var(--text-color);

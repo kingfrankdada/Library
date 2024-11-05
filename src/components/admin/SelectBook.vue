@@ -1,6 +1,6 @@
 <template>
   <div class="select-book">
-    <table v-if="books.length > 0">
+    <table v-if="filteredBooks.length > 0">
       <thead>
         <tr>
           <th>ID</th>
@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(book, index) in books" :key="index">
+        <tr v-for="(book, index) in filteredBooks" :key="index">
           <td>{{ book.id }}</td>
           <td>
             <InputTag v-model="book.name" @input="updateBook(book)"></InputTag>
@@ -78,7 +78,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -95,13 +95,32 @@ export default {
     AlertBox,
   },
 
+  props: {
+    searchText: {
+      type: String,
+      default: "",
+    },
+  },
+
   data() {
     return {
       books: [],
       menuTitles: [],
       alertMsg: "",
-      boxMsg: "正在加载图书数据...",
+      boxMsg: "暂无数据...",
     };
+  },
+
+  computed: {
+    filteredBooks() {
+      const filterList = this.searchText.toLowerCase();
+      return this.books.filter(
+        (book) =>
+          book.name.toLowerCase().includes(filterList) ||
+          book.author.toLowerCase().includes(filterList) ||
+          book.menu.toLowerCase().includes(filterList)
+      );
+    },
   },
 
   methods: {
@@ -110,10 +129,7 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/api/selectBook"
         );
-        console.log(response);
-        const books = response.data.books;
-        this.books = books || [];
-
+        this.books = response.data.books || [];
         if (this.books.length === 0) {
           this.boxMsg = "未找到任何图书记录";
         }

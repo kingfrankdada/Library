@@ -62,7 +62,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -321,6 +321,10 @@ export default {
   margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: auto;
 }
 
 .submit-button {

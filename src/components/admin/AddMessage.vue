@@ -21,7 +21,7 @@
         <tr>
           <td>详情内容*</td>
           <td>
-            <input
+            <textarea
               v-model="newMessage.info"
               type="text"
               placeholder="输入论坛留言内容"
@@ -47,7 +47,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -169,11 +169,22 @@ button:hover {
 
 input[type="text"],
 input[type="number"],
+textarea[type="text"],
 select {
   width: 100%;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+textarea[type="text"] {
+  height: 100px;
+  font-family: var(--body-font);
+  font-size: 16px;
 }
 
 .close-button {

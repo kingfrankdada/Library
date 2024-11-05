@@ -17,44 +17,62 @@ const state = {
   isDeleteModalVisible: false,
   // 公告展示模态框
   isNoticeModalVisible: false,
+  // 用户编辑模态框
+  isEditUserModalVisible: false,
+  // 用户注销模态框
+  isDelUserModalVisible: false,
+  // 公告编辑模态框
+  isEditNoticeModalVisible: false
 };
 
 const mutations = {
   // 登录模态框方法
-  setLoginModalVisible(state, visible) {
-    state.isLoginModalVisible = visible;
+  setLoginModalVisible(state, payload) {
+    state.isLoginModalVisible = payload;
   },
   // 退出模态框方法
-  setLogoutModalVisible(state, visible) {
-    state.isLogoutModalVisible = visible;
+  setLogoutModalVisible(state, payload) {
+    state.isLogoutModalVisible = payload;
   },
   // 注册模态框方法
-  setRegModalVisible(state, visible) {
-    state.isRegModalVisible = visible;
+  setRegModalVisible(state, payload) {
+    state.isRegModalVisible = payload;
   },
   // 搜索模态框方法
-  setSearchModalVisible(state, visible) {
-    state.isSearchModalVisible = visible;
+  setSearchModalVisible(state, payload) {
+    state.isSearchModalVisible = payload;
   },
   // 查看模态框方法
-  setSelectModalVisible(state, visible) {
-    state.isSelectModalVisible = visible;
+  setSelectModalVisible(state, payload) {
+    state.isSelectModalVisible = payload;
   },
   // 添加模态框方法
-  setAddModalVisible(state, visible) {
-    state.isAddModalVisible = visible;
+  setAddModalVisible(state, payload) {
+    state.isAddModalVisible = payload;
   },
   // 修改模态框方法
-  setUpdateModalVisible(state, visible) {
-    state.isUpdateModalVisible = visible;
+  setUpdateModalVisible(state, payload) {
+    state.isUpdateModalVisible = payload;
   },
   // 删除模态框方法
-  setkDeleteModalVisible(state, visible) {
-    state.isDeleteModalVisible = visible;
+  setkDeleteModalVisible(state, payload) {
+    state.isDeleteModalVisible = payload;
   },
   // 公告展示模态框方法
-  setNoticeModalVisible(state, visible) {
-    state.isNoticeModalVisible = visible;
+  setNoticeModalVisible(state, payload) {
+    state.isNoticeModalVisible = payload;
+  },
+  // 用户编辑模态框
+  setEditUserModalVisible(state, payload) {
+    state.isEditUserModalVisible = payload;
+  },
+  // 用户注销模态框
+  setDelUserModalVisible(state, payload) {
+    state.isDelUserModalVisible = payload;
+  },
+  // 公告编辑模态框
+  setEditNoticeModalVisible(state, payload) {
+    state.isEditNoticeModalVisible = payload;
   },
 };
 

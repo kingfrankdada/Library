@@ -1,10 +1,11 @@
 <template>
   <div class="select-user">
-    <table v-if="users.length > 0">
+    <table v-if="filteredusers.length > 0">
       <thead>
         <tr>
           <th>ID</th>
           <th>用户*</th>
+          <th>邮箱*</th>
           <th>状态*</th>
           <th>信誉分*</th>
           <th>注册日期</th>
@@ -12,13 +13,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in users" :key="index">
+        <tr v-for="(user, index) in filteredusers" :key="index">
           <td>{{ user.id }}</td>
           <td>
             <InputTag
               v-model="user.username"
               @input="updateUser(user)"
             ></InputTag>
+          </td>
+          <td>
+            <InputTag v-model="user.email" @input="updateUser(user)"></InputTag>
           </td>
           <td>
             <select v-model="user.state" @change="updateUser(user)">
@@ -46,7 +50,7 @@
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -63,12 +67,30 @@ export default {
     AlertBox,
   },
 
+  props: {
+    searchText: {
+      type: String,
+      default: "",
+    },
+  },
+
   data() {
     return {
       users: [],
       alertMsg: "",
-      boxMsg: "正在加载用户数据...",
+      boxMsg: "暂无数据...",
     };
+  },
+
+  computed: {
+    filteredusers() {
+      const filterList = this.searchText.toLowerCase();
+      return this.users.filter(
+        (user) =>
+          user.username.toLowerCase().includes(filterList) ||
+          user.email.toLowerCase().includes(filterList)
+      );
+    },
   },
 
   methods: {
@@ -78,9 +100,8 @@ export default {
           "http://localhost:3000/api/selectUser"
         );
         console.log(response);
-        const users = response.data.users;
         this.users =
-          users.map((user) => ({
+          response.data.users.map((user) => ({
             ...user,
             creditCount: user.credit_count,
           })) || [];
@@ -109,6 +130,7 @@ export default {
           state: user.state,
           credit_count: user.creditCount,
           username: user.username,
+          email: user.email,
         });
         this.alertMsg = "更新用户数据成功";
       } catch (error) {

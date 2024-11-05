@@ -133,6 +133,7 @@ export default {
 }
 
 .g-container {
+  margin-top: 60px;
   padding: 20px;
   width: 100%;
   overflow-y: auto;

@@ -1,6 +1,6 @@
 <template>
   <div class="select-message">
-    <table v-if="messages.length > 0">
+    <table v-if="filteredMessages.length > 0">
       <thead>
         <tr>
           <th>ID</th>
@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(message, index) in messages" :key="index">
+        <tr v-for="(message, index) in filteredMessages" :key="index">
           <td>{{ message.id }}</td>
           <td>
             <InputTag
@@ -20,11 +20,12 @@
               @input="updateMessage(message)"
             ></InputTag>
           </td>
-          <td>
-            <InputTag
-              v-model="message.info"
-              @input="updateMessage(message)"
-            ></InputTag>
+          <td
+            class="message-info"
+            title="双击可进入编辑模式"
+            @dblclick="openEdit(message)"
+          >
+            {{ message.info }}
           </td>
           <td>
             <InputTag
@@ -47,11 +48,19 @@
       </tbody>
     </table>
     <p v-else>{{ boxMsg }}</p>
+    <!-- 编辑公告模态框 -->
+    <EditTag
+      v-if="editMsg"
+      :editMsg="editMsg"
+      :editId="editId"
+      @update="updateMessage"
+      @close="editMsg = null"
+    ></EditTag>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
       :message="alertMsg"
-      @close="alertMsg = ''"
+      @close="alertMsg = null"
     ></AlertBox>
   </div>
 </template>
@@ -59,6 +68,7 @@
 <script>
 import axios from "axios";
 import InputTag from "../InputTag.vue";
+import EditTag from "../EditTag.vue";
 import AlertBox from "../AlertBox.vue";
 
 export default {
@@ -66,14 +76,40 @@ export default {
   components: {
     InputTag,
     AlertBox,
+    EditTag,
+  },
+
+  props: {
+    searchText: {
+      type: String,
+      default: "",
+    },
   },
 
   data() {
     return {
       messages: [],
       alertMsg: "",
-      boxMsg: "正在加载论坛留言数据...",
+      editMsg: "", // 编辑公告传入数据
+      editId: null, // 存储编辑的公告 ID
+      boxMsg: "暂无数据...",
     };
+  },
+
+  computed: {
+    filteredMessages() {
+      const filterList = this.searchText.toLowerCase();
+      return this.messages.filter(
+        (message) =>
+          message.title.toLowerCase().includes(filterList) ||
+          message.info.toLowerCase().includes(filterList) ||
+          message.adduser.toLowerCase().includes(filterList)
+      );
+    },
+  },
+
+  mounted() {
+    this.selectMessages();
   },
 
   methods: {
@@ -82,9 +118,7 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/api/selectMessage"
         );
-        const messages = response.data.message;
-        this.messages = messages || [];
-
+        this.messages = response.data.message || [];
         if (this.messages.length === 0) {
           this.boxMsg = "未找到任何论坛留言记录";
         }
@@ -106,6 +140,7 @@ export default {
           }
         );
         this.alertMsg = "更新论坛留言数据成功";
+        this.selectMessages();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新论坛留言数据失败";
@@ -125,10 +160,11 @@ export default {
       }
       this.selectMessages();
     },
-  },
 
-  mounted() {
-    this.selectMessages();
+    openEdit(message) {
+      this.editMsg = message.info; // 设置要编辑的论坛内容
+      this.editId = message.id; // 设置当前论坛ID
+    },
   },
 };
 </script>
@@ -163,6 +199,10 @@ th {
 img {
   height: 75px;
   width: auto;
+}
+
+.message-info{
+  cursor: pointer;
 }
 
 button {

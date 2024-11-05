@@ -4,7 +4,7 @@
       <HeaderGuide></HeaderGuide>
     </div>
     <div v-show="this.$route.path === '/home'" class="body">
-      <h1 class="title">高校图书管理系统</h1>
+      <h1 class="title">首页</h1>
       <h4 class="subtitle">Smart Organizational Library Assistant Resource</h4>
     </div>
     <div class="content">

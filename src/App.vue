@@ -84,8 +84,12 @@ export default {
   --search-modal-content-height: 30%;
   --small-modal-content-weight: 25%;
   --small-modal-content-height: 25%;
+  --mid-modal-content-weight: 35%;
+  --mid-modal-content-height: 50%;
   --normal-modal-content-weight: 25%;
   --normal-modal-content-height: 60%;
+  --edit-modal-content-weight: 50%;
+  --edit-modal-content-height: 50%;
   --large-modal-content-weight: 70%;
   --large-modal-content-height: 70%;
 

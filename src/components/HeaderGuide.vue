@@ -180,6 +180,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
+  border-bottom: 1px solid var(--border-color);
   background-color: var(--body-color);
   z-index: var(--z-fixed);
   transition: box-shadow 0.4s, background-color 0.4s;

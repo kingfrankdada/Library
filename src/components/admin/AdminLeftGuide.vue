@@ -137,6 +137,7 @@ export default {
   height: 100%;
   padding: 5% 0;
   text-align: left;
+  color: var(--text-color);
 }
 
 .router-link-active {
