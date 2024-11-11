@@ -470,8 +470,8 @@ app.get('/api/menuTitles', (req, res) => {
 // 添加图书 API
 app.post('/api/addBook', (req, res) => {
   const newBook = req.body;
-  const query = 'INSERT INTO book (name, author, menu, price, press, num, img, more, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [newBook.name, newBook.author, newBook.menu, newBook.price, newBook.press, newBook.num, newBook.img, newBook.more, newBook.state, newBook.adddate];
+  const query = 'INSERT INTO book (name, author, menu, price, press, num, img, info, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [newBook.name, newBook.author, newBook.menu, newBook.price, newBook.press, newBook.num, newBook.img, newBook.info, newBook.state, newBook.adddate];
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加图书失败:', err.stack);

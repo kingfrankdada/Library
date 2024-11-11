@@ -5,8 +5,15 @@
         <div
           v-for="(book, index) in filteredBooks"
           :key="index"
-          class="book-card"
+          :class="book.state === 1 ? 'book-card' : 'book-card disabled-card'"
+          :title="book.state === 1 ? '查看图书详情' : '图书已下架'"
         >
+          <i
+            class="book-collection"
+            :class="
+              book.state === 1 ? 'ri-information-line' : 'ri-prohibited-line'
+            "
+          ></i>
           <img
             :src="
               book.img
@@ -18,36 +25,35 @@
           />
           <div class="book-info">
             <h3>{{ book.name }}</h3>
-            <p>作者：{{ book.author }}</p>
+            <p>{{ book.author }}</p>
             <p>库存：{{ book.num }}本</p>
-            <p>分类：{{ book.menu }}</p>
+            <p>{{ book.menu }}</p>
           </div>
         </div>
       </div>
       <div v-else class="book-grid">
         <span>{{ boxMsg }}</span>
       </div>
+    </div>
 
-      <!-- 页码条 -->
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-        <span
-          >第 {{ currentPage }} 页 / 共
-          {{ totalPages ? totalPages : 1 }} 页</span
-        >
-        <button
-          @click="nextPage"
-          :disabled="currentPage === totalPages || !totalPages"
-        >
-          下一页
-        </button>
-      </div>
+    <!-- 页码条 -->
+    <div class="pagination">
+      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
+      <span
+        >第 {{ currentPage }} 页 / 共 {{ totalPages ? totalPages : 1 }} 页</span
+      >
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages || !totalPages"
+      >
+        下一页
+      </button>
     </div>
 
     <!-- 左侧导航栏 -->
     <UserLeftGuide
       class="left-guide-model"
-      :guideTitle="'图书中心'"
+      :guideTitle="'全部图书'"
       :guideList="menus"
       @handleTitle="handleTitle"
       @handleInfo="handleInfo"
@@ -76,12 +82,14 @@ export default {
       books: [],
       menus: [],
       selectedCategory: "",
+      searchQuery: "", // 搜索框的值
       currentPage: 1, // 默认展示第一页
       pageSize: 12, // 每页展示12本书 6x2
       alertMsg: "",
       boxMsg: "暂无数据...",
     };
   },
+
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
 
@@ -90,19 +98,49 @@ export default {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
 
-      // 过滤图书
-      const filtered = this.selectedCategory
-        ? this.books.filter((book) => book.menu === this.selectedCategory)
-        : this.books;
+      // 大小写转换，适配模糊匹配
+      const searchQuery = this.searchQuery
+        ? this.searchQuery.toLowerCase()
+        : "";
+
+      const filtered = this.books
+        .filter((book) => {
+          const isCategoryMatch = this.selectedCategory
+            ? book.menu === this.selectedCategory
+            : true;
+
+          // 正则搜索
+          const isNameMatch = searchQuery
+            ? book.name.toLowerCase().includes(searchQuery)
+            : true;
+
+          // 检查图书状态是否开启
+          // const isStateMatch = book.state === 1;
+
+          // return isCategoryMatch && isNameMatch && isStateMatch;
+          return isCategoryMatch && isNameMatch;
+        })
+        .sort((a, b) => b.id - a.id);
 
       return filtered.slice(start, end);
     },
 
     // 总页数
     totalPages() {
-      const filtered = this.selectedCategory
-        ? this.books.filter((book) => book.menu === this.selectedCategory)
-        : this.books;
+      const searchQuery = this.searchQuery
+        ? this.searchQuery.toLowerCase()
+        : "";
+
+      const filtered = this.books.filter((book) => {
+        const isCategoryMatch = this.selectedCategory
+          ? book.menu === this.selectedCategory
+          : true;
+        const isNameMatch = searchQuery
+          ? book.name.toLowerCase().includes(searchQuery)
+          : true;
+
+        return isCategoryMatch && isNameMatch;
+      });
 
       return Math.ceil(filtered.length / this.pageSize);
     },
@@ -113,9 +151,17 @@ export default {
     UserLeftGuide,
   },
 
+  watch: {
+    "$route.query.search"(newSearch) {
+      this.searchQuery = newSearch || "";
+      this.currentPage = 1;
+    },
+  },
+
   mounted() {
     this.selectBooks();
     this.selectMenus();
+    this.searchQuery = this.$route.query.search || "";
   },
 
   methods: {
@@ -146,10 +192,20 @@ export default {
       }
     },
 
-    // 点击标题，重置分类
+    // 清空分类搜索和图书搜索
     handleTitle() {
       this.currentPage = 1;
       this.selectedCategory = "";
+      this.searchQuery = "";
+      // 重置路由
+      this.$router
+        .replace({ path: this.$route.path, query: {} })
+        // 异常抛出
+        .catch((error) => {
+          if (error.name !== "NavigationDuplicated") {
+            throw error;
+          }
+        });
     },
 
     // 点击左侧导航栏，切换对应分类
@@ -188,6 +244,7 @@ export default {
 .book-body {
   position: absolute;
   width: calc(85% - 20px);
+  height: 100%;
   left: 15%;
   flex: 1;
   display: flex;
@@ -195,10 +252,11 @@ export default {
   padding-top: 20px;
   padding-left: 20px;
   gap: 20px;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .book-grid {
+  padding: 5px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 15px;
@@ -206,6 +264,7 @@ export default {
 
 .book-card {
   cursor: pointer;
+  height: 100%;
   background-color: var(--white-color);
   border-radius: 8px;
   padding: 15px;
@@ -213,12 +272,27 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
   transition: transform 0.3s ease;
 }
 
 .book-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.book-card.disabled-card {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.book-card .book-collection {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  color: var(--first-color);
 }
 
 .book-cover,
@@ -248,6 +322,9 @@ export default {
 }
 
 .pagination {
+  position: absolute;
+  left: 7.5%;
+  bottom: 20px;
   width: 100%;
   height: 50px;
   display: flex;

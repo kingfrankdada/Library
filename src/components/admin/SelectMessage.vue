@@ -3,16 +3,31 @@
     <table v-if="filteredMessages.length > 0">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>论坛留言*</th>
-          <th>详情内容*</th>
-          <th>浏览数</th>
-          <th>点赞数</th>
+          <th @click="sortMessages('id')">
+            ID
+            <span :class="getSortIcon('id')"></span>
+          </th>
+          <th @click="sortMessages('title')">
+            论坛留言*
+            <span :class="getSortIcon('title')"></span>
+          </th>
+          <th @click="sortMessages('info')">
+            详情内容*
+            <span :class="getSortIcon('info')"></span>
+          </th>
+          <th @click="sortMessages('views')">
+            浏览数*
+            <span :class="getSortIcon('views')"></span>
+          </th>
+          <th @click="sortMessages('likes')">
+            点赞数*
+            <span :class="getSortIcon('likes')"></span>
+          </th>
           <th>删除</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(message, index) in filteredMessages" :key="index">
+        <tr v-for="(message, index) in sortedMessages" :key="index">
           <td>{{ message.id }}</td>
           <td>
             <InputTag
@@ -93,6 +108,8 @@ export default {
       editMsg: "", // 编辑公告传入数据
       editId: null, // 存储编辑的公告 ID
       boxMsg: "暂无数据...",
+      sortColumn: "",
+      sortOrder: "asc", // 默认为升序asc
     };
   },
 
@@ -105,6 +122,22 @@ export default {
           message.info.toLowerCase().includes(filterList) ||
           message.adduser.toLowerCase().includes(filterList)
       );
+    },
+
+    sortedMessages() {
+      const messages = [...this.filteredMessages];
+      if (this.sortColumn) {
+        messages.sort((a, b) => {
+          const aVal = a[this.sortColumn];
+          const bVal = b[this.sortColumn];
+          if (this.sortOrder === "asc") {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
+      return messages;
     },
   },
 
@@ -165,6 +198,22 @@ export default {
       this.editMsg = message.info; // 设置要编辑的论坛内容
       this.editId = message.id; // 设置当前论坛ID
     },
+
+    sortMessages(column) {
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        this.sortColumn = column;
+        this.sortOrder = "asc";
+      }
+    },
+
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
+      }
+      return "sort-icon";
+    },
   },
 };
 </script>
@@ -194,6 +243,7 @@ td {
 
 th {
   background-color: #f2f2f2;
+  cursor: pointer;
 }
 
 img {
@@ -201,7 +251,7 @@ img {
   width: auto;
 }
 
-.message-info{
+.message-info {
   cursor: pointer;
 }
 
@@ -229,5 +279,15 @@ select {
   border-radius: 4px;
   background-color: #fff;
   color: #333;
+}
+
+.sort-icon {
+  margin-left: 5px;
+}
+.sort-asc-icon::after {
+  content: "▲";
+}
+.sort-desc-icon::after {
+  content: "▼";
 }
 </style>

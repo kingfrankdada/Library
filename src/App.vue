@@ -130,7 +130,7 @@ export default {
 }
 
 /*========== Responsive typography ==========*/
-@media screen and (min-width: 1150px) {
+/* @media screen and (min-width: 1150px) {
   :root {
     --biggest-font-size: 3.5rem;
     --h1-font-size: 2.25rem;
@@ -140,7 +140,7 @@ export default {
     --small-font-size: 0.875rem;
     --smaller-font-size: 0.813rem;
   }
-}
+} */
 
 /*=============== BASE ===============*/
 * {

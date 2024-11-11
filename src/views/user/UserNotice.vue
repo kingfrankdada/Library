@@ -231,7 +231,7 @@ export default {
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .header-notice {
     flex-direction: column;
   }
@@ -244,5 +244,5 @@ export default {
   .title {
     font-size: 2em;
   }
-}
+} */
 </style>

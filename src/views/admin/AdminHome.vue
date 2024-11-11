@@ -497,9 +497,10 @@ export default {
       const gaugeData = [
         {
           value: this.systemInfo.cpuUsage.usedPercentage,
-          name: "CPU使用率",
+          name: "CPU",
           title: {
             show: true,
+            fontSize: 15,
           },
           detail: {
             show: true,
@@ -581,9 +582,10 @@ export default {
             data: [
               {
                 value: this.systemInfo.cpuUsage.usedPercentage,
-                name: "CPU使用率",
+                name: "CPU",
                 title: {
                   show: true,
+                  fontSize: 15,
                 },
                 detail: {
                   show: true,
@@ -603,9 +605,10 @@ export default {
       const gaugeData = [
         {
           value: this.systemInfo.memoryUsage.usedPercentage,
-          name: "内存使用率",
+          name: "MEM",
           title: {
             show: true,
+            fontSize: 15,
           },
           detail: {
             show: true,
@@ -686,9 +689,10 @@ export default {
             data: [
               {
                 value: this.systemInfo.memoryUsage.usedPercentage,
-                name: "内存使用率",
+                name: "MEM",
                 title: {
                   show: true,
+                  fontSize: 15,
                 },
                 detail: {
                   show: true,

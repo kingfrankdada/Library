@@ -63,7 +63,12 @@
         <tr>
           <td>封面*</td>
           <td class="image-upload-container">
-            <input type="file" ref="imageInput" @change="handleImageChange" />
+            <input
+              type="file"
+              ref="imageInput"
+              @change="handleImageChange"
+              accept=".jpg, .jpeg, .png, .gif"
+            />
             <span v-if="selectedImage" class="close-button" @click="clearImage"
               >&times;</span
             >
@@ -73,7 +78,7 @@
           <td>更多信息</td>
           <td>
             <input
-              v-model.number="newBook.more"
+              v-model.number="newBook.info"
               type="text"
               placeholder="输入更多信息"
             />
@@ -126,7 +131,7 @@ export default {
         press: "",
         num: "1",
         img: "",
-        more: "",
+        info: "",
         state: "1",
         adddate: "",
       },
@@ -209,8 +214,8 @@ export default {
         return;
       }
 
-      if (!this.newBook.more) {
-        this.newBook.more = "暂无备注";
+      if (!this.newBook.info) {
+        this.newBook.info = "暂无备注";
       }
 
       try {
@@ -233,7 +238,7 @@ export default {
         press: "",
         num: "1",
         img: "",
-        more: "",
+        info: "",
         state: "1",
         adddate: "",
       };

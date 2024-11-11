@@ -3,14 +3,20 @@
     <table v-if="filteredMenus.length > 0">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>分类*</th>
+          <th @click="sortMenus('id')">
+            ID
+            <span :class="getSortIcon('id')"></span>
+          </th>
+          <th @click="sortMenus('title')">
+            分类*
+            <span :class="getSortIcon('title')"></span>
+          </th>
           <!-- <th>状态*</th> -->
           <th>删除</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(menu, index) in filteredMenus" :key="index">
+        <tr v-for="(menu, index) in sortedMenus" :key="index">
           <td>{{ menu.id }}</td>
           <td>
             <InputTag v-model="menu.title" @input="updateMenu(menu)"></InputTag>
@@ -63,6 +69,8 @@ export default {
       menus: [],
       alertMsg: "",
       boxMsg: "暂无数据...",
+      sortColumn: "",
+      sortOrder: "asc", // 默认为升序asc
     };
   },
 
@@ -72,6 +80,22 @@ export default {
       return this.menus.filter((menu) =>
         menu.title.toLowerCase().includes(filterList)
       );
+    },
+
+    sortedMenus() {
+      const menus = [...this.filteredMenus];
+      if (this.sortColumn) {
+        menus.sort((a, b) => {
+          const aVal = a[this.sortColumn];
+          const bVal = b[this.sortColumn];
+          if (this.sortOrder === "asc") {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
+      return menus;
     },
   },
 
@@ -114,6 +138,22 @@ export default {
       }
       this.selectMenus();
     },
+
+    sortMenus(column) {
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        this.sortColumn = column;
+        this.sortOrder = "asc";
+      }
+    },
+
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
+      }
+      return "sort-icon";
+    },
   },
 
   mounted() {
@@ -142,6 +182,7 @@ td {
 
 th {
   background-color: #f2f2f2;
+  cursor: pointer;
 }
 
 img {
@@ -173,5 +214,15 @@ select {
   border-radius: 4px;
   background-color: #fff;
   color: #333;
+}
+
+.sort-icon {
+  margin-left: 5px;
+}
+.sort-asc-icon::after {
+  content: "▲";
+}
+.sort-desc-icon::after {
+  content: "▼";
 }
 </style>

@@ -3,15 +3,27 @@
     <table v-if="filteredNotices.length > 0">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>公告*</th>
-          <th>详情内容*</th>
-          <th>是否置顶</th>
+          <th @click="sortNotices('id')">
+            ID
+            <span :class="getSortIcon('id')"></span>
+          </th>
+          <th @click="sortNotices('title')">
+            公告*
+            <span :class="getSortIcon('title')"></span>
+          </th>
+          <th @click="sortNotices('info')">
+            详情内容*
+            <span :class="getSortIcon('info')"></span>
+          </th>
+          <th @click="sortNotices('top')">
+            是否置顶
+            <span :class="getSortIcon('top')"></span>
+          </th>
           <th>删除</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(notice, index) in filteredNotices" :key="index">
+        <tr v-for="(notice, index) in sortedNotices" :key="index">
           <td>{{ notice.id }}</td>
           <td>
             <InputTag
@@ -87,6 +99,8 @@ export default {
       editMsg: "", // 编辑公告传入数据
       editId: null, // 存储编辑的公告 ID
       boxMsg: "暂无数据...",
+      sortColumn: "",
+      sortOrder: "asc", // 默认为升序asc
     };
   },
 
@@ -99,6 +113,22 @@ export default {
           notice.title.toLowerCase().includes(filterList) ||
           notice.info.toLowerCase().includes(filterList)
       );
+    },
+
+    sortedNotices() {
+      const notices = [...this.filteredNotices];
+      if (this.sortColumn) {
+        notices.sort((a, b) => {
+          const aVal = a[this.sortColumn];
+          const bVal = b[this.sortColumn];
+          if (this.sortOrder === "asc") {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
+      return notices;
     },
   },
 
@@ -161,6 +191,22 @@ export default {
       this.editMsg = notice.info; // 设置要编辑的公告内容
       this.editId = notice.id; // 设置当前公告ID
     },
+
+    sortNotices(column) {
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        this.sortColumn = column;
+        this.sortOrder = "asc";
+      }
+    },
+
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
+      }
+      return "sort-icon";
+    },
   },
 };
 </script>
@@ -194,6 +240,7 @@ td {
 
 th {
   background-color: #f2f2f2;
+  cursor: pointer;
 }
 
 img {
@@ -225,5 +272,15 @@ select {
   border-radius: 4px;
   background-color: #fff;
   color: #333;
+}
+
+.sort-icon {
+  margin-left: 5px;
+}
+.sort-asc-icon::after {
+  content: "▲";
+}
+.sort-desc-icon::after {
+  content: "▼";
 }
 </style>

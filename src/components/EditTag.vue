@@ -91,7 +91,7 @@ export default {
   font-family: var(--body-font);
   color: var(--text-color);
   width: 100%;
-  height: 60%;
+  height: 80%;
   padding: 10px;
   margin-bottom: 20px;
   border: 1px solid #ccc;

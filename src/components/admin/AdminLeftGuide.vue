@@ -98,7 +98,7 @@ export default {
   text-align: center;
   align-items: center;
   justify-content: left;
-  font-size: var(--h3-font-size);
+  font-size: 20px;
   font-weight: var(--font-medium);
 }
 

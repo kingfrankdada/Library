@@ -99,9 +99,9 @@ export default {
   margin: 5% 0 5% 0;
   padding-left: 10%;
   text-align: center;
-  align-items: ledft;
+  align-items: center;
   justify-content: left;
-  font-size: var(--h3-font-size);
+  font-size: 20px;
   font-weight: var(--font-medium);
 }
 

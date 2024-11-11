@@ -281,14 +281,14 @@ export default {
   color: var(--first-color);
 }
 
-@media screen and (min-width: 768px) {
+/* @media screen and (min-width: 768px) {
   .nav-link span {
     display: inline;
   }
-}
+} */
 
 /* 移动端适配 */
-@media screen and (max-width: 1150px) {
+/* @media screen and (max-width: 1150px) {
   .nav-menu {
     position: fixed;
     bottom: 0;
@@ -305,14 +305,14 @@ export default {
   .nav-userinfo {
     opacity: 0;
   }
-}
+} */
 
-@media screen and (min-width: 1150px) {
+/* @media screen and (min-width: 1150px) {
   .nav-menu {
     position: static;
     display: flex;
     background-color: transparent;
     box-shadow: none;
   }
-}
+} */
 </style>

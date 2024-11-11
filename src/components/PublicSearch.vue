@@ -3,7 +3,7 @@
     <i
       class="ri-seo-line search-button"
       id="search-button"
-      @click="setSearchModalVisible(true)"
+      @click="openSearch"
     ></i>
     <div class="search-content">
       <NormalModal :size="modalSize" v-if="isSearchModalVisible">
@@ -12,32 +12,46 @@
         <div class="g-container">
           <input
             v-model="inputText"
+            ref="inputRef"
             type="text"
             placeholder="输入你想查询的书籍"
             class="g-input-search"
+            @keyup.enter="clickSearch"
           />
-          <button type="button" class="g-button-search">GO</button>
+          <button type="button" class="g-button-search" @click="clickSearch">
+            GO
+          </button>
         </div>
       </NormalModal>
     </div>
+
+    <!-- 自定义弹窗捕获 -->
+    <AlertBox
+      v-if="alertMsg"
+      :message="alertMsg"
+      @close="alertMsg = null"
+    ></AlertBox>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from "vuex";
 import NormalModal from "@/components/NormalModal";
+import AlertBox from "./AlertBox.vue";
 
 export default {
   name: "PublicSearch",
 
   components: {
     NormalModal,
+    AlertBox,
   },
 
   data() {
     return {
       modalSize: "search",
       inputText: "",
+      alertMsg: "",
     };
   },
 
@@ -47,8 +61,28 @@ export default {
 
   methods: {
     ...mapMutations("NormalModal", ["setSearchModalVisible"]),
+
     checkWindowSize() {
       this.modalSize = window.innerWidth > 1150 ? "search" : "large";
+    },
+
+    openSearch() {
+      this.setSearchModalVisible(true);
+      this.$nextTick(() => {
+        this.$refs.inputRef.focus();
+      });
+    },
+
+    clickSearch() {
+      if (this.inputText.trim()) {
+        this.$router.push({
+          path: "/home/book",
+          query: { search: this.inputText.trim() },
+        });
+        this.setSearchModalVisible(false);
+      } else {
+        this.alertMsg = "搜索内容不能为空";
+      }
     },
   },
 

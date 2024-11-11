@@ -3,7 +3,7 @@
     <input
       v-if="isEdit"
       v-focus
-      ref="inp"
+      ref="inputRef"
       class="input"
       type="text"
       placeholder="输入标签"
@@ -44,6 +44,10 @@ export default {
   methods: {
     handleClick() {
       this.isEdit = true;
+      this.$nextTick(() => {
+        this.$refs.inputRef.focus();
+        this.$refs.inputRef.select();
+      });
     },
     handleEnter(e) {
       if (e.target.value.trim() === "") {

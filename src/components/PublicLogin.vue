@@ -228,7 +228,7 @@ export default {
   color: var(--first-color);
 }
 
-@media screen and (min-width: 1150px) {
+/* @media screen and (min-width: 1150px) {
   .login {
     display: flex;
     flex-direction: column;
@@ -249,5 +249,5 @@ export default {
     align-items: center;
     justify-content: center;
   }
-}
+} */
 </style>

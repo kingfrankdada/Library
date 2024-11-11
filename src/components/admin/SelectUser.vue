@@ -1,19 +1,37 @@
 <template>
   <div class="select-user">
-    <table v-if="filteredusers.length > 0">
+    <table v-if="filteredUsers.length > 0">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>用户*</th>
-          <th>邮箱*</th>
-          <th>状态*</th>
-          <th>信誉分*</th>
-          <th>注册日期</th>
+          <th @click="sortUsers('id')">
+            ID
+            <span :class="getSortIcon('id')"></span>
+          </th>
+          <th @click="sortUsers('username')">
+            用户*
+            <span :class="getSortIcon('username')"></span>
+          </th>
+          <th @click="sortUsers('email')">
+            邮箱*
+            <span :class="getSortIcon('email')"></span>
+          </th>
+          <th @click="sortUsers('state')">
+            状态*
+            <span :class="getSortIcon('state')"></span>
+          </th>
+          <th @click="sortUsers('creditCount')">
+            信誉分*
+            <span :class="getSortIcon('creditCount')"></span>
+          </th>
+          <th @click="sortUsers('adddate')">
+            注册日期
+            <span :class="getSortIcon('adddate')"></span>
+          </th>
           <th>删除</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in filteredusers" :key="index">
+        <tr v-for="(user, index) in sortedUsers" :key="index">
           <td>{{ user.id }}</td>
           <td>
             <InputTag
@@ -79,17 +97,35 @@ export default {
       users: [],
       alertMsg: "",
       boxMsg: "暂无数据...",
+      sortColumn: "",
+      sortOrder: "asc", // 默认为升序asc
     };
   },
 
   computed: {
-    filteredusers() {
+    filteredUsers() {
       const filterList = this.searchText.toLowerCase();
       return this.users.filter(
         (user) =>
           user.username.toLowerCase().includes(filterList) ||
           user.email.toLowerCase().includes(filterList)
       );
+    },
+
+    sortedUsers() {
+      const notices = [...this.filteredUsers];
+      if (this.sortColumn) {
+        notices.sort((a, b) => {
+          const aVal = a[this.sortColumn];
+          const bVal = b[this.sortColumn];
+          if (this.sortOrder === "asc") {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
+      return notices;
     },
   },
 
@@ -149,6 +185,22 @@ export default {
       }
       this.selectUsers();
     },
+
+    sortUsers(column) {
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        this.sortColumn = column;
+        this.sortOrder = "asc";
+      }
+    },
+
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
+      }
+      return "sort-icon";
+    },
   },
 
   mounted() {
@@ -177,6 +229,7 @@ td {
 
 th {
   background-color: #f2f2f2;
+  cursor: pointer;
 }
 
 img {
@@ -208,5 +261,15 @@ select {
   border-radius: 4px;
   background-color: #fff;
   color: #333;
+}
+
+.sort-icon {
+  margin-left: 5px;
+}
+.sort-asc-icon::after {
+  content: "▲";
+}
+.sort-desc-icon::after {
+  content: "▼";
 }
 </style>

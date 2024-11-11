@@ -31,6 +31,7 @@
     "systeminformation": "^5.23.5",
     "vue": "^2.6.14",
     "vue-router": "3.6.5",
+    "vuedraggable": "^2.24.3",
     "vuex": "3",
     "vuex-persistedstate": "^4.1.0",
     "ws": "^8.18.0"
