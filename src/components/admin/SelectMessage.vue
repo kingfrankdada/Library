@@ -55,7 +55,7 @@
             ></InputTag>
           </td>
           <td>
-            <button class="del-btn" @click="delMessage(message)">
+            <button class="del-btn" title="删除" @click="delMessage(message)">
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -172,7 +172,7 @@ export default {
             likes: message.likes,
           }
         );
-        this.alertMsg = "更新论坛留言数据成功";
+        // this.alertMsg = "更新论坛留言数据成功";
         this.selectMessages();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -186,7 +186,7 @@ export default {
           `http://localhost:3000/api/delMessage/${message.id}`,
           message
         );
-        this.alertMsg = "删除论坛留言成功";
+        // this.alertMsg = "删除论坛留言成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除论坛留言失败";

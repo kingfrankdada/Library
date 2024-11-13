@@ -45,7 +45,7 @@
             </select>
           </td>
           <td>
-            <button class="del-btn" @click="delNotice(notice)">
+            <button class="del-btn" title="删除" @click="delNotice(notice)">
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -165,7 +165,7 @@ export default {
             top: notice.top,
           }
         );
-        this.alertMsg = "更新公告数据成功";
+        // this.alertMsg = "更新公告数据成功";
         this.selectNotices();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -179,7 +179,7 @@ export default {
           `http://localhost:3000/api/delNotice/${notice.id}`,
           notice
         );
-        this.alertMsg = "删除公告成功";
+        // this.alertMsg = "删除公告成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除公告失败";

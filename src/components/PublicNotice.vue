@@ -106,7 +106,7 @@ export default {
           "http://localhost:3000/api/selectNotice"
         );
         this.notices = response.data.notice || [];
-
+        this.notices.sort((a, b) => new Date(b.adddate) - new Date(a.adddate));
         if (this.notices.length === 0) {
           this.selectedNotice = { info: "未找到任何公告记录" };
         }

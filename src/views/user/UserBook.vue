@@ -7,6 +7,7 @@
           :key="index"
           :class="book.state === 1 ? 'book-card' : 'book-card disabled-card'"
           :title="book.state === 1 ? '查看图书详情' : '图书已下架'"
+          @click="openBook(book)"
         >
           <i
             class="book-collection"
@@ -24,7 +25,9 @@
             :class="{ 'default-cover': !book.img, 'book-cover': book.img }"
           />
           <div class="book-info">
-            <h3>{{ book.name }}</h3>
+            <p>
+              <strong>{{ book.name }}</strong>
+            </p>
             <p>{{ book.author }}</p>
             <p>库存：{{ book.num }}本</p>
             <p>{{ book.menu }}</p>
@@ -38,6 +41,7 @@
 
     <!-- 页码条 -->
     <div class="pagination">
+      <button @click="firstPage">首页</button>
       <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
       <span
         >第 {{ currentPage }} 页 / 共 {{ totalPages ? totalPages : 1 }} 页</span
@@ -48,7 +52,15 @@
       >
         下一页
       </button>
+      <button @click="lastPage">尾页</button>
     </div>
+
+    <!-- 图书详情模态框 -->
+    <BookBox
+      v-if="selectedBook"
+      :book="selectedBook"
+      @close="selectedBook = null"
+    ></BookBox>
 
     <!-- 左侧导航栏 -->
     <UserLeftGuide
@@ -65,27 +77,43 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import AlertBox from "@/components/AlertBox.vue";
-import UserLeftGuide from "@/components/user/UserLeftGuide.vue";
 import { mapState } from "vuex";
+import AlertBox from "@/components/AlertBox.vue";
+import MessageBox from "@/components/MessageBox.vue";
+import UserLeftGuide from "@/components/user/UserLeftGuide.vue";
+import BookBox from "@/components/BookBox.vue";
 
 export default {
   name: "UserBook",
+
+  components: {
+    AlertBox,
+    MessageBox,
+    UserLeftGuide,
+    BookBox,
+  },
 
   data() {
     return {
       books: [],
       menus: [],
       selectedCategory: "",
+      selectedBook: null, // 选择要展示的图书
       searchQuery: "", // 搜索框的值
       currentPage: 1, // 默认展示第一页
       pageSize: 12, // 每页展示12本书 6x2
       alertMsg: "",
+      message: "",
       boxMsg: "暂无数据...",
     };
   },
@@ -114,10 +142,6 @@ export default {
             ? book.name.toLowerCase().includes(searchQuery)
             : true;
 
-          // 检查图书状态是否开启
-          // const isStateMatch = book.state === 1;
-
-          // return isCategoryMatch && isNameMatch && isStateMatch;
           return isCategoryMatch && isNameMatch;
         })
         .sort((a, b) => b.id - a.id);
@@ -146,15 +170,11 @@ export default {
     },
   },
 
-  components: {
-    AlertBox,
-    UserLeftGuide,
-  },
-
   watch: {
     "$route.query.search"(newSearch) {
       this.searchQuery = newSearch || "";
       this.currentPage = 1;
+      this.updateAlertMessage();
     },
   },
 
@@ -162,9 +182,25 @@ export default {
     this.selectBooks();
     this.selectMenus();
     this.searchQuery = this.$route.query.search || "";
+    this.updateAlertMessage(); // 初始页面加载时，更新搜索结果信息
   },
 
   methods: {
+    // 检查是否已收藏
+    async checkIfFavorited() {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/checkFavorite`,
+          {
+            params: { bookName: this.book.name, user: this.userInfo.username },
+          }
+        );
+        this.isFavorited = response.data.isFavorited;
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+      }
+    },
+
     async selectBooks() {
       try {
         const response = await axios.get(
@@ -174,6 +210,7 @@ export default {
         if (this.books.length === 0) {
           this.boxMsg = "未找到任何图书记录";
         }
+        this.updateAlertMessage(); // 更新搜索反馈信息
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.boxMsg = "获取图书数据失败";
@@ -200,7 +237,6 @@ export default {
       // 重置路由
       this.$router
         .replace({ path: this.$route.path, query: {} })
-        // 异常抛出
         .catch((error) => {
           if (error.name !== "NavigationDuplicated") {
             throw error;
@@ -225,6 +261,35 @@ export default {
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
+      }
+    },
+
+    // 切换到最后一页
+    lastPage() {
+      this.currentPage = this.totalPages;
+    },
+
+    // 切换到第一页
+    firstPage() {
+      this.currentPage = 1;
+    },
+
+    // 选择图书，传递数据给 BookBox 组件
+    openBook(book) {
+      this.selectedBook = book;
+    },
+
+    // 更新搜索的反馈
+    updateAlertMessage() {
+      const resultCount = this.filteredBooks.length;
+      if (this.searchQuery) {
+        if (resultCount > 0) {
+          this.message = `已为您找到 ${resultCount} 本符合搜索条件的图书`;
+        } else {
+          this.message = "未找到符合搜索条件的图书";
+        }
+      } else {
+        this.message = "";
       }
     },
   },
@@ -297,15 +362,15 @@ export default {
 
 .book-cover,
 .default-cover {
-  width: 100px;
+  width: 75px;
   height: 100px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 5px;
   margin-bottom: 10px;
 }
 
-.book-info h3 {
-  font-size: 16px;
+.book-info strong {
+  font-size: 15px;
   font-weight: bold;
   color: var(--first-color);
   margin: 10px 0;
@@ -352,5 +417,29 @@ export default {
 .pagination button:hover:not(:disabled) {
   background-color: var(--first-color);
   color: var(--white-color);
+}
+
+.book-modal-title {
+  left: 20px;
+  width: 100%;
+  height: 10%;
+  text-align: left;
+  font-size: 20px;
+  font-weight: var(--font-semi-bold);
+  color: var(--first-color);
+  margin-top: 20px;
+  margin-left: 50px;
+}
+
+.book-modal-text {
+  left: 20px;
+  width: 100%;
+  height: 90%;
+  text-align: left;
+  font-size: 20px;
+  color: black;
+  padding: 20px;
+  white-space: pre-wrap;
+  overflow-y: auto;
 }
 </style>

@@ -728,6 +728,24 @@ app.get('/api/selectMessage', (req, res) => {
   });
 });
 
+// 按用户名查询论坛留言api
+app.get('/api/selectMessage/:username', (req, res) => {
+  const username = req.params.username;
+  const query = 'SELECT * FROM message WHERE adduser = ?';
+  connection.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '查询成功',
+      message: results
+    });
+  });
+});
+
 // 更新论坛留言api
 app.post('/api/updateMessage/:id', (req, res) => {
   const messageId = req.params.id;
@@ -757,6 +775,103 @@ app.post('/api/delMessage/:id', (req, res) => {
     }
     res.json({
       message: '论坛留言信息删除成功'
+    });
+  });
+});
+
+// 添加收藏api
+app.post('/api/addFavorite', (req, res) => {
+  const newFavorite = req.body;
+  const query = 'INSERT INTO favorite (book, user, img) VALUES (?, ?, ?)';
+  const values = [newFavorite.book, newFavorite.user, newFavorite.img];
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('添加收藏失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '收藏添加成功',
+      FavoriteId: results.insertId
+    });
+  });
+});
+
+// 按用户名查询收藏api
+app.get('/api/selectFavorite/:username', (req, res) => {
+  const username = req.params.username;
+  const query = 'SELECT * FROM favorite WHERE user = ?';
+  connection.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '查询成功',
+      favorite: results
+    });
+  });
+});
+
+// 检查指定书籍是否已收藏api
+app.get('/api/checkFavorite', (req, res) => {
+  const {
+    bookName,
+    user
+  } = req.query;
+
+  const query = 'SELECT * FROM favorite WHERE user = ? AND book = ?';
+  connection.query(query, [user, bookName], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+
+    const isFavorited = results.length > 0;
+    res.json({
+      message: '查询成功',
+      isFavorited: isFavorited
+    });
+  });
+});
+
+
+// 按用户名和图书删除收藏apu
+app.post('/api/delFavorite/:username/:book', (req, res) => {
+  const username = req.params.username;
+  const book = req.params.book;
+  const query = 'DELETE FROM favorite WHERE user = ? AND book = ?';
+  connection.query(query, [username, book], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '收藏信息删除成功'
+    });
+  });
+});
+
+// 管理员删除书籍时删除对应收藏书籍api
+app.post('/api/delFavoriteByBookName/:bookName', (req, res) => {
+  const bookName = req.params.bookName;
+  const query = 'DELETE FROM favorite WHERE book = ?';
+
+  connection.query(query, [bookName], (err, results) => {
+    if (err) {
+      console.error('删除收藏记录失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '删除包含该书名的收藏记录成功'
     });
   });
 });

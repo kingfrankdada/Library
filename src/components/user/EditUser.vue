@@ -175,7 +175,7 @@ button {
   justify-content: center;
   align-items: center;
   margin-left: 40%;
-  margin-top: 10%;
+  margin-top: 20%;
   width: 20%;
   height: 12.5%;
   border: 1px solid var(--first-color);

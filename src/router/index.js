@@ -22,6 +22,7 @@ import AdminUser from '@/views/admin/AdminUser.vue'
 // 用户三级路由
 import UserCollection from '@/views/user/UserCollection.vue'
 import UserBorrow from '@/views/user/UserBorrow.vue'
+import UserComment from '@/views/user/UserComment.vue'
 
 Vue.use(VueRouter)
 
@@ -52,14 +53,20 @@ const router = new VueRouter({
           name: 'userSetting',
           component: UserSetting,
           children: [{
-            path: 'collection',
-            name: 'userSettingCollection',
-            component: UserCollection
-          }, {
-            path: 'borrow',
-            name: 'userSettingBorrow',
-            component: UserBorrow
-          }]
+              path: 'collection',
+              name: 'userSettingCollection',
+              component: UserCollection
+            }, {
+              path: 'borrow',
+              name: 'userSettingBorrow',
+              component: UserBorrow
+            },
+            {
+              path: 'comment',
+              name: 'userSettingComment',
+              component: UserComment
+            }
+          ]
         }
       ]
     },

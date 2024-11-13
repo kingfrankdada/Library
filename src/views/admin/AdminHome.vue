@@ -784,6 +784,11 @@ export default {
 .card-form-text {
   position: absolute;
   padding: 0 5px 5px 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 200px;
 }
 
 .sys-chart-container {

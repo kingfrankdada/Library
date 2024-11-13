@@ -8,7 +8,7 @@
         </p>
 
         <p class="notice-info notice-form-item">
-          &nbsp;&nbsp;&nbsp;&nbsp;{{ notice.info }}
+         {{ notice.info }}
         </p>
       </div>
       <div class="notice-bottom">
@@ -80,14 +80,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   overflow-y: auto;
-
 }
 
 .notice-form {
   width: 100%;
   height: 80%;
   display: flex;
-  padding: 20px 20px 0 20px;
+  padding: 0 20px 0 20px;
   flex-direction: column;
   align-items: flex-start;
   font-size: 20px;
@@ -111,6 +110,8 @@ export default {
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  white-space: pre-wrap;
+  display: -webkit-box;
 }
 
 .notice-info::-webkit-scrollbar {
@@ -119,7 +120,7 @@ export default {
 
 .notice-form-item {
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 20px;
 }
 
 .close-button {

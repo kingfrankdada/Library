@@ -61,7 +61,7 @@
           </td>
         </tr>
         <tr>
-          <td>封面*</td>
+          <td>封面</td>
           <td class="image-upload-container">
             <input
               type="file"
@@ -77,10 +77,10 @@
         <tr>
           <td>更多信息</td>
           <td>
-            <input
-              v-model.number="newBook.info"
+            <textarea
+              v-model="newBook.info"
               type="text"
-              placeholder="输入更多信息"
+              placeholder="输入图书详情内容"
             />
           </td>
         </tr>
@@ -90,6 +90,25 @@
             <select v-model="newBook.state">
               <option value="1">正常</option>
               <option value="0">关闭</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            自动推送公告<i
+              class="ri-question-line"
+              style="
+                margin-left: 5px;
+                color: var(--first-color);
+                font-size: 16px;
+              "
+              title="开启后在图书上线时自动推送公告，可在管理员仪表盘-公告管理中查看"
+            ></i>
+          </td>
+          <td>
+            <select v-model="isNoticeActive">
+              <option :value="true">开启</option>
+              <option :value="false">关闭</option>
             </select>
           </td>
         </tr>
@@ -114,6 +133,7 @@
 <script>
 import axios from "axios";
 import AlertBox from "../AlertBox.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "AddBook",
@@ -138,8 +158,14 @@ export default {
       menuTitles: [],
       alertMsg: "",
       selectedImage: null, // 暂存选中的图片
+      isNoticeActive: true, // 默认开启自动推送
     };
   },
+
+  computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+  },
+
   methods: {
     async fetchMenuTitles() {
       try {
@@ -221,6 +247,22 @@ export default {
       try {
         await this.uploadImage(); // 上传图片
         await axios.post("http://localhost:3000/api/addBook", this.newBook);
+        // 自动推送
+        if (this.isNoticeActive) {
+          const newNotice = {
+            title: "【新书上架通知】" + this.newBook.name,
+            info: this.newBook.info,
+            top: 0, // 默认不置顶
+            adduser: this.userInfo.username,
+            adddate: new Date().toISOString().split("T")[0],
+          };
+          try {
+            await axios.post("http://localhost:3000/api/addNotice", newNotice);
+          } catch (error) {
+            console.error(error.response?.data?.error || error.message);
+            this.alertMsg = "公告添加失败";
+          }
+        }
         this.alertMsg = "图书添加成功";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
@@ -300,11 +342,22 @@ button:hover {
 
 input[type="text"],
 input[type="number"],
+textarea[type="text"],
 select {
   width: 100%;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+textarea[type="text"] {
+  height: 100px;
+  font-family: var(--body-font);
+  font-size: 16px;
 }
 
 .image-upload-container {

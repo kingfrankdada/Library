@@ -1,5 +1,5 @@
 <template>
-  <div class="input-tag" title="双击可进入编辑模式，回车可确认提交">
+  <div class="input-tag" :title="value">
     <input
       v-if="isEdit"
       v-focus
@@ -76,6 +76,17 @@ export default {
   box-sizing: border-box;
   padding: 10px;
   color: #666;
+}
+
+.text {
+  max-width: 150px;
+  min-width: 50px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  direction: ltr;
 }
 
 .input-tag .input::placeholder {

@@ -97,7 +97,7 @@
           </td>
           <td>{{ book.adddate }}</td>
           <td>
-            <button class="del-btn" @click="delBook(book)">
+            <button class="del-btn" title="删除" @click="delBook(book)">
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -216,7 +216,7 @@ export default {
           `http://localhost:3000/api/updateBook/${book.id}`,
           book
         );
-        this.alertMsg = "更新图书数据成功";
+        // this.alertMsg = "更新图书数据成功";
         this.selectBooks();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -227,10 +227,20 @@ export default {
     async delBook(book) {
       try {
         await axios.post(`http://localhost:3000/api/delBook/${book.id}`, book);
-        this.alertMsg = "删除图书成功";
+        // this.alertMsg = "删除图书成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除图书失败";
+      }
+      // 删除收藏表
+      try {
+        await axios.post(
+          `http://localhost:3000/api/delFavoriteByBookName/${book.name}`
+        );
+        // this.alertMsg = "取消收藏成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "删除收藏失败";
       }
       this.selectBooks();
     },
@@ -280,11 +290,12 @@ td {
   text-align: center;
   justify-content: center;
   justify-items: center;
-  max-width: 200px;
+  max-width: 150px;
   min-width: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  direction: ltr;
 }
 
 .book-info {

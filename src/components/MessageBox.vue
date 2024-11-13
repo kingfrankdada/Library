@@ -92,7 +92,7 @@ export default {
   width: 100%;
   height: 7%;
   display: flex;
-  background: green;
+  background: rgb(41, 181, 41);
   animation: loading 2s;
 }
 

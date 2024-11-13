@@ -56,7 +56,7 @@
           </td>
           <td>{{ formatDate(user.adddate) }}</td>
           <td>
-            <button class="del-btn" @click="delUser(user)">
+            <button class="del-btn" title="删除" @click="delUser(user)">
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -168,7 +168,7 @@ export default {
           username: user.username,
           email: user.email,
         });
-        this.alertMsg = "更新用户数据成功";
+        // this.alertMsg = "更新用户数据成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新用户数据失败";
@@ -178,7 +178,7 @@ export default {
     async delUser(user) {
       try {
         await axios.post(`http://localhost:3000/api/delUser/${user.id}`, user);
-        this.alertMsg = "删除用户成功";
+        // this.alertMsg = "删除用户成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除用户失败";

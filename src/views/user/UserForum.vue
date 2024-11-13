@@ -23,13 +23,13 @@
                 {{ message.likes }}
                 <!-- 显示点赞量 -->
               </span>
-              <button
+              <!-- <button
                 v-if="message.adduser === userInfo.username"
                 @click="delMessage(message)"
                 class="delete-button"
               >
                 删除
-              </button>
+              </button> -->
             </div>
           </div>
         </div>

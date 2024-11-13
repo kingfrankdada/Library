@@ -28,7 +28,7 @@
             </select>
           </td> -->
           <td>
-            <button class="del-btn" @click="delMenu(menu)">
+            <button class="del-btn" title="删除" @click="delMenu(menu)">
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -121,7 +121,7 @@ export default {
           `http://localhost:3000/api/updateMenu/${menu.id}`,
           menu
         );
-        this.alertMsg = "更新分类数据成功";
+        // this.alertMsg = "更新分类数据成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新分类数据失败";
@@ -131,7 +131,7 @@ export default {
     async delMenu(menu) {
       try {
         await axios.post(`http://localhost:3000/api/delMenu/${menu.id}`, menu);
-        this.alertMsg = "删除分类成功";
+        // this.alertMsg = "删除分类成功";
       } catch (error) {
         this.alertMsg =
           "删除分类失败: " + (error.response?.data?.error || error.message);

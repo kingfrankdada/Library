@@ -114,7 +114,6 @@ export default {
   right: 5%;
   bottom: 0;
   background-color: #ddd;
-  z-index: 1;
 }
 
 .guide-list {

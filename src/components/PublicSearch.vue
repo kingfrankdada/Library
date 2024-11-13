@@ -63,7 +63,7 @@ export default {
     ...mapMutations("NormalModal", ["setSearchModalVisible"]),
 
     checkWindowSize() {
-      this.modalSize = window.innerWidth > 1150 ? "search" : "large";
+      // this.modalSize = window.innerWidth > 1150 ? "search" : "large";
     },
 
     openSearch() {
