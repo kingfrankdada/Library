@@ -9,7 +9,7 @@
             <h3>查看并编辑所有公告</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background7.png" alt="notice" />
+            <img v-lazy="'/assets/images/background7.png'" alt="notice" />
           </div>
         </NormalViewBox>
       </div>
@@ -45,7 +45,7 @@
             <h3>添加新的公告</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background8.png" alt="notice" />
+            <img v-lazy="'/assets/images/background8.png'" alt="notice" />
           </div>
         </NormalViewBox>
       </div>

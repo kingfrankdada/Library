@@ -42,6 +42,7 @@
 <script>
 import axios from "axios";
 import AlertBox from "../AlertBox.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "AddMenu",
@@ -58,6 +59,11 @@ export default {
       alertMsg: "",
     };
   },
+
+  computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+  },
+
   methods: {
     async submitForm() {
       if (!this.newMenu.title) {
@@ -67,6 +73,21 @@ export default {
       try {
         await axios.post("http://localhost:3000/api/addMenu", this.newMenu);
         this.alertMsg = "分类添加成功";
+
+        // 添加更新日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "新增",
+          info: `新增分类：${this.newMenu.title}`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+        
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

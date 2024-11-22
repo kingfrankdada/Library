@@ -258,6 +258,19 @@ export default {
           };
           try {
             await axios.post("http://localhost:3000/api/addNotice", newNotice);
+            // 添加更新日志
+            const adddate = new Date().toLocaleString("sv-SE", {
+              timeZoneName: "short",
+            });
+            const newLog = {
+              username: this.userInfo.username,
+              userIP: this.userInfo.userIP,
+              type: "新增",
+              info: `新增图书：${this.newBook.name}`,
+              creditCount: 0,
+              adddate: adddate,
+            };
+            await axios.post("http://localhost:3000/api/addLog", newLog);
           } catch (error) {
             console.error(error.response?.data?.error || error.message);
             this.alertMsg = "公告添加失败";

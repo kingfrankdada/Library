@@ -84,7 +84,7 @@ export default {
     ...mapMutations("UserInfo", ["setUserInfo"]),
 
     checkWindowSize() {
-      this.modalSize = window.innerWidth < 1150 ? "large" : "normal";
+      this.modalSize = window.innerWidth < 1150 ? "mid" : "normal";
     },
 
     changeRegModal() {
@@ -96,6 +96,13 @@ export default {
 
     async handleLogin() {
       try {
+        // 获取用户的 IP 地址
+        const ipResponse = await axios.get("https://api.ipify.org?format=json");
+        const userIP = ipResponse.data.ip;
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+
         const response = await axios.post("http://localhost:3000/api/login", {
           username: this.username,
           password: this.password,
@@ -108,7 +115,21 @@ export default {
           isAdmin: username === "admin",
           username,
           usertoken,
+          userIP,
         });
+
+        // 添加登录日志
+        const newLog = {
+          username: username,
+          userIP: userIP,
+          type: "登录",
+          info: `用户${username}于${adddate}登录`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
         this.setLoginModalVisible(false);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

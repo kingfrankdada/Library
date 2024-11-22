@@ -3,7 +3,7 @@
     <div class="notice-content">
       <span class="close-button" @click="close">&times;</span>
       <div class="notice-form">
-        <p class="notice-form-item">
+        <p class="notice-form-item notice-title">
           <strong>{{ notice.title }}</strong>
         </p>
 
@@ -106,7 +106,14 @@ export default {
   color: var(--text-color);
 }
 
+.notice-title{
+  font-size: 20px;
+  font-weight: var(--font-medium);
+  color: var(--first-color);
+}
+
 .notice-info {
+  font-size: 16px;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;

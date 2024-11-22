@@ -9,7 +9,7 @@
             <h3>查看并编辑所有书籍</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background2.png" alt="book" />
+            <img v-lazy="'/assets/images/background2.png'" alt="book" />
           </div>
         </NormalViewBox>
       </div>
@@ -44,7 +44,7 @@
             <h3>添加新的书籍</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background3.png" alt="book" />
+            <img v-lazy="'/assets/images/background3.png'" alt="book" />
           </div>
         </NormalViewBox>
       </div>
@@ -100,7 +100,6 @@ export default {
       "setAddModalVisible",
       "setUpdateModalVisible",
     ]),
-
     updateModalPosition(isVisible) {
       this.$nextTick(() => {
         const selectModal = document.querySelector(".select-modal");

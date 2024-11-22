@@ -9,7 +9,7 @@
             <h3>查看并编辑所有论坛留言</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background9.png" alt="message" />
+            <img v-lazy="'/assets/images/background9.png'" alt="message" />
           </div>
         </NormalViewBox>
       </div>
@@ -45,7 +45,7 @@
             <h3>添加新的论坛留言</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background10.png" alt="message" />
+            <img v-lazy="'/assets/images/background10.png'" alt="message" />
           </div>
         </NormalViewBox>
       </div>

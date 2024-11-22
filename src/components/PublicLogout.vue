@@ -20,31 +20,48 @@
 <script scoped>
 import { mapState, mapMutations } from "vuex";
 import NormalModal from "@/components/NormalModal";
+import axios from "axios";
 
 export default {
   name: "PublicLogout",
-  
+
   components: {
     NormalModal,
   },
 
   computed: {
     ...mapState("NormalModal", ["isLogoutModalVisible"]),
+    ...mapState("UserInfo", ["userInfo"]),
   },
-  
+
   methods: {
     ...mapMutations("UserInfo", ["setUserInfo"]),
     ...mapMutations("NormalModal", ["setLogoutModalVisible"]),
-    handleLogout() {
-      this.setLogoutModalVisible(false);
-      this.setUserInfo({
-        isAdmin: false,
-        username: "",
-        usertoken: "",
+    async handleLogout() {
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
       });
-      if (this.$route.path !== "/home") {
-        this.$router.push({ path: "/" });
-      }
+      // 添加登出日志
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "登出",
+        info: `用户${this.userInfo.username}于${adddate}登出`,
+        creditCount: 0,
+        adddate: adddate,
+      };
+      await axios.post("http://localhost:3000/api/addLog", newLog).then(() => {
+        this.setUserInfo({
+          isAdmin: false,
+          username: "",
+          usertoken: "",
+          userIP: "",
+        });
+        this.setLogoutModalVisible(false);
+        if (this.$route.path !== "/home") {
+          this.$router.push({ path: "/" });
+        }
+      });
     },
     close() {
       this.setLogoutModalVisible(false);

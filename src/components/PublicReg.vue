@@ -120,13 +120,47 @@ export default {
           });
           // console.log(response);
           // alert(`注册成功：用户 ${response.data.username}`);
-          this.alertMsg = `注册成功：用户 ${response.data.username}`;
+
+          // 获取用户的 IP 地址
+          const ipResponse = await axios.get(
+            "https://api.ipify.org?format=json"
+          );
+          const userIP = ipResponse.data.ip;
 
           this.setUserInfo({
             isAdmin: false,
             username: response.data.username,
             usertoken: response.data.usertoken,
+            userIP: userIP,
           });
+
+          const adddate = new Date().toLocaleString("sv-SE", {
+            timeZoneName: "short",
+          });
+
+          // 添加注册日志
+          const newLog = {
+            username: this.userInfo.username,
+            userIP: this.userInfo.userIP,
+            type: "注册",
+            info: `用户${this.userInfo.username}于${adddate}注册`,
+            creditCount: 0,
+            adddate: adddate,
+          };
+          await axios.post("http://localhost:3000/api/addLog", newLog);
+
+          // 添加信誉分表初始化信息
+          const newCredit = {
+            username: this.userInfo.username,
+            creditCount: 100,
+            info: "用户注册默认",
+            adddate: adddate,
+          };
+
+          await axios.post("http://localhost:3000/api/addCredit", newCredit);
+
+          this.alertMsg = `注册成功：用户 ${response.data.username}`;
+
           this.setRegModalVisible(false);
         } catch (error) {
           this.alertMsg = `注册失败：${error.response.data.error}`;

@@ -230,6 +230,14 @@ export default {
     },
   },
 
+  watch: {
+    $route() {
+      this.$nextTick(() => {
+        this.resizeCharts();
+      });
+    },
+  },
+
   methods: {
     ...mapMutations("NormalModal", ["setNoticeModalVisible"]),
 

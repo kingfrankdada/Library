@@ -151,7 +151,7 @@ export default {
     ]),
     ...mapMutations("UserInfo", ["setUserInfo"]),
     checkWindowSize() {
-      this.modalSize = window.innerWidth < 1150 ? "large" : "normal";
+      this.modalSize = window.innerWidth < 1150 ? "mid" : "normal";
     },
     setNoticeModalVisible(value) {
       this.$refs.notice.setNoticeModalVisible(value);

@@ -37,6 +37,7 @@ export default {
         { id: 4, name: "notice", title: "公告管理", path: "/admin/notice" },
         { id: 5, name: "forum", title: "论坛管理", path: "/admin/forum" },
         { id: 6, name: "user", title: "用户管理", path: "/admin/user" },
+        { id: 7, name: "log", title: "日志管理", path: "/admin/log" },
       ],
     };
   },

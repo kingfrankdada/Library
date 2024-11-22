@@ -3,6 +3,7 @@ const state = {
     isAdmin: false,
     username: '',
     usertoken: '',
+    userIP: ''
   }
 };
 

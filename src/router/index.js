@@ -18,11 +18,13 @@ import AdminMenu from '@/views/admin/AdminMenu.vue'
 import AdminForum from '@/views/admin/AdminForum.vue'
 import Adminnotice from '@/views/admin/AdminNotice.vue'
 import AdminUser from '@/views/admin/AdminUser.vue'
+import AdminLog from '@/views/admin/AdminLog.vue'
 
 // 用户三级路由
 import UserCollection from '@/views/user/UserCollection.vue'
 import UserBorrow from '@/views/user/UserBorrow.vue'
 import UserComment from '@/views/user/UserComment.vue'
+import UserCredit from '@/views/user/UserCredit.vue'
 
 Vue.use(VueRouter)
 
@@ -65,6 +67,11 @@ const router = new VueRouter({
               path: 'comment',
               name: 'userSettingComment',
               component: UserComment
+            },
+            {
+              path: 'credit',
+              name: 'userSettingCredit',
+              component: UserCredit
             }
           ]
         }
@@ -103,6 +110,11 @@ const router = new VueRouter({
           path: 'user',
           name: 'adminUser',
           component: AdminUser
+        },
+        {
+          path: 'log',
+          name: 'adminLog',
+          component: AdminLog
         }
       ]
     },

@@ -125,6 +125,7 @@ import axios from "axios";
 import InputTag from "../InputTag.vue";
 import AlertBox from "../AlertBox.vue";
 import EditTag from "../EditTag.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "SelectBook",
@@ -155,6 +156,8 @@ export default {
   },
 
   computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+
     filteredBooks() {
       const filterList = this.searchText.toLowerCase();
       return this.books.filter(
@@ -222,6 +225,22 @@ export default {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新图书数据失败";
       }
+
+      // 添加更新日志
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "更新",
+        info: `更新图书：${book.name}`,
+        creditCount: 0,
+        adddate: adddate,
+      };
+
+      await axios.post("http://localhost:3000/api/addLog", newLog);
     },
 
     async delBook(book) {
@@ -242,6 +261,23 @@ export default {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除收藏失败";
       }
+
+      // 添加删除日志
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "删除",
+        info: `删除图书：${book.name}`,
+        creditCount: 0,
+        adddate: adddate,
+      };
+
+      await axios.post("http://localhost:3000/api/addLog", newLog);
+
       this.selectBooks();
     },
 

@@ -9,7 +9,7 @@
             <h3>查看所有用户</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background5.png" alt="user" />
+            <img v-lazy="'/assets/images/background5.png'" alt="user" />
           </div>
         </NormalViewBox>
       </div>
@@ -45,7 +45,7 @@
             <h3>添加新的用户</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background6.png" alt="user" />
+            <img v-lazy="'/assets/images/background6.png'" alt="user" />
           </div>
         </NormalViewBox>
       </div>

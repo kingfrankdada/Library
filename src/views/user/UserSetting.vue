@@ -56,9 +56,14 @@
               </span></strong
             >
           </p>
-          <p class="user-credit-content">
-            &nbsp;&nbsp;&nbsp;&nbsp;在本系统中，信誉分机制旨在激励用户遵守规则并维护良好的使用环境。用户的信誉分会基于其行为表现进行动态调整，例如，若用户在借书时逾期未还，每逾期一次将扣除20分。此外，在社区论坛中发布违规言论也会导致信誉分减少，每次违规将扣除5分。信誉分的高低将直接影响用户的借书和发言权限。信誉分过低的用户可能会被限制借书次数或无法在论坛中发言，从而确保系统的公平性与安全性。
-          </p>
+          <div class="user-credit-content">
+            <p>
+              在本系统中，信誉分机制旨在激励用户遵守规则并维护良好的使用环境。用户的信誉分会基于其行为表现进行动态调整，从而确保系统的公平性与安全性。
+            </p>
+            <button class="user-info-button" @click="goCredit">
+              查看信誉分明细
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -143,6 +148,12 @@ export default {
           title: "我的留言",
           path: "/home/user/comment",
         },
+        {
+          id: 4,
+          name: "credit",
+          title: "我的信誉分",
+          path: "/home/user/credit",
+        },
       ],
       isEditUser: true, // 修改用户信息还是修改密码
       creditChart: null,
@@ -196,6 +207,14 @@ export default {
     }
   },
 
+  watch: {
+    $route() {
+      this.$nextTick(() => {
+        this.resizeCharts();
+      });
+    },
+  },
+
   methods: {
     ...mapMutations("NormalModal", [
       "setEditUserModalVisible",
@@ -221,6 +240,10 @@ export default {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "获取用户数据失败";
       }
+    },
+
+    goCredit() {
+      this.$router.push({ path: "/home/user/credit" });
     },
 
     // 日期格式化

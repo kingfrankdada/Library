@@ -77,6 +77,7 @@
 import axios from "axios";
 import InputTag from "../InputTag.vue";
 import AlertBox from "../AlertBox.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "SelectUser",
@@ -103,6 +104,8 @@ export default {
   },
 
   computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+
     filteredUsers() {
       const filterList = this.searchText.toLowerCase();
       return this.users.filter(
@@ -169,6 +172,32 @@ export default {
           email: user.email,
         });
         // this.alertMsg = "更新用户数据成功";
+
+        // 添加更新日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `更新用户：${user.username}`,
+          creditCount: user.creditCount,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 添加信誉分表更新信息
+        const newCredit = {
+          username: user.username,
+          creditCount: user.creditCount,
+          info: "管理员更新",
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addCredit", newCredit);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新用户数据失败";
@@ -183,6 +212,23 @@ export default {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除用户失败";
       }
+
+      // 添加删除日志
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "删除",
+        info: `删除用户：${user.username}`,
+        creditCount: 0,
+        adddate: adddate,
+      };
+
+      await axios.post("http://localhost:3000/api/addLog", newLog);
+
       this.selectUsers();
     },
 

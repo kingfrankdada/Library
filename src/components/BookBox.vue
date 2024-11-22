@@ -35,8 +35,8 @@
 
       <!-- 操作按钮 -->
       <div class="book-actions">
-        <button class="action-button borrow-button" @click="borrowBook">
-          借阅
+        <button class="action-button borrow-button" @click="actionButton">
+          {{ btMsg }}
         </button>
         <button
           class="action-button favorite-button"
@@ -84,6 +84,11 @@ export default {
         state: 1,
         adddate: "未知日期",
       }),
+    },
+    // 是否为借阅按钮
+    btMsg: {
+      type: String,
+      default: "借阅",
     },
   },
 
@@ -179,9 +184,17 @@ export default {
 
     async addFavorite() {
       const newFavorite = {
-        book: this.book.name,
+        name: this.book.name,
         user: this.userInfo.username,
+        author: this.book.author,
+        menu: this.book.menu,
+        price: this.book.price,
+        press: this.book.press,
+        num: this.book.num,
         img: this.book.img,
+        info: this.book.info,
+        state: this.book.state,
+        adddate: this.book.adddate,
       };
       try {
         await axios.post("http://localhost:3000/api/addFavorite", newFavorite);
@@ -198,6 +211,8 @@ export default {
           `http://localhost:3000/api/delFavorite/${this.userInfo.username}/${this.book.name}`
         );
         // this.alertMsg = "取消收藏成功，请前往用户中心-我的收藏查看";
+        this.$emit("reSelect");
+        this.$emit("close");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "取消收藏失败";
@@ -205,12 +220,27 @@ export default {
     },
 
     // 借阅图书
-    borrowBook() {
-      if (this.userInfo.usertoken) {
-        if (this.users[0].credit_count >= 25) {
+    actionButton() {
+      switch (this.btMsg) {
+        case "借阅":
+          console.log("借阅");
+          if (this.userInfo.usertoken) {
+            if (this.users[0].credit_count >= 25) {
+              this.$emit("close");
+              // 借阅逻辑
+            } else this.alertMsg = "用户信誉分不足，操作失败";
+          } else this.alertMsg = "请先登录";
+          break;
+        case "在图书中心查看":
+          this.$router.push({
+            path: "/home/book",
+            query: { search: this.book.name.trim() },
+          });
+          break;
+        case "归还":
           this.$emit("close");
-        } else this.alertMsg = "用户信誉分不足，操作失败";
-      } else this.alertMsg = "请先登录";
+          break;
+      }
     },
   },
 };
@@ -301,7 +331,7 @@ export default {
 
 .action-button {
   padding: 10px;
-  width: 100px;
+  min-width: 100px;
   border-radius: 5px;
   font-weight: var(--font-medium);
   font-size: 16px;

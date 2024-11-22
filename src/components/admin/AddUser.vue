@@ -64,6 +64,7 @@
 import axios from "axios";
 import AlertBox from "../AlertBox.vue";
 import MessageBox from "../MessageBox.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "AddUser",
@@ -86,6 +87,11 @@ export default {
       message: "",
     };
   },
+
+  computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+  },
+
   methods: {
     async submitForm() {
       this.newUser.adddate = new Date().toISOString().split("T")[0];
@@ -98,6 +104,21 @@ export default {
         await axios.post("http://localhost:3000/api/reg", this.newUser);
         // this.alertMsg = "用户添加成功";
         this.message = "用户添加成功，初始密码为：" + this.newUser.password;
+
+        // 添加更新日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "新增",
+          info: `新增用户：${this.newUser.username}`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

@@ -243,11 +243,6 @@ th {
   cursor: pointer;
 }
 
-img {
-  height: 75px;
-  width: auto;
-}
-
 button {
   cursor: pointer;
   width: 30px;

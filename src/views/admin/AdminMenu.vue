@@ -9,7 +9,7 @@
             <h3>查看并编辑所有分类</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background4.png" alt="menu" />
+            <img v-lazy="'/assets/images/background4.png'" alt="menu" />
           </div>
         </NormalViewBox>
       </div>
@@ -45,7 +45,7 @@
             <h3>添加新的分类</h3>
           </div>
           <div class="img-container">
-            <img src="/assets/images/background1.png" alt="menu" />
+            <img v-lazy="'/assets/images/background1.png'" alt="menu" />
           </div>
         </NormalViewBox>
       </div>

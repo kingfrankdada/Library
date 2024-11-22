@@ -79,7 +79,7 @@ export default {
 }
 
 .text {
-  max-width: 150px;
+  max-width: 200px;
   min-width: 50px;
   display: -webkit-box;
   -webkit-box-orient: vertical;

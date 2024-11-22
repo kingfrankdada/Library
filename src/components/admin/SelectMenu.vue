@@ -49,6 +49,7 @@
 import axios from "axios";
 import InputTag from "../InputTag.vue";
 import AlertBox from "../AlertBox.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "SelectMenu",
@@ -75,6 +76,8 @@ export default {
   },
 
   computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+
     filteredMenus() {
       const filterList = this.searchText.toLowerCase();
       return this.menus.filter((menu) =>
@@ -126,6 +129,22 @@ export default {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新分类数据失败";
       }
+
+      // 添加更新日志
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "更新",
+        info: `更新分类：${menu.title}`,
+        creditCount: 0,
+        adddate: adddate,
+      };
+
+      await axios.post("http://localhost:3000/api/addLog", newLog);
     },
 
     async delMenu(menu) {
@@ -136,6 +155,23 @@ export default {
         this.alertMsg =
           "删除分类失败: " + (error.response?.data?.error || error.message);
       }
+
+      // 添加删除日志
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "删除",
+        info: `删除分类：${menu.title}`,
+        creditCount: 0,
+        adddate: adddate,
+      };
+
+      await axios.post("http://localhost:3000/api/addLog", newLog);
+
       this.selectMenus();
     },
 

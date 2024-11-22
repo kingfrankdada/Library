@@ -1,7 +1,7 @@
 <template>
   <div class="not-found">
     <div class="content" @click="$router.push('/')" title="返回首页">
-      <img src="/assets/images/404.png" class="not-found-image" />
+      <img v-lazy="'/assets/images/404.png'" class="not-found-image" />
       <p class="not-found-text">404 Not Found</p>
       <p class="not-found-text-small">好像来到了没有知识的荒原...</p>
     </div>

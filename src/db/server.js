@@ -782,8 +782,8 @@ app.post('/api/delMessage/:id', (req, res) => {
 // 添加收藏api
 app.post('/api/addFavorite', (req, res) => {
   const newFavorite = req.body;
-  const query = 'INSERT INTO favorite (book, user, img) VALUES (?, ?, ?)';
-  const values = [newFavorite.book, newFavorite.user, newFavorite.img];
+  const query = 'INSERT INTO favorite (name, user, author, menu, price, press, num, img, info, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [newFavorite.name, newFavorite.user, newFavorite.author, newFavorite.menu, newFavorite.price, newFavorite.press, newFavorite.num, newFavorite.img, newFavorite.info, newFavorite.state, newFavorite.adddate];
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加收藏失败:', err.stack);
@@ -823,7 +823,7 @@ app.get('/api/checkFavorite', (req, res) => {
     user
   } = req.query;
 
-  const query = 'SELECT * FROM favorite WHERE user = ? AND book = ?';
+  const query = 'SELECT * FROM favorite WHERE user = ? AND name = ?';
   connection.query(query, [user, bookName], (err, results) => {
     if (err) {
       console.error('查询失败:', err.stack);
@@ -841,11 +841,11 @@ app.get('/api/checkFavorite', (req, res) => {
 });
 
 
-// 按用户名和图书删除收藏apu
+// 按用户名和图书删除收藏api
 app.post('/api/delFavorite/:username/:book', (req, res) => {
   const username = req.params.username;
   const book = req.params.book;
-  const query = 'DELETE FROM favorite WHERE user = ? AND book = ?';
+  const query = 'DELETE FROM favorite WHERE user = ? AND name = ?';
   connection.query(query, [username, book], (err) => {
     if (err) {
       return res.status(500).json({
@@ -861,7 +861,7 @@ app.post('/api/delFavorite/:username/:book', (req, res) => {
 // 管理员删除书籍时删除对应收藏书籍api
 app.post('/api/delFavoriteByBookName/:bookName', (req, res) => {
   const bookName = req.params.bookName;
-  const query = 'DELETE FROM favorite WHERE book = ?';
+  const query = 'DELETE FROM favorite WHERE name = ?';
 
   connection.query(query, [bookName], (err, results) => {
     if (err) {
@@ -872,6 +872,157 @@ app.post('/api/delFavoriteByBookName/:bookName', (req, res) => {
     }
     res.json({
       message: '删除包含该书名的收藏记录成功'
+    });
+  });
+});
+
+// 添加日志api
+app.post('/api/addLog', (req, res) => {
+  const newLog = req.body;
+  const query = 'INSERT INTO log (username, user_ip, type, info, credit_count, adddate) VALUES (?, ?, ?, ?, ?, ?)';
+  const values = [newLog.username, newLog.userIP, newLog.type, newLog.info, newLog.creditCount, newLog.adddate];
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('添加日志失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '日志添加成功',
+      logId: results.insertId
+    });
+  });
+});
+
+// 日志查询api
+app.get('/api/selectLog', (req, res) => {
+  const query = 'SELECT * FROM log';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        log: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到日志记录'
+      });
+    }
+  });
+});
+
+// 按用户名查询日志api
+app.get('/api/selectLog/:username', (req, res) => {
+  const username = req.params.username;
+  const query = 'SELECT * FROM log WHERE username = ?';
+  connection.query(query, [username], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '查询成功',
+      log: results
+    });
+  });
+});
+
+// 更新日志api
+app.post('/api/updateLog/:id', (req, res) => {
+  const logId = req.params.id;
+  let logData = req.body;
+  const query = 'UPDATE log SET ? WHERE id = ?';
+  connection.query(query, [logData, logId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '日志信息更新成功'
+    });
+  });
+});
+
+// 删除日志api
+app.post('/api/delLog/:id', (req, res) => {
+  const logId = req.params.id;
+  const query = 'DELETE FROM log WHERE id = ?';
+  connection.query(query, [logId], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '日志信息删除成功'
+    });
+  });
+});
+
+// 信誉分查询api
+app.get('/api/selectCredit', (req, res) => {
+  const query = 'SELECT * FROM credit';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        credit: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到日志记录'
+      });
+    }
+  });
+});
+
+// 添加信誉分记录api
+app.post('/api/addCredit', (req, res) => {
+  const newCredit = req.body;
+  const query = 'INSERT INTO credit (username, credit_count, info, adddate) VALUES (?, ?, ?, ?)';
+  const values = [newCredit.username, newCredit.creditCount, newCredit.info, newCredit.adddate];
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('添加日志失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '日志添加成功',
+      creditId: results.insertId
+    });
+  });
+});
+
+// 删除信誉分api
+app.post('/api/delCredit/:username', (req, res) => {
+  const username = req.params.username;
+  const query = 'DELETE FROM credit WHERE username = ?';
+  connection.query(query, [username], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '信誉分信息删除成功'
     });
   });
 });

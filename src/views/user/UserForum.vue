@@ -54,7 +54,7 @@
         <button @click="submitForm" class="submit-button">提交留言</button>
       </div>
       <div v-else>
-        <i class="ri-alert-line">请先登录再进行留言</i>
+        <i class="ri-alert-line">&nbsp;请先登录再进行留言</i>
       </div>
     </div>
 

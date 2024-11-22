@@ -26,7 +26,7 @@ import NormalModal from "@/components/NormalModal";
 import axios from "axios";
 
 export default {
-  name: "PublicDel",
+  name: "DelUser",
 
   props: {
     userId: {
@@ -42,6 +42,7 @@ export default {
 
   computed: {
     ...mapState("NormalModal", ["isDelUserModalVisible"]),
+    ...mapState("UserInfo", ["userInfo"]),
   },
 
   methods: {
@@ -50,6 +51,24 @@ export default {
 
     async handleDel() {
       try {
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+        // 添加注销日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "注销",
+          info: `用户${this.userInfo.username}于${adddate}注销`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 删除信誉分信息
+        await axios.post(
+          `http://localhost:3000/api/delCredit/${this.userInfo.username}`
+        );
         const user = {
           id: this.userId,
         };
@@ -57,7 +76,7 @@ export default {
           `http://localhost:3000/api/delUser/${this.userId}`,
           user
         );
-        this.alertMsg = "删除用户成功";
+        // this.alertMsg = "删除用户成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除用户失败";
@@ -66,6 +85,7 @@ export default {
         isAdmin: false,
         username: "",
         usertoken: "",
+        userIP: "",
       });
       if (this.$route.path !== "/home") {
         this.$router.push({ path: "/" });
