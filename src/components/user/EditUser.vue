@@ -25,6 +25,7 @@
         </tr>
       </tbody>
     </table>
+    <p>Tips：双击表单项进行编辑，按下回车键提交表单项</p>
     <button @click="submitForm">提交</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
@@ -119,7 +120,7 @@ export default {
     },
 
     updateUser() {
-      this.alertMsg = "更新表单数据成功";
+      // this.alertMsg = "更新表单数据成功";
     },
 
     async submitForm() {
@@ -169,13 +170,17 @@ th {
   background-color: #f2f2f2;
 }
 
+p {
+  margin-left: 8px;
+}
+
 button {
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-left: 40%;
-  margin-top: 20%;
+  margin-top: 10%;
   width: 20%;
   height: 12.5%;
   border: 1px solid var(--first-color);

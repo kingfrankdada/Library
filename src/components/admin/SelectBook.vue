@@ -109,6 +109,7 @@
       v-if="editMsg"
       :editMsg="editMsg"
       :editId="editId"
+      :editName="editName"
       @update="updateBook"
       @close="editMsg = null"
     ></EditTag>
@@ -148,6 +149,7 @@ export default {
       menuTitles: [],
       alertMsg: "",
       editMsg: "",
+      editName: "",
       editId: null,
       boxMsg: "暂无数据...",
       sortColumn: "",
@@ -284,6 +286,7 @@ export default {
     openEdit(book) {
       this.editMsg = book.info;
       this.editId = book.id;
+      this.editName = book.name;
     },
 
     sortBooks(column) {

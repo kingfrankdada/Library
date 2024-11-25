@@ -520,7 +520,8 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const timestamp = new Date().getTime();
-    const fileName = `${timestamp}_${file.originalname}`;
+    const ext = path.extname(file.originalname);
+    const fileName = `${timestamp}${ext}`; // 使用时间戳和扩展名生成文件名
     cb(null, fileName);
   }
 });
@@ -1080,6 +1081,156 @@ app.post('/proxy/qianfan', async (req, res) => {
   }
 });
 
+// 借阅api
+app.post('/api/borrow', (req, res) => {
+  const {
+    user_id,
+    book_id,
+    over_date,
+    days
+  } = req.body;
+  const start_date = new Date().toISOString().split('T')[0];
+  const adddate = new Date().toISOString();
+
+  const query = `
+    INSERT INTO record (user_id, book_id, start_date, over_date, days, adddate)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const values = [user_id, book_id, start_date, over_date, days, adddate];
+
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      console.error('借阅失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '借阅成功',
+      borrowId: results.insertId
+    });
+  });
+});
+
+// 归还api
+app.post('/api/return', (req, res) => {
+  const {
+    user_id,
+    book_id
+  } = req.body;
+  const return_date = new Date().toISOString().split('T')[0];
+
+  // 查询借阅记录
+  const selectQuery = `
+    SELECT * FROM record 
+    WHERE user_id = ? AND book_id = ? AND return_date IS NULL
+  `;
+  connection.query(selectQuery, [user_id, book_id], (err, results) => {
+    if (err) {
+      console.error('查询借阅记录失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({
+        error: '未找到未归还的借阅记录'
+      });
+    }
+
+    const {
+      start_date,
+      over_date
+    } = results[0];
+
+    // 计算实际借阅天数和逾期时间
+    const record_days = Math.ceil(
+      (new Date(return_date) - new Date(start_date)) / (1000 * 60 * 60 * 24)
+    );
+    const overtime = Math.max(
+      0,
+      Math.ceil((new Date(return_date) - new Date(over_date)) / (1000 * 60 * 60 * 24))
+    );
+
+    // 计算信誉分变化（逾期一天扣5分）
+    const credit_delta = 5 * overtime;
+
+    // 更新借阅记录
+    const updateQuery = `
+      UPDATE record 
+      SET return_date = ?, record_days = ?, overtime = ?, credit_delta = ?
+      WHERE user_id = ? AND book_id = ?
+    `;
+    connection.query(
+      updateQuery,
+      [return_date, record_days, overtime, credit_delta, user_id, book_id],
+      (updateErr) => {
+        if (updateErr) {
+          console.error('归还失败:', updateErr.stack);
+          return res.status(500).json({
+            error: '归还失败'
+          });
+        }
+        res.json({
+          message: '归还成功',
+          credit_delta
+        });
+      }
+    );
+  });
+});
+
+// 每日中午12点执行逾期检查
+schedule.scheduleJob('0 12 * * *', () => {
+  dailyOverCheck();
+});
+
+// 自动检查逾期方法
+function dailyOverCheck() {
+  console.log('开始逾期检查...');
+  const today = new Date().toISOString().split('T')[0];
+
+  const query = `
+    SELECT * FROM record 
+    WHERE return_date IS NULL AND over_date < ?
+  `;
+  connection.query(query, [today], (err, results) => {
+    if (err) {
+      console.error('查询逾期记录失败:', err.stack);
+      return;
+    }
+
+    results.forEach((record) => {
+      const {
+        id,
+        over_date
+      } = record;
+
+      // 计算逾期时间
+      const overtime = Math.ceil(
+        (new Date(today) - new Date(over_date)) / (1000 * 60 * 60 * 24)
+      );
+      const credit_delta = 5 * overtime;
+
+      // 更新借阅记录
+      const updateQuery = `
+        UPDATE record 
+        SET overtime = ?, credit_delta = ?
+        WHERE id = ?
+      `;
+      connection.query(updateQuery, [overtime, credit_delta, id], (updateErr) => {
+        if (updateErr) {
+          console.error(`更新记录失败（ID: ${id}）:`, updateErr.stack);
+        }
+      });
+    });
+
+    // 逾期检查完成，反馈更新几条记录
+    console.log('逾期检查完成,已更新' + results.length + '条记录');
+  });
+}
+
 app.listen(port, () => {
   console.log(`服务器正在监听 http://localhost:${port}`);
+  dailyOverCheck(); // 开发环境，启动时执行逾期检查
 });

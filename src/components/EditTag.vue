@@ -2,11 +2,11 @@
   <div class="edit" @click="handleClickOutside">
     <div class="edit-content">
       <span class="close-button" @click="close">&times;</span>
-      <strong class="edit-title">修改公告详情</strong>
+      <strong class="edit-title">修改详情</strong>
       <textarea
         v-model="editableInfo"
         class="edit-textarea"
-        placeholder="编辑公告内容"
+        placeholder="编辑内容"
       ></textarea>
       <button class="submit-button" @click="submitForm">提交</button>
     </div>
@@ -25,6 +25,10 @@ export default {
       type: Number,
       required: true,
     },
+    editName: {
+      type: String,
+      required: true,
+    }
   },
   data() {
     return {
@@ -46,6 +50,7 @@ export default {
       this.$emit("update", {
         id: this.editId,
         info: this.editableInfo,
+        name: this.editName
       });
       this.close();
     },

@@ -72,11 +72,13 @@
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
+      <button @click="firstPage">首页</button>
       <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
       <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
       <button @click="nextPage" :disabled="currentPage === totalPages">
         下一页
       </button>
+      <button @click="lastPage">尾页</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -254,19 +256,28 @@ export default {
       }
       return "sort-icon";
     },
+    // 首页
+    firstPage() {
+      this.currentPage = 1;
+    },
 
-    // 翻页：上一页
+    // 上一页
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
       }
     },
 
-    // 翻页：下一页
+    // 下一页
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
       }
+    },
+
+    // 尾页
+    lastPage() {
+      this.currentPage = this.totalPages;
     },
 
     // 当用户更改每页显示的条数时，重置当前页为第一页
