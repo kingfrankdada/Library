@@ -101,7 +101,7 @@ export default {
   text-align: center;
   align-items: center;
   justify-content: left;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: var(--font-medium);
 }
 
@@ -123,7 +123,7 @@ export default {
   width: 90%;
   left: 5%;
   align-items: center;
-  font-size: 17.5px;
+  font-size: 14px;
   color: var(--border-color);
   font-weight: var(--font-regular);
   padding-left: 5%;

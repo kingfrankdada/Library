@@ -1,7 +1,7 @@
 <template>
   <div class="user-forum">
     <div class="forum-box">
-      <div class="forum-title">欢迎来到用户留言板！</div>
+      <!-- <div class="forum-title">欢迎来到用户留言板！</div> -->
       <div class="message-list">
         <div v-if="messages.length > 0">
           <div

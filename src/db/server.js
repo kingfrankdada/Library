@@ -435,6 +435,30 @@ app.get('/api/selectBook', (req, res) => {
   });
 });
 
+// 按书名或作者模糊查询图书api
+app.get('/api/selectBook/:name', (req, res) => {
+  const name = req.params.name;
+  const query = 'SELECT * FROM book WHERE name LIKE ? OR author LIKE ?';
+  connection.query(query, [`%${name}%`, `%${name}%`], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    if (results.length > 0) {
+      res.status(200).json({
+        message: '查询成功',
+        books: results
+      });
+    } else {
+      res.status(404).json({
+        error: '未找到图书记录'
+      });
+    }
+  });
+});
+
 // 更新图书api
 app.post('/api/updateBook/:id', (req, res) => {
   const bookId = req.params.id;
@@ -1025,6 +1049,35 @@ app.post('/api/delCredit/:username', (req, res) => {
       message: '信誉分信息删除成功'
     });
   });
+});
+
+
+// 千帆NPL大模型路由接口
+app.post('/proxy/qianfan', async (req, res) => {
+  const {
+    client_id,
+    client_secret
+  } = req.body;
+
+  try {
+    const response = await axios.post(
+      'https://aip.baidubce.com/oauth/2.0/token',
+      null, {
+        params: {
+          grant_type: 'client_credentials',
+          client_id,
+          client_secret,
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('代理请求失败:', error.message);
+    res.status(500).json({
+      error: '服务器代理请求失败'
+    });
+  }
 });
 
 app.listen(port, () => {

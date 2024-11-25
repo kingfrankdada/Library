@@ -6,7 +6,7 @@
         <!-- 左侧封面图片 -->
         <div class="book-image">
           <img
-            :src="
+            v-lazy="
               book.img
                 ? `/assets/img/${book.img}`
                 : '/assets/img/image-add-fill.png'
@@ -320,6 +320,7 @@ export default {
   border-top: 1px solid #ddd;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+  overflow-y: auto;
 }
 
 .book-actions {
