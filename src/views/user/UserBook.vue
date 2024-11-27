@@ -185,11 +185,11 @@ export default {
   },
 
   watch: {
-    // "$route.query.search"(newSearch) {
-    //   this.searchQuery = newSearch || "";
-    //   this.currentPage = 1;
-    //   this.updateAlertMessage();
-    // },
+    "$route.query.search"(newSearch) {
+      this.searchQuery = newSearch || "";
+      this.currentPage = 1;
+      // this.updateAlertMessage();
+    },
   },
 
   mounted() {
