@@ -61,6 +61,7 @@
       :book="selectedBook"
       @close="selectedBook = null"
       @reSelect="selectFavorite"
+      :btnMsg="'在图书中心查看'"
     ></BookBox>
 
     <!-- 左侧导航栏 -->

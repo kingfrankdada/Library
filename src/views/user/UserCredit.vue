@@ -30,7 +30,9 @@
       </thead>
       <tbody>
         <tr v-for="(credit, index) in paginatedCredits" :key="index">
-          <td :title="credit.adddate">{{ credit.adddate }}</td>
+          <td :title="formatDate(credit.adddate)">
+            {{ formatDate(credit.adddate) }}
+          </td>
           <td :style="creditIconColor(credit)" :title="credit.credit_count">
             {{ credit.credit_count }}
           </td>
@@ -218,6 +220,15 @@ export default {
       this.currentPage = 1;
       this.selectCredits();
     },
+
+    // 日期格式化
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    },
   },
 };
 </script>
@@ -226,18 +237,14 @@ export default {
 .credit-credit {
   height: 100%;
   width: 85%;
-  overflow-y: scroll;
+  overflow-y: auto;
   background: var(--background-color);
+  padding: 20px;
 }
 
 .search-box {
-  position: sticky;
-  top: 0;
-  background-color: var(--white-color);
   display: flex;
   justify-content: center;
-  border-bottom: 1px solid #ddd;
-  z-index: 1;
   padding: 10px;
 }
 
@@ -251,22 +258,28 @@ export default {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+tr {
+  height: 50px;
 }
 
 th,
 td {
   padding: 8px;
   text-align: left;
+  border: 1px solid #ddd;
   max-width: 200px;
-  min-width: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 th {
-  background-color: #ccc;
+  background-color: var(--first-color);
+  color: var(--white-color);
   cursor: pointer;
 }
 
@@ -276,7 +289,7 @@ th {
 
 button {
   cursor: pointer;
-  width: 30px;
+  width: 75%;
   height: 30px;
   border: 1px solid var(--first-color);
   border-radius: 5px;

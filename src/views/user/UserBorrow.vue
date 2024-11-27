@@ -1,18 +1,372 @@
 <template>
-  <div class="user-borrow">用户借阅</div>
+  <div class="user-borrow">
+    <!-- 搜索框 -->
+    <div class="search-box">
+      <input
+        type="text"
+        v-model="searchText"
+        placeholder="搜索借阅图书名称或借阅日期"
+      />
+    </div>
+
+    <!-- 借阅记录表格 -->
+    <table v-if="filteredRecords.length > 0">
+      <thead>
+        <tr>
+          <th @click="sortRecords('start_date')">
+            借出日期
+            <span :class="getSortIcon('start_date')"></span>
+          </th>
+          <th @click="sortRecords('over_date')">
+            预计归还日期
+            <span :class="getSortIcon('over_date')"></span>
+          </th>
+          <th @click="sortRecords('bookname')">
+            书名
+            <span :class="getSortIcon('bookname')"></span>
+          </th>
+          <th @click="sortRecords('return_date')">
+            实际归还日期
+            <span :class="getSortIcon('return_date')"></span>
+          </th>
+          <th @click="sortRecords('record_days')">
+            实际借阅天数
+            <span :class="getSortIcon('record_days')"></span>
+          </th>
+          <th @click="sortRecords('credit_delta')">
+            信誉分变化
+            <span :class="getSortIcon('credit_delta')"></span>
+          </th>
+          <th @click="sortRecords('state')">
+            状态
+            <span :class="getSortIcon('state')"></span>
+          </th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="record in paginatedRecords" :key="record.id">
+          <td>{{ record.start_date }}</td>
+          <td>{{ record.over_date }}</td>
+          <td>{{ record.bookname }}</td>
+          <td>{{ record.return_date || "借阅中" }}</td>
+          <td>{{ record.record_days || "--" }}</td>
+          <td :style="record.credit_delta > 0 ? 'color: red' : 'color: green'">
+            -{{ record.credit_delta || "-" }}
+          </td>
+          <td
+            :style="
+              record.state === 0
+                ? 'color: green'
+                : record.state === 1
+                ? 'color: orange'
+                : 'color: red'
+            "
+          >
+            {{
+              record.state === 0
+                ? "已归还"
+                : record.state === 1
+                ? "未归还"
+                : "已逾期"
+            }}
+          </td>
+
+          <td>
+            <button
+              v-if="!record.return_date"
+              @click="handleReturn(record.bookname)"
+            >
+              归还
+            </button>
+            <span v-else>已归还</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p v-else>{{ boxMsg }}</p>
+
+    <!-- 分页控制 -->
+    <div class="pagination">
+      <span>每页显示：</span>
+      <select v-model="pageSize" @change="handlePageSizeChange">
+        <option :value="10">10</option>
+        <option :value="20">20</option>
+        <option :value="50">50</option>
+      </select>
+      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
+      <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        下一页
+      </button>
+    </div>
+
+    <!-- 自定义弹窗捕获 -->
+    <AlertBox
+      v-if="alertMsg"
+      :message="alertMsg"
+      @close="alertMsg = null"
+    ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
+  </div>
 </template>
 
 <script>
-export default {};
+import axios from "axios";
+import AlertBox from "@/components/AlertBox.vue";
+import MessageBox from "@/components/MessageBox.vue";
+import { mapState } from "vuex";
+
+export default {
+  name: "UserBorrow",
+  components: {
+    AlertBox,
+    MessageBox,
+  },
+  data() {
+    return {
+      records: [], // 用户的借阅记录
+      searchText: "",
+      alertMsg: "",
+      message: "",
+      boxMsg: "暂无借阅记录",
+      sortColumn: null,
+      sortOrder: "asc",
+      pageSize: 10,
+      currentPage: 1,
+    };
+  },
+  computed: {
+    ...mapState("UserInfo", ["userInfo"]),
+
+    // 筛选后的借阅记录
+    filteredRecords() {
+      const filter = this.searchText.toLowerCase();
+      return this.records.filter(
+        (record) =>
+          record.bookname.toLowerCase().includes(filter) ||
+          record.start_date.includes(filter) ||
+          record.over_date.includes(filter)
+      );
+    },
+
+    // 排序后的借阅记录
+    sortedRecords() {
+      const sorted = [...this.filteredRecords];
+      if (this.sortColumn) {
+        sorted.sort((a, b) => {
+          const aVal = a[this.sortColumn];
+          const bVal = b[this.sortColumn];
+          if (this.sortOrder === "asc") {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
+      return sorted;
+    },
+
+    // 当前页的借阅记录
+    paginatedRecords() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.sortedRecords.slice(start, end);
+    },
+
+    // 总页数
+    totalPages() {
+      return Math.ceil(this.filteredRecords.length / this.pageSize);
+    },
+  },
+  mounted() {
+    this.fetchBorrowRecords();
+  },
+  methods: {
+    // 获取用户借阅记录
+    async fetchBorrowRecords() {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/selectRecord/${this.userInfo.username}`
+        );
+        this.records = response.data.record || [];
+        if (this.records.length === 0) {
+          this.boxMsg = "未找到借阅记录";
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取借阅记录失败";
+      }
+    },
+
+    // 排序
+    sortRecords(column) {
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        this.sortColumn = column;
+        this.sortOrder = "asc";
+      }
+    },
+
+    // 获取排序图标
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
+      }
+      return "sort-icon";
+    },
+
+    // 归还图书
+    async handleReturn(bookname) {
+      if (!this.userInfo.usertoken) {
+        this.alertMsg = "请先登录";
+        return;
+      }
+      try {
+        await axios.post("http://localhost:3000/api/return", {
+          username: this.userInfo.username,
+          bookname,
+        });
+        this.message = "归还成功，感谢您的支持";
+        this.fetchBorrowRecords();
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "归还失败，请稍后再试";
+      }
+    },
+
+    // 翻页
+    prevPage() {
+      if (this.currentPage > 1) this.currentPage--;
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) this.currentPage++;
+    },
+
+    // 更改每页条数时重置当前页
+    handlePageSizeChange() {
+      this.currentPage = 1;
+    },
+  },
+};
 </script>
 
 <style scoped>
 .user-borrow {
   height: 100%;
   width: 85%;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  overflow-y: scroll;
-  background: var(--white-color);
+  background: var(--background-color);
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.search-box input {
+  width: 60%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+tr {
+  height: 50px;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+  max-width: 200px;
+  min-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+th {
+  background-color: var(--first-color);
+  color: var(--white-color);
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+  width: 75%;
+  height: 30px;
+  border: 1px solid var(--first-color);
+  border-radius: 5px;
+  background-color: var(--white-color);
+  color: var(--first-color);
+  font-weight: var(--font-medium);
+}
+
+button:hover {
+  background-color: var(--first-color);
+  color: var(--white-color);
+  transition: 0.4s;
+}
+
+.sort-icon {
+  margin-left: 5px;
+}
+.sort-asc-icon::after {
+  content: "▲";
+}
+.sort-desc-icon::after {
+  content: "▼";
+}
+
+.pagination {
+  position: sticky;
+  height: 12.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 40px;
+  gap: 20px;
+  z-index: 1;
+  background: var(--background-color);
+}
+
+.pagination span {
+  margin-right: 10px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  width: 80px;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+.pagination select {
+  width: 100px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

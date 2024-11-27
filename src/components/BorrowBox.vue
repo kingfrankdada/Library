@@ -1,8 +1,8 @@
 <template>
-  <div class="book" @click="handleClickOutside">
-    <div class="book-content">
+  <div class="borrow" @click="handleClickOutside">
+    <div class="borrow-content">
       <span class="close-button" @click="close">&times;</span>
-      <div class="book-form">
+      <div class="borrow-form">
         <!-- 左侧封面图片 -->
         <div class="book-image">
           <img
@@ -33,18 +33,37 @@
         &nbsp;&nbsp;&nbsp;&nbsp;{{ book.info }}
       </div>
 
-      <!-- 操作按钮 -->
-      <div class="book-actions">
-        <button class="action-button borrow-button" @click="actionButton">
-          {{ btnMsg }}
-        </button>
-        <button
-          class="action-button favorite-button"
-          @click="toggleFavorite"
-          :class="{ favorited: isFavorited }"
-        >
-          {{ isFavorited ? "取消收藏" : "收藏" }}
-        </button>
+      <!-- 借阅表单 -->
+      <div class="borrow-actions">
+        <div class="borrow-inputs">
+          <div>
+            <label for="borrow-days">预计借阅天数:</label>
+            <input
+              id="borrow-days"
+              type="number"
+              v-model="borrowDays"
+              placeholder="输入天数"
+              min="1"
+            />
+          </div>
+          <div>
+            <label for="over-date">预计归还日期:</label>
+            <input
+              id="over-date"
+              type="date"
+              v-model="overDate"
+              :min="minOverDate"
+            />
+          </div>
+        </div>
+        <div class="buttons">
+          <button class="action-button borrow-button" @click="handleBorrow">
+            确认借阅
+          </button>
+          <button class="action-button cancel-button" @click="handleCancel">
+            取消
+          </button>
+        </div>
       </div>
     </div>
     <!-- 自定义弹窗捕获 -->
@@ -73,6 +92,7 @@ export default {
     book: {
       type: Object,
       default: () => ({
+        id: null,
         name: "未知书籍",
         author: "未知作者",
         menu: "未知分类",
@@ -85,29 +105,17 @@ export default {
         adddate: "未知日期",
       }),
     },
-    // 是否为借阅按钮
-    btnMsg: {
-      type: String,
-      default: "借阅",
-    },
   },
 
   data() {
     return {
       alertMsg: "",
       message: "",
-      isFavorited: false,
-      users: [
-        {
-          id: 0,
-          username: "",
-          email: "",
-          password: "",
-          credit_count: 0,
-          state: 0,
-          adddate: "",
-        },
-      ],
+      borrowDays: 1, // 默认借阅一天
+      overDate: new Date(new Date().setDate(new Date().getDate() + 1))
+        .toISOString()
+        .split("T")[0], // 默认日期为明天
+      minOverDate: new Date().toISOString().split("T")[0], // 最小日期为今天
     };
   },
 
@@ -120,136 +128,82 @@ export default {
     MessageBox,
   },
 
-  mounted() {
-    this.checkIfFavorited();
-    this.selectUsersByUserName();
+  watch: {
+    // 当借阅天数发生变化时更新归还日期
+    borrowDays(newDays) {
+      if (newDays && newDays > 0) {
+        const newDate = new Date();
+        newDate.setDate(newDate.getDate() + parseInt(newDays, 10));
+        this.overDate = newDate.toISOString().split("T")[0];
+      }
+    },
+
+    // 当归还日期发生变化时更新借阅天数
+    overDate(newDate) {
+      if (newDate) {
+        const startDate = new Date(this.minOverDate);
+        const endDate = new Date(newDate);
+        const diffDays = Math.ceil(
+          (endDate - startDate) / (1000 * 60 * 60 * 24)
+        );
+        this.borrowDays = diffDays > 0 ? diffDays : 1;
+      }
+    },
   },
 
   methods: {
     close() {
       this.$emit("close");
     },
+
     handleClickOutside(event) {
-      if (event.target.classList.contains("book")) {
+      if (event.target.classList.contains("borrow")) {
         this.close();
       }
     },
 
-    // 查询当前用户信息
-    async selectUsersByUserName() {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectUser/${this.userInfo.username}`
-        );
-        const users = response.data.users;
-        this.users =
-          users.map((user) => ({
-            ...user,
-          })) || {};
-        if (this.users.length === 0) {
-          this.alertMsg = "未找到任何用户记录";
-        }
-      } catch (error) {
-        console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取用户数据失败";
+    // 借阅逻辑
+    async handleBorrow() {
+      if (!this.userInfo.usertoken) {
+        this.alertMsg = "请先登录";
+        return;
       }
-    },
 
-    // 检查是否已收藏
-    async checkIfFavorited() {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/checkFavorite`,
-          {
-            params: { bookName: this.book.name, user: this.userInfo.username },
-          }
-        );
-        this.isFavorited = response.data.isFavorited;
-      } catch (error) {
-        console.error(error.response?.data?.error || error.message);
+      if (!this.borrowDays || !this.overDate) {
+        this.alertMsg = "请填写预计借阅天数和归还日期";
+        return;
       }
-    },
 
-    // 收藏/取消收藏图书
-    async toggleFavorite() {
-      if (this.userInfo.usertoken) {
-        if (this.isFavorited) {
-          await this.cancelFavorite();
-        } else {
-          await this.addFavorite();
-        }
-        this.isFavorited = !this.isFavorited;
-      } else this.alertMsg = "请先登录";
-    },
-
-    async addFavorite() {
-      const newFavorite = {
-        name: this.book.name,
-        user: this.userInfo.username,
-        author: this.book.author,
-        menu: this.book.menu,
-        price: this.book.price,
-        press: this.book.press,
-        num: this.book.num,
-        img: this.book.img,
-        info: this.book.info,
-        state: this.book.state,
-        adddate: this.book.adddate,
-      };
-      try {
-        await axios.post("http://localhost:3000/api/addFavorite", newFavorite);
-        this.message = "收藏成功，请前往用户中心-我的收藏查看";
-      } catch (error) {
-        console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "收藏添加失败";
+      if (this.book.num <= 0) {
+        this.alertMsg = "库存不足，无法借阅";
+        return;
       }
-    },
 
-    async cancelFavorite() {
       try {
-        await axios.post(
-          `http://localhost:3000/api/delFavorite/${this.userInfo.username}/${this.book.name}`
-        );
-        // this.alertMsg = "取消收藏成功，请前往用户中心-我的收藏查看";
+        await axios.post("http://localhost:3000/api/borrow", {
+          username: this.userInfo.username,
+          bookname: this.book.name,
+          over_date: this.overDate,
+          days: this.borrowDays,
+        });
+
+        this.message = `借阅成功: ${this.book.name}`;
         this.$emit("reSelect");
-        this.$emit("close");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "取消收藏失败";
+        this.alertMsg = "借阅失败，请稍后再试";
       }
     },
 
-    // 操作按钮
-    actionButton() {
-      switch (this.btnMsg) {
-        case "借阅":
-          console.log("借阅");
-          if (this.userInfo.usertoken) {
-            if (this.users[0].credit_count >= 25) {
-              // 借阅逻辑
-              this.$emit("borrowBook", this.book);
-              console.log("借阅成功", this.book);
-              this.$emit("close");
-            } else this.alertMsg = "用户信誉分不足，操作失败";
-          } else this.alertMsg = "请先登录";
-          break;
-        case "在图书中心查看":
-          this.$router.push({
-            path: "/home/book",
-            query: { search: this.book.name.trim() },
-          });
-          break;
-        case "归还":
-          this.$emit("close");
-          break;
-      }
+    handleCancel() {
+      this.$emit("close");
     },
   },
 };
 </script>
 
 <style scoped>
-.book {
+.borrow {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -264,7 +218,7 @@ export default {
   animation: fade-in 0.5s;
 }
 
-.book-content {
+.borrow-content {
   width: 60%;
   max-height: 80%;
   background-color: var(--white-color);
@@ -278,7 +232,7 @@ export default {
   overflow-y: auto;
 }
 
-.book-form {
+.borrow-form {
   display: flex;
   gap: 20px;
   width: 100%;
@@ -325,11 +279,37 @@ export default {
   overflow-y: auto;
 }
 
-.book-actions {
+.borrow-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.borrow-inputs {
+  height: 50px;
+  display: flex;
+  gap: 10px;
+}
+
+.borrow-inputs label {
+  font-size: 14px;
+  color: #333;
+  font-weight: bold;
+}
+
+.borrow-inputs input {
+  padding: 10px;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.buttons {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  margin-top: 20px;
+  gap: 20px;
 }
 
 .action-button {
@@ -354,26 +334,14 @@ export default {
   transition: 0.4s;
 }
 
-.favorite-button {
-  color: gold;
-  border: 1px solid gold;
+.cancel-button {
+  color: red;
+  border: 1px solid red;
   background-color: var(--white-color);
 }
 
-.favorite-button.favorited {
-  color: gray;
-  border-color: gray;
-  border: 1px solid gray;
-}
-
-.favorite-button.favorited:hover {
-  background-color: gray;
-  color: var(--white-color);
-  transition: 0.4s;
-}
-
-.favorite-button:hover {
-  background-color: gold;
+.cancel-button:hover {
+  background-color: red;
   color: var(--white-color);
   transition: 0.4s;
 }

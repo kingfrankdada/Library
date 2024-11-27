@@ -60,7 +60,16 @@
       v-if="selectedBook"
       :book="selectedBook"
       @close="selectedBook = null"
+      @borrowBook="borrowBook"
     ></BookBox>
+
+    <!-- 图书借阅模态框 -->
+    <BorrowBox
+      v-if="selectedBorrowBook"
+      :book="selectedBorrowBook"
+      @reSelect="selectBooks"
+      @close="selectedBorrowBook = null"
+    ></BorrowBox>
 
     <!-- 左侧导航栏 -->
     <UserLeftGuide
@@ -91,6 +100,7 @@ import { mapState } from "vuex";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import UserLeftGuide from "@/components/user/UserLeftGuide.vue";
+import BorrowBox from "@/components/BorrowBox.vue";
 import BookBox from "@/components/BookBox.vue";
 
 export default {
@@ -100,6 +110,7 @@ export default {
     AlertBox,
     MessageBox,
     UserLeftGuide,
+    BorrowBox,
     BookBox,
   },
 
@@ -110,6 +121,9 @@ export default {
       selectedCategory: "",
       selectedBook: null, // 选择要展示的图书
       searchQuery: "", // 搜索框的值
+
+      selectedBorrowBook: null, // 选择要借阅的图书
+
       currentPage: 1, // 默认展示第一页
       pageSize: 12, // 每页展示12本书 6x2
       alertMsg: "",
@@ -277,6 +291,11 @@ export default {
     // 选择图书，传递数据给 BookBox 组件
     openBook(book) {
       this.selectedBook = book;
+    },
+
+    // 借阅图书，传递数据给 BorrowBox 组件
+    borrowBook(book) {
+      this.selectedBorrowBook = book;
     },
 
     // 更新搜索的反馈
