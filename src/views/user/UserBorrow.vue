@@ -121,6 +121,7 @@ import axios from "axios";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import { mapState } from "vuex";
+import { eventBus } from "@/utils/eventBus";
 
 export default {
   name: "UserBorrow",
@@ -144,7 +145,6 @@ export default {
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
 
-    // 筛选后的借阅记录
     filteredRecords() {
       const filter = this.searchText.toLowerCase();
       return this.records.filter(
@@ -155,7 +155,6 @@ export default {
       );
     },
 
-    // 排序后的借阅记录
     sortedRecords() {
       const sorted = [...this.filteredRecords];
       if (this.sortColumn) {
@@ -204,7 +203,6 @@ export default {
       }
     },
 
-    // 排序
     sortRecords(column) {
       if (this.sortColumn === column) {
         this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
@@ -214,7 +212,6 @@ export default {
       }
     },
 
-    // 获取排序图标
     getSortIcon(column) {
       if (this.sortColumn === column) {
         return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
@@ -233,8 +230,26 @@ export default {
           username: this.userInfo.username,
           bookname,
         });
+
+        // 添加归还日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "归还",
+          info: `用户${this.userInfo.username}于${adddate}归还图书${bookname}`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
         this.message = "归还成功，感谢您的支持";
         this.fetchBorrowRecords();
+        // 刷新eharts
+        eventBus.$emit("borrow-returned");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "归还失败，请稍后再试";

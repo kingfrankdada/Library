@@ -187,6 +187,10 @@ export default {
           return "ri-add-circle-line";
         case "删除":
           return "ri-delete-bin-5-line";
+        case "借阅":
+          return "ri-book-open-line";
+        case "归还":
+          return "ri-book-line";
         default:
           return null;
       }
@@ -210,6 +214,10 @@ export default {
           return "color: limegreen;";
         case "删除":
           return "color: #ff0000;";
+        case "借阅":
+          return "color: #964B00;";
+        case "归还":
+          return "color: goldenrod;";
         default:
           return null;
       }

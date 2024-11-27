@@ -185,18 +185,18 @@ export default {
   },
 
   watch: {
-    "$route.query.search"(newSearch) {
-      this.searchQuery = newSearch || "";
-      this.currentPage = 1;
-      this.updateAlertMessage();
-    },
+    // "$route.query.search"(newSearch) {
+    //   this.searchQuery = newSearch || "";
+    //   this.currentPage = 1;
+    //   this.updateAlertMessage();
+    // },
   },
 
   mounted() {
     this.selectBooks();
     this.selectMenus();
     this.searchQuery = this.$route.query.search || "";
-    this.updateAlertMessage(); // 初始页面加载时，更新搜索结果信息
+    // this.updateAlertMessage(); // 初始页面加载时，更新搜索结果信息
   },
 
   methods: {
@@ -224,7 +224,6 @@ export default {
         if (this.books.length === 0) {
           this.boxMsg = "未找到任何图书记录";
         }
-        this.updateAlertMessage(); // 更新搜索反馈信息
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.boxMsg = "获取图书数据失败";

@@ -187,11 +187,32 @@ export default {
           days: this.borrowDays,
         });
 
+        // 添加借阅日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "借阅",
+          info: `用户${this.userInfo.username}于${adddate}借阅图书：${this.book.name}`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
         this.message = `借阅成功: ${this.book.name}`;
         this.$emit("reSelect");
       } catch (error) {
-        console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "借阅失败，请稍后再试";
+        const errorMessage = error.response?.data?.error || error.message;
+        console.error(errorMessage);
+
+        if (error.response?.status === 400) {
+          this.alertMsg = errorMessage; // 已借阅
+        } else {
+          this.alertMsg = "借阅失败，请稍后再试";
+        }
       }
     },
 

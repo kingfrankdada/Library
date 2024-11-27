@@ -115,6 +115,7 @@ import EditUser from "@/components/user/EditUser.vue";
 import EditPassword from "@/components/user/EditPassword.vue";
 import DelUser from "@/components/user/DelUser.vue";
 import { mapState, mapMutations } from "vuex";
+import { eventBus } from "@/utils/eventBus";
 import UserLeftGuide from "@/components/user/UserLeftGuide.vue";
 import axios from "axios";
 import * as echarts from "echarts";
@@ -193,6 +194,8 @@ export default {
       this.$router.push("/home");
     }
     window.addEventListener("resize", this.resizeCharts);
+    // 归还图书，刷新echarts
+    eventBus.$on("borrow-returned", this.handleBorrowReturned);
     this.selectUsersByUserName().then(() => {
       this.initCreditChart();
       this.setEditUserModalVisible(false);
@@ -239,6 +242,16 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "获取用户数据失败";
+      }
+    },
+
+    // 刷新信誉分图表
+    async handleBorrowReturned() {
+      try {
+        // 更新用户信息
+        await this.selectUsersByUserName();
+      } catch (error) {
+        console.error("更新用户信息或图表失败:", error.message);
       }
     },
 
