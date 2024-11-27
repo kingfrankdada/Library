@@ -46,11 +46,13 @@
       </thead>
       <tbody>
         <tr v-for="record in paginatedRecords" :key="record.id">
-          <td>{{ record.start_date }}</td>
-          <td>{{ record.over_date }}</td>
-          <td>{{ record.bookname }}</td>
-          <td>{{ record.return_date || "借阅中" }}</td>
-          <td>{{ record.record_days || "--" }}</td>
+          <td :title="record.start_date">{{ record.start_date }}</td>
+          <td :title="record.over_date">{{ record.over_date }}</td>
+          <td :title="record.bookname">{{ record.bookname }}</td>
+          <td :title="record.return_date || '借阅中'">
+            {{ record.return_date || "借阅中" }}
+          </td>
+          <td :title="record.record_days">{{ record.record_days || "--" }}</td>
           <td :style="record.credit_delta > 0 ? 'color: red' : 'color: green'">
             -{{ record.credit_delta || "-" }}
           </td>
