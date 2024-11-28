@@ -66,6 +66,7 @@ import SelectMenu from "@/components/admin/SelectMenu.vue";
 import AddMenu from "@/components/admin/AddMenu.vue";
 
 export default {
+  name: "AdminMenu",
   components: {
     NormalViewBox,
     NormalModal,

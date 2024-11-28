@@ -65,6 +65,7 @@ import SelectBook from "@/components/admin/SelectBook.vue";
 import AddBook from "@/components/admin/AddBook.vue";
 
 export default {
+  name: "AdminBook",
   components: {
     NormalViewBox,
     NormalModal,

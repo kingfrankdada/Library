@@ -66,6 +66,7 @@ import SelectUser from "@/components/admin/SelectUser.vue";
 import AddUser from "@/components/admin/AddUser.vue";
 
 export default {
+  name: "AdminUser",
   components: {
     NormalViewBox,
     NormalModal,

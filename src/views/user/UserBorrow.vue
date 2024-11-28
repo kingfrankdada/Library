@@ -10,34 +10,34 @@
     </div>
 
     <!-- 借阅记录表格 -->
-    <table v-if="filteredRecords.length > 0">
+    <table v-if="filteredBorrows.length > 0">
       <thead>
         <tr>
-          <th @click="sortRecords('start_date')">
+          <th @click="sortBorrows('start_date')">
             借出日期
             <span :class="getSortIcon('start_date')"></span>
           </th>
-          <th @click="sortRecords('over_date')">
+          <th @click="sortBorrows('over_date')">
             预计归还日期
             <span :class="getSortIcon('over_date')"></span>
           </th>
-          <th @click="sortRecords('bookname')">
+          <th @click="sortBorrows('bookname')">
             书名
             <span :class="getSortIcon('bookname')"></span>
           </th>
-          <th @click="sortRecords('return_date')">
+          <th @click="sortBorrows('return_date')">
             实际归还日期
             <span :class="getSortIcon('return_date')"></span>
           </th>
-          <th @click="sortRecords('record_days')">
+          <th @click="sortBorrows('record_days')">
             实际借阅天数
             <span :class="getSortIcon('record_days')"></span>
           </th>
-          <th @click="sortRecords('credit_delta')">
+          <th @click="sortBorrows('credit_delta')">
             信誉分变化
             <span :class="getSortIcon('credit_delta')"></span>
           </th>
-          <th @click="sortRecords('state')">
+          <th @click="sortBorrows('state')">
             状态
             <span :class="getSortIcon('state')"></span>
           </th>
@@ -45,7 +45,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="record in paginatedRecords" :key="record.id">
+        <tr v-for="record in paginatedBorrows" :key="record.id">
           <td :title="record.start_date">{{ record.start_date }}</td>
           <td :title="record.over_date">{{ record.over_date }}</td>
           <td :title="record.bookname">{{ record.bookname }}</td>
@@ -147,7 +147,7 @@ export default {
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
 
-    filteredRecords() {
+    filteredBorrows() {
       const filter = this.searchText.toLowerCase();
       return this.records.filter(
         (record) =>
@@ -157,8 +157,8 @@ export default {
       );
     },
 
-    sortedRecords() {
-      const sorted = [...this.filteredRecords];
+    sortedBorrows() {
+      const sorted = [...this.filteredBorrows];
       if (this.sortColumn) {
         sorted.sort((a, b) => {
           const aVal = a[this.sortColumn];
@@ -174,26 +174,26 @@ export default {
     },
 
     // 当前页的借阅记录
-    paginatedRecords() {
+    paginatedBorrows() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
-      return this.sortedRecords.slice(start, end);
+      return this.sortedBorrows.slice(start, end);
     },
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredRecords.length / this.pageSize);
+      return Math.ceil(this.filteredBorrows.length / this.pageSize);
     },
   },
   mounted() {
-    this.fetchBorrowRecords();
+    this.fetchBorrowBorrows();
   },
   methods: {
     // 获取用户借阅记录
-    async fetchBorrowRecords() {
+    async fetchBorrowBorrows() {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/selectRecord/${this.userInfo.username}`
+          `http://localhost:3000/api/selectBorrow/${this.userInfo.username}`
         );
         this.records = response.data.record || [];
         if (this.records.length === 0) {
@@ -205,7 +205,7 @@ export default {
       }
     },
 
-    sortRecords(column) {
+    sortBorrows(column) {
       if (this.sortColumn === column) {
         this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
       } else {
@@ -249,7 +249,7 @@ export default {
         await axios.post("http://localhost:3000/api/addLog", newLog);
 
         this.message = "归还成功，感谢您的支持";
-        this.fetchBorrowRecords();
+        this.fetchBorrowBorrows();
         // 刷新eharts
         eventBus.$emit("borrow-returned");
       } catch (error) {
@@ -317,6 +317,7 @@ td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
 }
 
 th {

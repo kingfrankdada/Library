@@ -66,6 +66,7 @@ import SelectNotice from "@/components/admin/SelectNotice.vue";
 import AddNotice from "@/components/admin/AddNotice.vue";
 
 export default {
+  name: "AdminNotice",
   components: {
     NormalViewBox,
     NormalModal,

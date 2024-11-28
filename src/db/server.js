@@ -1058,10 +1058,10 @@ app.post('/api/borrow', (req, res) => {
   const {
     username,
     bookname,
+    start_date,
     over_date,
     days
   } = req.body;
-  const start_date = new Date().toISOString().split('T')[0];
   const adddate = new Date().toISOString().split('T')[0];
   const state = 1;
 
@@ -1080,7 +1080,7 @@ app.post('/api/borrow', (req, res) => {
 
     if (results.length > 0) {
       return res.status(400).json({
-        error: '您已借阅该书，请先归还后再借阅',
+        error: '已借阅该书，请先归还后再借阅',
       });
     }
 
@@ -1115,7 +1115,7 @@ app.post('/api/borrow', (req, res) => {
 });
 
 // 按用户名查询借阅记录api
-app.get('/api/selectRecord/:username', (req, res) => {
+app.get('/api/selectBorrow/:username', (req, res) => {
   const username = req.params.username;
   const query = 'SELECT * FROM record WHERE username = ?';
   connection.query(query, [username], (err, results) => {
@@ -1128,6 +1128,56 @@ app.get('/api/selectRecord/:username', (req, res) => {
     res.json({
       message: '查询成功',
       record: results
+    });
+  });
+});
+
+// 查询所有借阅记录api
+app.get('/api/selectBorrow', (req, res) => {
+  const query = 'SELECT * FROM record';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '查询成功',
+      record: results
+    });
+  });
+});
+
+// 更新借阅记录api
+app.post('/api/updateBorrow/:id', (req, res) => {
+  const recordId = req.params.id;
+  let recordData = req.body;
+  const query = 'UPDATE record SET ? WHERE id = ?';
+  connection.query(query, [recordData, recordId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '借阅信息更新成功'
+    });
+  });
+});
+
+// 删除借阅记录api
+app.post('/api/delBorrow/:id', (req, res) => {
+  const recordId = req.params.id;
+  const query = 'DELETE FROM record WHERE id = ?';
+  connection.query(query, [recordId], (err) => {
+    if (err) {
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+    res.json({
+      message: '借阅信息删除成功'
     });
   });
 });
@@ -1285,13 +1335,13 @@ function dailyOverCheck() {
       const updated_credit = Math.max(0, restored_credit - new_credit_delta);
 
       // 更新借阅记录
-      const updateRecordQuery = `
+      const updateBorrowQuery = `
         UPDATE record 
         SET overtime = ?, credit_delta = ?, last_penalty_date = ?, state = 2
         WHERE id = ?
       `;
       connection.query(
-        updateRecordQuery,
+        updateBorrowQuery,
         [overtime, new_credit_delta, today, id],
         (updateErr) => {
           if (updateErr) {
@@ -1345,7 +1395,6 @@ function dailyOverCheck() {
     console.log("逾期检查完成,已更新" + results.length + "条记录");
   });
 }
-
 
 app.listen(port, () => {
   console.log(`服务器正在监听 http://localhost:${port}`);

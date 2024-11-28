@@ -12,7 +12,7 @@
       @keyup.enter="handleEnter"
     />
     <div v-else @dblclick="handleClick" class="text">
-      {{ value }}
+      {{ value || "-" }}
     </div>
     <AlertBox
       v-if="alertMsg"

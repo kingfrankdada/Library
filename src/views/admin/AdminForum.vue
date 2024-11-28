@@ -66,6 +66,7 @@ import SelectMessage from "@/components/admin/SelectMessage.vue";
 import AddMessage from "@/components/admin/AddMessage.vue";
 
 export default {
+  name: "AdminForum",
   components: {
     NormalViewBox,
     NormalModal,

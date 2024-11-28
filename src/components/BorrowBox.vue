@@ -183,6 +183,7 @@ export default {
         await axios.post("http://localhost:3000/api/borrow", {
           username: this.userInfo.username,
           bookname: this.book.name,
+          start_date: new Date().toISOString().split("T")[0],
           over_date: this.overDate,
           days: this.borrowDays,
         });
