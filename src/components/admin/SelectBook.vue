@@ -74,7 +74,7 @@
           </td>
           <td>
             <img
-              :src="
+              v-lazy="
                 book.img
                   ? `/assets/img/${book.img}`
                   : '/assets/img/image-add-fill.png'

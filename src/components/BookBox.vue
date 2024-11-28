@@ -223,12 +223,10 @@ export default {
     actionButton() {
       switch (this.btnMsg) {
         case "借阅":
-          console.log("借阅");
           if (this.userInfo.usertoken) {
             if (this.users[0].credit_count >= 25) {
               // 借阅逻辑
               this.$emit("borrowBook", this.book);
-              console.log("借阅成功", this.book);
               this.$emit("close");
             } else this.alertMsg = "用户信誉分不足，操作失败";
           } else this.alertMsg = "请先登录";
