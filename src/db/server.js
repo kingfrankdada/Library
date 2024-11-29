@@ -1310,6 +1310,9 @@ function dailyOverCheck() {
       return;
     }
 
+    // 累积每个用户的总扣分
+    const userPenaltyMap = {};
+
     results.forEach((record) => {
       const {
         id,
@@ -1317,10 +1320,10 @@ function dailyOverCheck() {
         last_penalty_date,
         credit_delta,
         username,
-        credit_count,
+        credit_count
       } = record;
 
-      // 扣过了，跳过
+      // 如果今天已经扣过分，跳过
       if (last_penalty_date === today) {
         console.log(`记录已扣分，跳过（记录ID: ${id}, 用户: ${username}）`);
         return;
@@ -1328,11 +1331,17 @@ function dailyOverCheck() {
 
       // 先恢复上一天被扣的分，再计算今天的扣分
       const restored_credit = credit_count + credit_delta;
-      const overtime = Math.ceil(
-        (new Date(today) - new Date(over_date)) / (1000 * 60 * 60 * 24)
-      );
+      const overtime = Math.ceil((new Date(today) - new Date(over_date)) / (1000 * 60 * 60 * 24));
       const new_credit_delta = 5 * overtime;
-      const updated_credit = Math.max(0, restored_credit - new_credit_delta);
+
+      // 累积用户的总逾期扣分
+      if (!userPenaltyMap[username]) {
+        userPenaltyMap[username] = {
+          totalPenalty: 0,
+          userId: username
+        };
+      }
+      userPenaltyMap[username].totalPenalty += new_credit_delta;
 
       // 更新借阅记录
       const updateBorrowQuery = `
@@ -1340,61 +1349,62 @@ function dailyOverCheck() {
         SET overtime = ?, credit_delta = ?, last_penalty_date = ?, state = 2
         WHERE id = ?
       `;
-      connection.query(
-        updateBorrowQuery,
-        [overtime, new_credit_delta, today, id],
-        (updateErr) => {
-          if (updateErr) {
-            console.error(`更新记录失败（ID: ${id}）:`, updateErr.stack);
+      connection.query(updateBorrowQuery, [overtime, new_credit_delta, today, id], (updateErr) => {
+        if (updateErr) {
+          console.error(`更新记录失败（ID: ${id}）:`, updateErr.stack);
+          return;
+        }
+      });
+    });
+
+    // 处理完所有记录后，更新每个用户的总扣分
+    Object.values(userPenaltyMap).forEach(({
+      totalPenalty,
+      userId
+    }) => {
+      const user = results.find((r) => r.username === userId);
+      if (user) {
+        const {
+          credit_count
+        } = user;
+        const updated_credit = Math.max(0, credit_count - totalPenalty);
+
+        // 更新用户的信誉分
+        const updateUserQuery = `
+          UPDATE user 
+          SET credit_count = ?
+          WHERE username = ?
+        `;
+        connection.query(updateUserQuery, [updated_credit, userId], (userErr) => {
+          if (userErr) {
+            console.error(`更新用户信誉分失败（用户名: ${userId}）:`, userErr.stack);
             return;
           }
-        }
-      );
+          console.log(`更新用户信誉分成功（用户名: ${userId}, 当前信誉分: ${updated_credit}）`);
+        });
 
-      // 更新用户信誉分
-      const updateUserQuery = `
-        UPDATE user 
-        SET credit_count = ?
-        WHERE username = ?
-      `;
-      connection.query(updateUserQuery, [updated_credit, username], (userErr) => {
-        if (userErr) {
-          console.error(
-            `更新用户信誉分失败（用户名: ${username}）:`,
-            userErr.stack
-          );
-          return;
-        }
-        console.log(
-          `更新信誉分成功（用户名: ${username}, 当前信誉分: ${updated_credit}）`
-        );
-      });
-
-      // 插入信誉分记录
-      const insertCreditLogQuery = `
-        INSERT INTO credit (username, credit_count, info, adddate)
-        VALUES (?, ?, ?, ?)
-      `;
-      const creditInfo = `借阅超期，扣除${new_credit_delta}分（逾期${overtime}天）`;
-      const insertValues = [username, updated_credit, creditInfo, today];
-      connection.query(insertCreditLogQuery, insertValues, (insertErr) => {
-        if (insertErr) {
-          console.error(
-            `插入信誉分记录失败（用户名: ${username}）:`,
-            insertErr.stack
-          );
-          return;
-        }
-        console.log(
-          `插入信誉分记录成功（用户名: ${username}, 当前信誉分: ${updated_credit}）`
-        );
-      });
+        // 插入信誉分记录
+        const insertCreditLogQuery = `
+          INSERT INTO credit (username, credit_count, info, adddate)
+          VALUES (?, ?, ?, ?)
+        `;
+        const creditInfo = `借阅超期，扣除总共${totalPenalty}分（共逾期${totalPenalty / 5}天）`;
+        const insertValues = [userId, updated_credit, creditInfo, today];
+        connection.query(insertCreditLogQuery, insertValues, (insertErr) => {
+          if (insertErr) {
+            console.error(`插入信誉分记录失败（用户名: ${userId}）:`, insertErr.stack);
+            return;
+          }
+          console.log(`插入信誉分记录成功（用户名: ${userId}, 当前信誉分: ${updated_credit}）`);
+        });
+      }
     });
 
     // 逾期检查完成，反馈更新几条记录
     console.log("逾期检查完成,已更新" + results.length + "条记录");
   });
 }
+
 
 app.listen(port, () => {
   console.log(`服务器正在监听 http://localhost:${port}`);

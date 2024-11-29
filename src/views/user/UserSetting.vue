@@ -142,7 +142,12 @@ export default {
           title: "我的收藏",
           path: "/home/user/collection",
         },
-        { id: 2, name: "borrow", title: "我的借阅", path: "/home/user/borrow" },
+        {
+          id: 2,
+          name: "borrow",
+          title: "我的借阅",
+          path: "/home/user/borrow",
+        },
         {
           id: 3,
           name: "comment",
@@ -250,8 +255,11 @@ export default {
       try {
         // 更新用户信息
         await this.selectUsersByUserName();
+        this.$nextTick(() => {
+          this.initCreditChart();
+        });
       } catch (error) {
-        console.error("更新用户信息或图表失败:", error.message);
+        console.error(error);
       }
     },
 
