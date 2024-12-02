@@ -301,51 +301,68 @@ export default {
 .admin-log {
   height: 100%;
   width: 85%;
-  overflow-y: scroll;
   background: var(--background-color);
+  overflow-y: auto;
 }
 
 .search-box {
-  position: sticky;
-  top: 0;
-  background-color: var(--white-color);
   display: flex;
   justify-content: center;
-  border-bottom: 1px solid #ddd;
-  z-index: 1;
   padding: 10px;
 }
 
 .search-box input {
   width: 60%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  font-size: 16px;
 }
 
 table {
+  margin-left: 20px;
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 35px;
+  margin-top: 20px;
+  margin-bottom: 50px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 th,
 td {
-  padding: 8px;
+  padding: 12px;
   text-align: left;
+  border-bottom: 1px solid #eaeaea;
   max-width: 200px;
-  min-width: 50px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: center;
 }
 
 th {
-  background-color: #ccc;
+  background-color: var(--first-color);
+  color: #fff;
+  font-weight: bold;
   cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
 }
 
+td {
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+td:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s;
+}
+
+td:last-child:hover {
+  background-color: #f9f9f9;
+}
 .log-type-icon {
   margin-left: 5px;
 }
@@ -400,6 +417,7 @@ select {
 
 .pagination span {
   margin-right: 10px;
+  font-size: 14px;
 }
 
 .pagination button {

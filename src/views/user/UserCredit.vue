@@ -56,11 +56,13 @@
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
+      <button @click="firstPage">首页</button>
       <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
       <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
       <button @click="nextPage" :disabled="currentPage === totalPages">
         下一页
       </button>
+      <button @click="lastPage">尾页</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -84,7 +86,7 @@ import MessageBox from "@/components/MessageBox.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "CreditLog",
+  name: "UserCredit",
   components: {
     AlertBox,
     MessageBox,
@@ -229,6 +231,16 @@ export default {
       const day = String(date.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     },
+
+    // 首页
+    firstPage() {
+      this.currentPage = 1;
+    },
+
+    // 尾页
+    lastPage() {
+      this.currentPage = this.totalPages;
+    },
   },
 };
 </script>
@@ -239,7 +251,6 @@ export default {
   width: 85%;
   overflow-y: auto;
   background: var(--background-color);
-  padding: 20px;
 }
 
 .search-box {
@@ -250,42 +261,51 @@ export default {
 
 .search-box input {
   width: 60%;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  font-size: 16px;
 }
 
 table {
   width: 100%;
+  margin-left: 20px;
   border-collapse: collapse;
   margin-top: 20px;
   margin-bottom: 50px;
-}
-
-tr {
-  height: 50px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 th,
 td {
-  padding: 8px;
+  padding: 12px;
   text-align: left;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #eaeaea;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: center;
 }
 
 th {
   background-color: var(--first-color);
-  color: var(--white-color);
+  color: #fff;
+  font-weight: bold;
   cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
 }
 
-.credit-type-icon {
-  margin-left: 5px;
+td {
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+td:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s;
 }
 
 button {
@@ -305,21 +325,14 @@ button:hover {
   transition: 0.4s;
 }
 
-select {
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #333;
-}
-
 .sort-icon {
   margin-left: 5px;
 }
+
 .sort-asc-icon::after {
   content: "▲";
 }
+
 .sort-desc-icon::after {
   content: "▼";
 }
@@ -338,6 +351,7 @@ select {
 
 .pagination span {
   margin-right: 10px;
+  font-size: 14px;
 }
 
 .pagination button {
