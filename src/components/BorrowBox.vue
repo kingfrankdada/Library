@@ -3,7 +3,6 @@
     <div class="borrow-content">
       <span class="close-button" @click="close">&times;</span>
       <div class="borrow-form">
-        <!-- 左侧封面图片 -->
         <div class="book-image">
           <img
             v-lazy="
@@ -37,13 +36,14 @@
       <div class="borrow-actions">
         <div class="borrow-inputs">
           <div>
-            <label for="borrow-days">预计借阅天数:</label>
+            <label for="borrow-days">预计借阅天数 (最大30天):</label>
             <input
               id="borrow-days"
               type="number"
               v-model="borrowDays"
               placeholder="输入天数"
               min="1"
+              max="30"
             />
           </div>
           <div>
@@ -53,6 +53,7 @@
               type="date"
               v-model="overDate"
               :min="minOverDate"
+              :max="maxOverDate"
             />
           </div>
         </div>
@@ -115,7 +116,8 @@ export default {
       overDate: new Date(new Date().setDate(new Date().getDate() + 1))
         .toISOString()
         .split("T")[0], // 默认日期为明天
-      minOverDate: new Date().toISOString().split("T")[0], // 最小日期为今天
+      minOverDate: new Date().toISOString().split("T")[0],
+      maxOverDate: this.calMaxOverDate(),
     };
   },
 
@@ -162,6 +164,13 @@ export default {
       }
     },
 
+    // 计算最大归还日期（当前日期 + 30天）
+    calMaxOverDate() {
+      const maxDate = new Date();
+      maxDate.setDate(maxDate.getDate() + 30);
+      return maxDate.toISOString().split("T")[0];
+    },
+
     // 借阅逻辑
     async handleBorrow() {
       if (!this.userInfo.usertoken) {
@@ -176,6 +185,12 @@ export default {
 
       if (this.book.num <= 0) {
         this.alertMsg = "库存不足，无法借阅";
+        return;
+      }
+
+      // 借阅天数超过 30 天
+      if (this.borrowDays > 30) {
+        this.alertMsg = "借阅天数不能超过30天";
         return;
       }
 
@@ -223,6 +238,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .borrow {
