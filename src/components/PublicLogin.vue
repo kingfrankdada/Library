@@ -110,9 +110,10 @@ export default {
         // 返回数据
         const username = response.data.username || this.username;
         const usertoken = response.data.usertoken;
+        const role = response.data.role || 2;
 
         this.setUserInfo({
-          isAdmin: username === "admin",
+          role,
           username,
           usertoken,
           userIP,

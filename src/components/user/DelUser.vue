@@ -82,7 +82,7 @@ export default {
         this.alertMsg = "删除用户失败";
       }
       this.setUserInfo({
-        isAdmin: false,
+        role: "",
         username: "",
         usertoken: "",
         userIP: "",

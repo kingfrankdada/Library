@@ -31,7 +31,13 @@
           </li>
 
           <!-- 管理员设置 -->
-          <li v-if="userInfo.isAdmin" title="系统设置" class="nav-item">
+          <li
+            v-if="
+              userInfo.role ? userInfo.role == 1 || userInfo.role == 0 : false
+            "
+            title="系统设置"
+            class="nav-item"
+          >
             <i class="ri-settings-line"></i>
             <router-link to="/admin">System</router-link>
           </li>

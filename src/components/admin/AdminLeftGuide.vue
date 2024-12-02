@@ -6,9 +6,10 @@
         <span>管理员控制台</span>
         <div class="line"></div>
       </div>
-      <div v-for="item in menuList" :key="item.id" class="guide-list">
+      <div v-for="item in filteredMenuList" :key="item.id" class="guide-list">
         <div class="guide-item">
           <router-link :title="item.title" class="guide-link" :to="item.path">
+            <i :class="item.icon"></i>
             {{ item.title }}
           </router-link>
         </div>
@@ -21,7 +22,6 @@
   </div>
 </template>
 
-
 <script>
 import { mapState, mapMutations } from "vuex";
 
@@ -31,20 +31,73 @@ export default {
   data() {
     return {
       menuList: [
-        { id: 1, name: "book", title: "图书管理", path: "/admin/book" },
-        { id: 2, name: "menu", title: "分类管理", path: "/admin/menu" },
-        { id: 3, name: "borrow", title: "借阅管理", path: "/admin/borrow" },
-        { id: 4, name: "notice", title: "公告管理", path: "/admin/notice" },
-        { id: 5, name: "forum", title: "论坛管理", path: "/admin/forum" },
-        { id: 6, name: "user", title: "用户管理", path: "/admin/user" },
-        { id: 7, name: "log", title: "日志管理", path: "/admin/log" },
+        {
+          id: 1,
+          name: "book",
+          title: "图书管理",
+          path: "/admin/book",
+          icon: "ri-book-3-line",
+        },
+        {
+          id: 2,
+          name: "menu",
+          title: "分类管理",
+          path: "/admin/menu",
+          icon: "ri-list-check",
+        },
+        {
+          id: 3,
+          name: "borrow",
+          title: "借阅管理",
+          path: "/admin/borrow",
+          icon: "ri-book-open-line",
+        },
+        {
+          id: 4,
+          name: "notice",
+          title: "公告管理",
+          path: "/admin/notice",
+          icon: "ri-mail-line",
+        },
+        {
+          id: 5,
+          name: "forum",
+          title: "论坛管理",
+          path: "/admin/forum",
+          icon: "ri-chat-new-line",
+        },
+        {
+          id: 6,
+          name: "user",
+          title: "用户管理",
+          path: "/admin/user",
+          icon: "ri-user-line",
+        },
+        {
+          id: 7,
+          name: "log",
+          title: "日志管理",
+          path: "/admin/log",
+          icon: "ri-history-line",
+        },
       ],
     };
   },
 
   computed: {
     ...mapState("AdminLeftGuide", ["isLeftGuideVisible"]),
-    ...mapState("NormalModal", ["isModalVisible"]),
+    ...mapState("UserInfo", ["userInfo"]),
+
+    // 权限过滤，管理员不能查看系统日志，只有超管拥有全部权限
+    filteredMenuList() {
+      if (this.userInfo.role == 1) {
+        return this.menuList.filter(
+          // (item) => item.name !== "user" && item.name !== "log"
+          (item) => item.name !== "log"
+        );
+      }
+      return this.menuList;
+    },
   },
 
   created() {

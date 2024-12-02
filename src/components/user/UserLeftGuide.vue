@@ -14,6 +14,7 @@
             class="guide-link"
             :to="item.path"
           >
+            <i :class="item.icon"></i>
             {{ item.title }}
           </router-link>
           <!-- 展示为普通导航 -->

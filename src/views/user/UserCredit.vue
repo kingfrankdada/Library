@@ -46,7 +46,7 @@
       </tbody>
     </table>
 
-    <p v-else>{{ boxMsg }}</p>
+    <p v-else style="text-align: center">{{ boxMsg }}</p>
 
     <!-- 分页控制 -->
     <div class="pagination">
@@ -150,6 +150,12 @@ export default {
 
   mounted() {
     this.selectCredits();
+  },
+
+  watch: {
+    searchText() {
+      this.currentPage = 1;
+    },
   },
 
   methods: {
@@ -264,6 +270,7 @@ export default {
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
+  color: var(--text-color);
   background-color: #f9f9f9;
   font-size: 16px;
 }

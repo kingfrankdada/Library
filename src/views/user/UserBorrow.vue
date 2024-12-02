@@ -87,7 +87,7 @@
       </tbody>
     </table>
 
-    <p v-else>{{ boxMsg }}</p>
+    <p v-else style="text-align: center">{{ boxMsg }}</p>
 
     <!-- 分页控制 -->
     <div class="pagination">
@@ -189,6 +189,11 @@ export default {
   },
   mounted() {
     this.fetchBorrowBorrows();
+  },
+  watch: {
+    searchText() {
+      this.currentPage = 1;
+    },
   },
   methods: {
     // 获取用户借阅记录
@@ -304,6 +309,7 @@ export default {
   width: 60%;
   padding: 12px;
   border: 1px solid #ddd;
+  color: var(--text-color);
   border-radius: 6px;
   background-color: #f9f9f9;
   font-size: 16px;

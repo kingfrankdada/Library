@@ -11,6 +11,14 @@
             用户*
             <span :class="getSortIcon('username')"></span>
           </th>
+          <th v-if="userInfo.role == 0" @click="sortUsers('role')">
+            权限组*
+            <i
+              class="ri-question-line"
+              title="提示：该项会在重新登陆后生效"
+            ></i>
+            <span :class="getSortIcon('role')"></span>
+          </th>
           <th @click="sortUsers('email')">
             邮箱*
             <span :class="getSortIcon('email')"></span>
@@ -39,13 +47,20 @@
               @input="updateUser(user)"
             ></InputTag>
           </td>
+          <td v-if="userInfo.role == 0">
+            <select v-model="user.role" @change="updateUser(user)">
+              <option value="0">超级管理员</option>
+              <option value="1">管理员</option>
+              <option value="2">用户</option>
+            </select>
+          </td>
           <td>
             <InputTag v-model="user.email" @input="updateUser(user)"></InputTag>
           </td>
           <td>
             <select v-model="user.state" @change="updateUser(user)">
               <option value="1">正常</option>
-              <option value="0">关闭</option>
+              <option value="0">封禁</option>
             </select>
           </td>
           <td>
@@ -56,7 +71,12 @@
           </td>
           <td>{{ formatDate(user.adddate) }}</td>
           <td>
-            <button class="del-btn" title="删除" @click="delUser(user)">
+            <button
+              :disabled="userInfo.role != 0"
+              class="del-btn"
+              :title="userInfo.role != 0 ? '权限不足' : '删除'"
+              @click="delUser(user)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -108,11 +128,19 @@ export default {
 
     filteredUsers() {
       const filterList = this.searchText.toLowerCase();
-      return this.users.filter(
+
+      let filteredUsers = this.users.filter(
         (user) =>
           user.username.toLowerCase().includes(filterList) ||
           user.email.toLowerCase().includes(filterList)
       );
+
+      // 如果当前用户不是超级管理员，隐藏超级管理员
+      if (this.userInfo.role != 0) {
+        filteredUsers = filteredUsers.filter((user) => user.role != 0);
+      }
+
+      return filteredUsers;
     },
 
     sortedUsers() {
@@ -166,6 +194,7 @@ export default {
     async updateUser(user) {
       try {
         await axios.post(`http://localhost:3000/api/updateUser/${user.id}`, {
+          role: user.role,
           state: user.state,
           credit_count: user.creditCount,
           username: user.username,
@@ -297,6 +326,16 @@ button {
 button:hover {
   background-color: var(--first-color);
   color: var(--white-color);
+  transition: 0.4s;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ri-question-line:hover {
+  color: var(--first-color);
   transition: 0.4s;
 }
 

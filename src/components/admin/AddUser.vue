@@ -78,6 +78,7 @@ export default {
       newUser: {
         username: "",
         password: "",
+        role: 2,
         creditCount: 100,
         state: 1,
         adddate: "",

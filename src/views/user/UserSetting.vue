@@ -14,7 +14,12 @@
           </p>
           <p class="user-info-content">
             用户名：{{ userInfo.username }}
-            <span v-if="userInfo.isAdmin" style="color: red">[管理员]</span>
+            <span v-if="userInfo.role == 0" style="color: red"
+              >[超级管理员]</span
+            >
+            <span v-else-if="userInfo.role == 1" style="color: red"
+              >[管理员]</span
+            >
             <span v-else style="color: green">[用户]</span>
           </p>
           <p class="user-info-content">邮箱：{{ users[0].email }}</p>
@@ -141,24 +146,28 @@ export default {
           name: "collection",
           title: "我的收藏",
           path: "/home/user/collection",
+          icon: "ri-heart-line",
         },
         {
           id: 2,
           name: "borrow",
           title: "我的借阅",
           path: "/home/user/borrow",
+          icon: "ri-book-open-line",
         },
         {
           id: 3,
           name: "comment",
           title: "我的留言",
           path: "/home/user/comment",
+          icon: "ri-message-3-line",
         },
         {
           id: 4,
           name: "credit",
           title: "我的信誉分",
           path: "/home/user/credit",
+          icon: "ri-bank-card-line",
         },
       ],
       isEditUser: true, // 修改用户信息还是修改密码
@@ -294,7 +303,7 @@ export default {
     logout() {
       this.setEditUserModalVisible(false);
       this.setUserInfo({
-        isAdmin: false,
+        role: "",
         username: "",
         usertoken: "",
       });

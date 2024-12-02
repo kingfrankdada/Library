@@ -9,7 +9,7 @@
       />
     </div>
     <!-- 评论列表 -->
-    <div class="comment-list">
+    <div v-if="messages.length > 0" class="comment-list">
       <div
         v-for="message in filteredMessages"
         :key="message.id"
@@ -34,6 +34,8 @@
         <hr class="comment-separator" />
       </div>
     </div>
+
+    <div v-else style="text-align: center">未找到任何留言</div>
 
     <!-- 自定义弹窗捕获 -->
     <AlertBox
@@ -130,8 +132,8 @@ export default {
 
 .search-box {
   position: sticky;
-  top: 0; 
-  background-color: var(--white-color); 
+  top: 0;
+  background-color: var(--white-color);
   display: flex;
   justify-content: center;
   border-bottom: 1px solid #ddd;
@@ -154,9 +156,7 @@ export default {
 .comment-item {
   position: relative;
   padding: 15px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .comment-header {

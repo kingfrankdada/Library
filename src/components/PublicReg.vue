@@ -113,6 +113,7 @@ export default {
             username: this.username,
             usertoken: this.usertoken,
             password: this.password,
+            role: 2, // 默认普通用户
             email: this.email,
             creditCount: this.creditCount,
             state: this.state,
@@ -128,7 +129,7 @@ export default {
           const userIP = ipResponse.data.ip;
 
           this.setUserInfo({
-            isAdmin: false,
+            role: response.data.role,
             username: response.data.username,
             usertoken: response.data.usertoken,
             userIP: userIP,

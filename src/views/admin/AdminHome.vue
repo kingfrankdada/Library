@@ -175,9 +175,9 @@ export default {
   },
 
   created() {
-    if (!this.userInfo.isAdmin) {
-      this.$router.push("/home");
-    }
+    // if (this.userInfo.role != 1 || this.userInfo.role != 0) {
+    //   this.$router.push("/home");
+    // }
     this.getSystemInfo();
   },
 

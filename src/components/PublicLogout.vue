@@ -52,7 +52,7 @@ export default {
       };
       await axios.post("http://localhost:3000/api/addLog", newLog).then(() => {
         this.setUserInfo({
-          isAdmin: false,
+          role: "",
           username: "",
           usertoken: "",
           userIP: "",

@@ -204,6 +204,7 @@ app.post('/api/login', (req, res) => {
               message: '登录成功',
               username: user.username,
               usertoken: usertoken,
+              role: user.role
             });
           }
         } else {
@@ -226,6 +227,7 @@ app.post('/api/reg', (req, res) => {
   let {
     username,
     password,
+    role,
     email,
     creditCount,
     state,
@@ -250,15 +252,16 @@ app.post('/api/reg', (req, res) => {
         error: '服务器内部错误'
       });
     }
-    const query = 'INSERT INTO user (username, password, email, credit_count, state, adddate) VALUES (?, ?, ?, ?, ?, ?)';
-    connection.query(query, [username, hash, email, creditCount, state, adddate], (err, results) => {
+    const query = 'INSERT INTO user (username, password, role, email, credit_count, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    connection.query(query, [username, hash, role, email, creditCount, state, adddate], (err, results) => {
       if (results) {
         // 使用 bcrypt.hashSync() 方法来添加时间戳生成唯一用户token
         const usertoken = bcrypt.hashSync(Date.now().toString(), saltRounds);
         res.status(200).json({
           message: '注册成功',
           username: username,
-          usertoken: usertoken
+          usertoken: usertoken,
+          role: role
         });
       } else if (err) {
         if (err.code === 'ER_DUP_ENTRY') {

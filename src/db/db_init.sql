@@ -131,7 +131,8 @@ CREATE TABLE `record` (
 CREATE TABLE `user` (
     `id` int NOT NULL AUTO_INCREMENT,
     `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-    `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+    `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `role` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     `credit_count` int DEFAULT NULL,
     `state` int DEFAULT NULL,
     `adddate` datetime DEFAULT NULL,
@@ -139,4 +140,4 @@ CREATE TABLE `user` (
     PRIMARY KEY (`id`, `username`),
     UNIQUE KEY `unique_username` (`username`),
     UNIQUE KEY `unique_email` (`email`)
-) ENGINE = InnoDB AUTO_INCREMENT = 71 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci
+) ENGINE = InnoDB AUTO_INCREMENT = 75 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci

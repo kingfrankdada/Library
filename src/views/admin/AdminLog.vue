@@ -168,6 +168,13 @@ export default {
     this.selectLogs();
   },
 
+  watch: {
+    // 监听搜索框变化，重置当前页为第一页
+    searchText() {
+      this.currentPage = 1;
+    },
+  },
+
   methods: {
     // 动态图标
     logIconType(log) {
@@ -316,6 +323,7 @@ export default {
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
+  color: var(--text-color);
   background-color: #f9f9f9;
   font-size: 16px;
 }
