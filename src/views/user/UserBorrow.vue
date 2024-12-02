@@ -151,12 +151,18 @@ export default {
 
     filteredBorrows() {
       const filter = this.searchText.toLowerCase();
-      return this.records.filter(
-        (record) =>
-          record.bookname.toLowerCase().includes(filter) ||
-          record.start_date.includes(filter) ||
-          record.over_date.includes(filter)
-      );
+      return this.records
+        .filter(
+          (record) =>
+            record.bookname.toLowerCase().includes(filter) ||
+            record.start_date.includes(filter) ||
+            record.over_date.includes(filter)
+        )
+        .sort((a, b) => {
+          const dateA = new Date(a.start_date);
+          const dateB = new Date(b.start_date);
+          return dateB - dateA;
+        });
     },
 
     sortedBorrows() {

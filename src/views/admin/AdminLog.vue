@@ -124,14 +124,20 @@ export default {
     // 筛选后的日志
     filteredLogs() {
       const filterList = this.searchText.toLowerCase();
-      return this.logs.filter(
-        (log) =>
-          log.username.toLowerCase().includes(filterList) ||
-          log.info.toLowerCase().includes(filterList) ||
-          log.type.toLowerCase().includes(filterList) ||
-          log.user_ip.toLowerCase().includes(filterList) ||
-          log.adddate.toLowerCase().includes(filterList)
-      );
+      return this.logs
+        .filter(
+          (log) =>
+            log.username.toLowerCase().includes(filterList) ||
+            log.info.toLowerCase().includes(filterList) ||
+            log.type.toLowerCase().includes(filterList) ||
+            log.user_ip.toLowerCase().includes(filterList) ||
+            log.adddate.toLowerCase().includes(filterList)
+        )
+        .sort((a, b) => {
+          const dateA = new Date(a.adddate);
+          const dateB = new Date(b.adddate);
+          return dateB - dateA;
+        });
     },
 
     // 排序后的日志

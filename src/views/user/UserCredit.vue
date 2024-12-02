@@ -111,11 +111,17 @@ export default {
     // 筛选后的信誉分
     filteredCredits() {
       const filterList = this.searchText.toLowerCase();
-      return this.credits.filter(
-        (credit) =>
-          credit.info.toLowerCase().includes(filterList) ||
-          credit.adddate.toLowerCase().includes(filterList)
-      );
+      return this.credits
+        .filter(
+          (credit) =>
+            credit.info.toLowerCase().includes(filterList) ||
+            credit.adddate.toLowerCase().includes(filterList)
+        )
+        .sort((a, b) => {
+          const dateA = new Date(a.adddate);
+          const dateB = new Date(b.adddate);
+          return dateB - dateA;
+        });
     },
 
     // 排序后的信誉分
