@@ -1,9 +1,9 @@
 <template>
   <div class="user">
     <div v-show="this.$route.path === '/home/user'" class="user-body">
-      <div class="user-title">
+      <!-- <div class="user-title">
         <p>用户中心</p>
-      </div>
+      </div> -->
       <div class="user-container">
         <div class="user-info">
           <p class="user-info-title">
@@ -442,7 +442,7 @@ export default {
   display: flex;
   background-color: var(--white-color);
   width: calc(100% - 40px);
-  height: calc(100% - 80px - var(--header-height));
+  height: calc(100% - 40px - var(--header-height));
   margin: 20px;
   padding: 20px;
   border-radius: 8px;
