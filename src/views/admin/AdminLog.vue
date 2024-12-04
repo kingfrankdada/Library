@@ -19,12 +19,32 @@
         />
         仅显示最近七天
       </label>
+      <label>
+        <input type="checkbox" v-model="enableSelection" />
+        启用复选框
+      </label>
+      <!-- 全选 -->
+      <label v-show="enableSelection">
+        <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
+        全选
+      </label>
+      <label v-show="enableSelection" @click="deleteSelectedLogs">
+        <i class="ri-delete-bin-5-fill"></i>
+        删除选中
+      </label>
     </div>
 
     <!-- 日志表格 -->
     <table v-if="paginatedLogs.length > 0">
       <thead>
         <tr>
+          <th v-if="enableSelection">
+            <input
+              type="checkbox"
+              v-model="selectPage"
+              @change="toggleSelectPage"
+            />
+          </th>
           <th @click="sortLogs('id')">
             ID
             <span :class="getSortIcon('id')"></span>
@@ -54,6 +74,9 @@
       </thead>
       <tbody>
         <tr v-for="(log, index) in paginatedLogs" :key="index">
+          <td v-if="enableSelection">
+            <input type="checkbox" :value="log.id" v-model="selectedLogs" />
+          </td>
           <td :title="log.id">{{ log.id }}</td>
           <td :title="log.username">{{ log.username }}</td>
           <td :title="log.user_ip">{{ log.user_ip }}</td>
@@ -130,6 +153,10 @@ export default {
       pageSize: 10, // 每页显示的条数
       currentPage: 1, // 当前页
       showRecentDays: false,
+      enableSelection: false, // 是否启用复选框
+      selectAll: false, // 全选
+      selectPage: false, // 当页全选
+      selectedLogs: [], // 选中
     };
   },
 
@@ -139,7 +166,7 @@ export default {
       const filterList = this.searchText.toLowerCase();
       let logs = [...this.logs];
 
-      // 如果启用了最近七天筛选
+      // 启用最近七天筛选
       if (this.showRecentDays) {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -194,9 +221,31 @@ export default {
   },
 
   watch: {
-    // 监听搜索框变化，重置当前页为第一页
+    selectedLogs: {
+      handler() {
+        // 更新全页全选状态
+        const allIds = this.filteredLogs.map((log) => log.id);
+        this.selectAll = allIds.every((id) => this.selectedLogs.includes(id));
+
+        // 更新当页全选状态
+        const currentPageIds = this.paginatedLogs.map((log) => log.id);
+        this.selectPage = currentPageIds.every((id) =>
+          this.selectedLogs.includes(id)
+        );
+      },
+      deep: true,
+    },
+
+    currentPage() {
+      const currentPageIds = this.paginatedLogs.map((log) => log.id);
+      this.selectPage = currentPageIds.every((id) =>
+        this.selectedLogs.includes(id)
+      );
+    },
+
     searchText() {
       this.currentPage = 1;
+      this.resetSelection();
     },
   },
 
@@ -256,7 +305,38 @@ export default {
     },
 
     filterByRecentDays() {
-      this.currentPage = 1; // 切换筛选时重置到第一页
+      this.currentPage = 1;
+      this.resetSelection();
+    },
+
+    // 全页全选
+    toggleSelectAll() {
+      if (this.selectAll) {
+        this.selectedLogs = this.filteredLogs.map((log) => log.id);
+      } else {
+        this.selectedLogs = [];
+      }
+    },
+
+    // 当页全选
+    toggleSelectPage() {
+      const currentPageIds = this.paginatedLogs.map((log) => log.id);
+      if (this.selectPage) {
+        this.selectedLogs = Array.from(
+          new Set([...this.selectedLogs, ...currentPageIds])
+        );
+      } else {
+        this.selectedLogs = this.selectedLogs.filter(
+          (id) => !currentPageIds.includes(id)
+        );
+      }
+    },
+
+    // 还原复选框状态
+    resetSelection() {
+      this.selectedLogs = [];
+      this.selectAll = false;
+      this.selectPage = false;
     },
 
     async selectLogs() {
@@ -283,6 +363,26 @@ export default {
       }
     },
 
+    // 删除选中的日志
+    async deleteSelectedLogs() {
+      if (this.selectedLogs.length === 0) {
+        this.alertMsg = "请选择要删除的日志";
+        return;
+      }
+      try {
+        for (const logId of this.selectedLogs) {
+          await axios.post(`http://localhost:3000/api/delLog/${logId}`);
+        }
+        this.selectedLogs = [];
+        this.selectLogs();
+        this.resetSelection();
+        this.message = "删除成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "删除失败";
+      }
+    },
+
     // 排序日志
     sortLogs(column) {
       if (this.sortColumn === column) {
@@ -300,6 +400,7 @@ export default {
       }
       return "sort-icon";
     },
+
     // 首页
     firstPage() {
       this.currentPage = 1;
@@ -324,9 +425,9 @@ export default {
       this.currentPage = this.totalPages;
     },
 
-    // 当用户更改每页显示的条数时，重置当前页为第一页
     handlePageSizeChange() {
       this.currentPage = 1;
+      this.resetSelection();
       this.selectLogs();
     },
   },
@@ -368,6 +469,11 @@ export default {
   font-size: 14px;
   color: var(--text-color);
   cursor: pointer;
+  margin-right: 10px;
+}
+
+.toolbar label:last-child:hover {
+  color: red;
 }
 
 table {
