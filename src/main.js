@@ -4,7 +4,7 @@ import router from './router/index'
 import store from '@/store/index'
 import VueLazyload from 'vue-lazyload';
 import 'remixicon/fonts/remixicon.css'
-import 'swiper/swiper-bundle.min.css';
+// import 'swiper/swiper-bundle.min.css';
 
 Vue.config.productionTip = false
 

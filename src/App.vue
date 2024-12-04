@@ -15,7 +15,7 @@
       href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
       rel="stylesheet"
     /> -->
-    <!-- <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" /> -->
+    <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" />
     <router-view class="app__content"></router-view>
   </div>
 </template>
