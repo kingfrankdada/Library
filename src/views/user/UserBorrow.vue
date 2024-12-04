@@ -9,8 +9,20 @@
       />
     </div>
 
+    <!-- 工具栏 -->
+    <div v-if="paginatedBorrows.length > 0" class="toolbar">
+      <label>
+        <input
+          type="checkbox"
+          v-model="showRecentDays"
+          @change="filterByRecentDays"
+        />
+        仅显示最近七天
+      </label>
+    </div>
+
     <!-- 借阅记录表格 -->
-    <table v-if="filteredBorrows.length > 0">
+    <table v-if="paginatedBorrows.length > 0">
       <thead>
         <tr>
           <th @click="sortBorrows('start_date')">
@@ -141,25 +153,35 @@ export default {
       sortOrder: "asc",
       pageSize: 10,
       currentPage: 1,
+      showRecentDays: false,
     };
   },
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
 
+    // 仅显示最近七天记录的开关
     filteredBorrows() {
       const filter = this.searchText.toLowerCase();
-      return this.records
+      let records = [...this.records];
+
+      // 如果启用了最近七天筛选
+      if (this.showRecentDays) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        records = records.filter(
+          (record) => new Date(record.start_date) >= sevenDaysAgo
+        );
+      }
+
+      // 根据搜索框内容筛选
+      return records
         .filter(
           (record) =>
             record.bookname.toLowerCase().includes(filter) ||
             record.start_date.includes(filter) ||
             record.over_date.includes(filter)
         )
-        .sort((a, b) => {
-          const dateA = new Date(a.start_date);
-          const dateB = new Date(b.start_date);
-          return dateB - dateA;
-        });
+        .sort((a, b) => new Date(b.id) - new Date(a.id));
     },
 
     sortedBorrows() {
@@ -190,6 +212,7 @@ export default {
       return Math.ceil(this.filteredBorrows.length / this.pageSize);
     },
   },
+
   mounted() {
     this.fetchBorrowBorrows();
   },
@@ -199,6 +222,10 @@ export default {
     },
   },
   methods: {
+    filterByRecentDays() {
+      this.currentPage = 1; // 切换筛选时重置到第一页
+    },
+
     // 获取用户借阅记录
     async fetchBorrowBorrows() {
       try {
@@ -319,11 +346,24 @@ export default {
   font-size: 16px;
 }
 
+.toolbar {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.toolbar label {
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
 table {
   margin-left: 20px;
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 5px;
   margin-bottom: 50px;
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

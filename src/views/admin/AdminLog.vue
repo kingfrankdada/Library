@@ -9,8 +9,20 @@
       />
     </div>
 
+    <!-- 工具栏 -->
+    <div v-if="paginatedLogs.length > 0" class="toolbar">
+      <label>
+        <input
+          type="checkbox"
+          v-model="showRecentDays"
+          @change="filterByRecentDays"
+        />
+        仅显示最近七天
+      </label>
+    </div>
+
     <!-- 日志表格 -->
-    <table v-if="filteredLogs.length > 0">
+    <table v-if="paginatedLogs.length > 0">
       <thead>
         <tr>
           <th @click="sortLogs('id')">
@@ -117,6 +129,7 @@ export default {
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
       currentPage: 1, // 当前页
+      showRecentDays: false,
     };
   },
 
@@ -124,7 +137,17 @@ export default {
     // 筛选后的日志
     filteredLogs() {
       const filterList = this.searchText.toLowerCase();
-      return this.logs
+      let logs = [...this.logs];
+
+      // 如果启用了最近七天筛选
+      if (this.showRecentDays) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        logs = logs.filter((log) => new Date(log.adddate) >= sevenDaysAgo);
+      }
+
+      // 根据搜索框内容筛选
+      return logs
         .filter(
           (log) =>
             log.username.toLowerCase().includes(filterList) ||
@@ -133,11 +156,7 @@ export default {
             log.user_ip.toLowerCase().includes(filterList) ||
             log.adddate.toLowerCase().includes(filterList)
         )
-        .sort((a, b) => {
-          const dateA = new Date(a.adddate);
-          const dateB = new Date(b.adddate);
-          return dateB - dateA;
-        });
+        .sort((a, b) => new Date(b.id) - new Date(a.id));
     },
 
     // 排序后的日志
@@ -234,6 +253,10 @@ export default {
         default:
           return null;
       }
+    },
+
+    filterByRecentDays() {
+      this.currentPage = 1; // 切换筛选时重置到第一页
     },
 
     async selectLogs() {
@@ -334,11 +357,24 @@ export default {
   font-size: 16px;
 }
 
+.toolbar {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.toolbar label {
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
 table {
   margin-left: 20px;
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 5px;
   margin-bottom: 50px;
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

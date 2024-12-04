@@ -9,8 +9,20 @@
       />
     </div>
 
+    <!-- 工具栏 -->
+    <div v-if="paginatedCredits.length > 0" class="toolbar">
+      <label>
+        <input
+          type="checkbox"
+          v-model="showRecentDays"
+          @change="filterByRecentDays"
+        />
+        仅显示最近七天
+      </label>
+    </div>
+
     <!-- 信誉分表格 -->
-    <table v-if="filteredCredits.length > 0">
+    <table v-if="paginatedCredits.length > 0">
       <thead>
         <tr>
           <th @click="sortCredits('adddate')">
@@ -102,6 +114,7 @@ export default {
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
       currentPage: 1, // 当前页
+      showRecentDays: false,
     };
   },
 
@@ -110,12 +123,24 @@ export default {
 
     // 筛选后的信誉分
     filteredCredits() {
+      // 是否启用最近七天
+      let credits = [...this.credits];
+      if (this.showRecentDays) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        credits = credits.filter(
+          (credit) => new Date(credit.adddate) >= sevenDaysAgo
+        );
+      }
+      // 根据搜索框筛选数据
       const filterList = this.searchText.toLowerCase();
-      return this.credits.filter(
-        (credit) =>
-          credit.info.toLowerCase().includes(filterList) ||
-          credit.adddate.toLowerCase().includes(filterList)
-      );
+      return credits
+        .filter(
+          (credit) =>
+            credit.info.toLowerCase().includes(filterList) ||
+            credit.adddate.toLowerCase().includes(filterList)
+        )
+        .sort((a, b) => new Date(b.id) - new Date(a.id));
     },
 
     // 排序后的信誉分
@@ -171,6 +196,10 @@ export default {
       } else {
         return { color: "gray" };
       }
+    },
+
+    filterByRecentDays() {
+      this.currentPage = 1; // 切换筛选时重置到第一页
     },
 
     async selectCredits() {
@@ -275,11 +304,24 @@ export default {
   font-size: 16px;
 }
 
+.toolbar {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.toolbar label {
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
 table {
   width: 100%;
   margin-left: 20px;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 5px;
   margin-bottom: 50px;
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
