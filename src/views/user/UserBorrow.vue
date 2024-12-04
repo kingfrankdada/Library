@@ -75,10 +75,7 @@
           </td>
 
           <td>
-            <button
-              v-if="!record.return_date"
-              @click="handleReturn(record.bookname)"
-            >
+            <button v-if="!record.return_date" @click="handleReturn(record)">
               归还
             </button>
             <span v-else>已归还</span>
@@ -235,15 +232,16 @@ export default {
     },
 
     // 归还图书
-    async handleReturn(bookname) {
+    async handleReturn(record) {
       if (!this.userInfo.usertoken) {
         this.alertMsg = "请先登录";
         return;
       }
       try {
         await axios.post("http://localhost:3000/api/return", {
+          id: record.id,
           username: this.userInfo.username,
-          bookname,
+          bookname: record.bookname,
         });
 
         // 添加归还日志
@@ -254,7 +252,7 @@ export default {
           username: this.userInfo.username,
           userIP: this.userInfo.userIP,
           type: "归还",
-          info: `用户${this.userInfo.username}于${adddate}归还图书${bookname}`,
+          info: `用户${this.userInfo.username}于${adddate}归还图书${record.bookname}`,
           creditCount: 0,
           adddate: adddate,
         };

@@ -1206,6 +1206,7 @@ app.post('/api/delBorrow/:id', (req, res) => {
 // 归还api
 app.post('/api/return', (req, res) => {
   const {
+    id,
     username,
     bookname
   } = req.body;
@@ -1214,9 +1215,9 @@ app.post('/api/return', (req, res) => {
   // 查询借阅记录
   const selectQuery = `
     SELECT * FROM record 
-    WHERE username = ? AND bookname = ? AND return_date IS NULL
+    WHERE username = ? AND bookname = ? AND id = ? AND return_date IS NULL
   `;
-  connection.query(selectQuery, [username, bookname], (err, results) => {
+  connection.query(selectQuery, [username, bookname, id], (err, results) => {
     if (err) {
       console.error('查询借阅记录失败:', err.stack);
       return res.status(500).json({
@@ -1254,9 +1255,9 @@ app.post('/api/return', (req, res) => {
     const updateQuery = `
       UPDATE record 
       SET return_date = ?, record_days = ?, overtime = ?, credit_delta = ?, state = 0
-      WHERE username = ? AND bookname = ?
+      WHERE username = ? AND id = ?
     `;
-    connection.query(updateQuery, [return_date, record_days, overtime, credit_delta, username, bookname], (updateErr) => {
+    connection.query(updateQuery, [return_date, record_days, overtime, credit_delta, username, id], (updateErr) => {
       if (updateErr) {
         console.error('归还失败:', updateErr.stack);
         return res.status(500).json({
@@ -1313,14 +1314,13 @@ app.post('/api/return', (req, res) => {
   });
 });
 
-
 // 自动检查逾期方法
 function dailyOverCheck() {
   console.log("开始逾期检查...");
   const today = new Date().toISOString().split("T")[0];
 
   const query = `
-    SELECT r.id, r.over_date, r.last_penalty_date, r.credit_delta, r.username, u.credit_count
+    SELECT r.id, r.over_date, r.last_penalty_date, r.username, r.credit_delta, u.credit_count
     FROM record r
     JOIN user u ON r.username = u.username
     WHERE r.return_date IS NULL AND r.over_date < ?
@@ -1331,7 +1331,6 @@ function dailyOverCheck() {
       return;
     }
 
-    // 累积每个用户的总扣分
     const userPenaltyMap = {};
 
     results.forEach((record) => {
@@ -1339,9 +1338,7 @@ function dailyOverCheck() {
         id,
         over_date,
         last_penalty_date,
-        credit_delta,
         username,
-        credit_count
       } = record;
 
       // 如果今天已经扣过分，跳过
@@ -1350,18 +1347,17 @@ function dailyOverCheck() {
         return;
       }
 
-      // 先恢复上一天被扣的分，再计算今天的扣分
-      const restored_credit = credit_count + credit_delta;
       const overtime = Math.ceil((new Date(today) - new Date(over_date)) / (1000 * 60 * 60 * 24));
       const new_credit_delta = 5 * overtime;
 
-      // 累积用户的总逾期扣分
       if (!userPenaltyMap[username]) {
         userPenaltyMap[username] = {
           totalPenalty: 0,
           userId: username
         };
       }
+
+      // 更新每本图书的扣分
       userPenaltyMap[username].totalPenalty += new_credit_delta;
 
       // 更新借阅记录
@@ -1378,7 +1374,7 @@ function dailyOverCheck() {
       });
     });
 
-    // 处理完所有记录后，更新每个用户的总扣分
+    // 更新用户总扣分并处理
     Object.values(userPenaltyMap).forEach(({
       totalPenalty,
       userId
@@ -1390,10 +1386,10 @@ function dailyOverCheck() {
         } = user;
         const updated_credit = Math.max(0, credit_count - totalPenalty);
 
-        // 更新用户的信誉分
+        // 更新用户信誉分
         const updateUserQuery = `
           UPDATE user 
-          SET credit_count = ?
+          SET credit_count = ? 
           WHERE username = ?
         `;
         connection.query(updateUserQuery, [updated_credit, userId], (userErr) => {
@@ -1425,7 +1421,6 @@ function dailyOverCheck() {
     console.log("逾期检查完成,已更新" + results.length + "条记录");
   });
 }
-
 
 app.listen(port, () => {
   console.log(`服务器正在监听 http://localhost:${port}`);
