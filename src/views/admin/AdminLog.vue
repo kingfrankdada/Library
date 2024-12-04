@@ -376,6 +376,7 @@ export default {
         this.selectedLogs = [];
         this.selectLogs();
         this.resetSelection();
+        this.currentPage = 1;
         this.message = "删除成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
