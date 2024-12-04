@@ -97,8 +97,28 @@ export default {
     async handleLogin() {
       try {
         // 获取用户的 IP 地址
-        const ipResponse = await axios.get("https://api.ipify.org?format=json");
-        const userIP = ipResponse.data.ip;
+        let userIP = "127.0.0.1";
+        try {
+          const ipResponse = await axios.get(
+            "https://api.ipify.org?format=json",
+            { timeout: 2000 }
+          );
+          userIP = ipResponse.data.ip;
+        } catch (error) {
+          console.warn(
+            "无法通过公网API获取IP地址，尝试本地获取:",
+            error.message
+          );
+          try {
+            const localResponse = await axios.get(
+              "http://localhost:3000/api/getLocalIP"
+            );
+            userIP = localResponse.data.ip;
+          } catch (localError) {
+            console.error("获取本地IP失败，使用默认IP:", localError.message);
+          }
+        }
+
         const adddate = new Date().toLocaleString("sv-SE", {
           timeZoneName: "short",
         });

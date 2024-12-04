@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const WebSocket = require('ws');
 const system = require('systeminformation');
 const schedule = require('node-schedule');
+const os = require('os');
 
 const app = express();
 const port = 3000;
@@ -80,6 +81,23 @@ const server = app.listen(wsport, () => {
 server.on('upgrade', (request, socket, head) => {
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request);
+  });
+});
+
+// 获取用户IP的api
+app.get("/api/getLocalIP", (req, res) => {
+  const networkInterfaces = os.networkInterfaces();
+  let localIP = "127.0.0.1";
+  for (const iface in networkInterfaces) {
+    for (const alias of networkInterfaces[iface]) {
+      if (alias.family === "IPv4" && !alias.internal) {
+        localIP = alias.address;
+        break;
+      }
+    }
+  }
+  res.json({
+    ip: localIP
   });
 });
 
