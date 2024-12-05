@@ -17,6 +17,10 @@
               <h4>收录图书数</h4>
               <span class="card-form-count">{{ books.length }}</span>
             </div>
+            <div class="card-form-item">
+              <h4>系统日志数</h4>
+              <span class="card-form-count">{{ logs.length }}</span>
+            </div>
           </div>
         </div>
         <!-- CPU数据卡片 -->
@@ -65,53 +69,25 @@
             ></div>
           </div>
         </div>
-        <!-- 图书类型占比卡片 -->
-        <!-- <div class="card book-type-ratio">
-          <div class="card-title">图书类型占比</div>
-          <div class="card-body">
-            <div
-              class="menu-chart-container"
-              ref="bookTypeChartContainer"
-            ></div>
-          </div>
-        </div> -->
         <!-- 公告卡片 -->
-        <div class="card notice-ratio">
-          <div class="card-title">站内公告</div>
+        <div class="card log-ratio">
+          <div class="card-title">系统日志</div>
           <div class="card-body">
-            <div class="notice-chart-container">
-              <ul class="notice-list">
+            <div class="log-chart-container">
+              <ul class="log-list">
                 <li
-                  v-for="notice in pinnedNotices"
-                  :key="notice.id"
-                  class="notice-item"
-                  @click="openNotice(notice)"
+                  v-for="log in logs.slice(0, 100)"
+                  :key="log.id"
+                  class="log-item"
+                  :style="logColorType(log)"
+                  @click="$router.push(`/admin/log`)"
+                  :title="log.info"
                 >
-                  <span class="top-notice">[置顶]</span>
-                  {{ notice.title }} - {{ notice.adddate }}
-                </li>
-              </ul>
-
-              <!-- 普通公告列表 -->
-              <ul class="notice-list">
-                <li
-                  v-for="notice in regularNotices"
-                  :key="notice.id"
-                  class="notice-item"
-                  @click="openNotice(notice)"
-                >
-                  {{ notice.title }} - {{ notice.adddate }}
+                  <i :class="logIconType(log)"></i>
+                  {{ log.type }} - {{ log.username }} - {{ log.adddate }}
                 </li>
               </ul>
             </div>
-
-            <!-- 公告详情展示区域 -->
-            <NoticeBox
-              class="notice-box"
-              v-if="selectedNotice"
-              :notice="selectedNotice"
-              @close="selectedNotice = null"
-            ></NoticeBox>
           </div>
         </div>
       </div>
@@ -132,8 +108,7 @@ import HeaderGuide from "@/components/HeaderGuide";
 import AdminLeftGuide from "@/components/admin/AdminLeftGuide";
 import AlertBox from "@/components/AlertBox.vue";
 import * as echarts from "echarts";
-import { mapState, mapMutations } from "vuex";
-import NoticeBox from "@/components/NoticeBox.vue";
+import { mapState } from "vuex";
 import axios from "axios";
 
 export default {
@@ -156,8 +131,7 @@ export default {
       books: [],
       menuTitles: [],
       dailyUser: [],
-      notices: [], // 存储公告数据
-      selectedNotice: null, // 存储当前选中的公告
+      logs: [],
       typeCount: {},
       alertMsg: "",
       pollingInterval: null,
@@ -171,7 +145,6 @@ export default {
     HeaderGuide,
     AdminLeftGuide,
     AlertBox,
-    NoticeBox,
   },
 
   created() {
@@ -186,7 +159,7 @@ export default {
     this.initMemChart();
     this.getDailyUser();
     this.selectBooks();
-    this.selectNotice();
+    this.selectLogs();
 
     window.addEventListener("resize", this.resizeCharts);
 
@@ -217,49 +190,70 @@ export default {
     ...mapState("UserInfo", ["userInfo"]),
     ...mapState("AdminLeftGuide", ["isLeftGuideVisible"]),
     ...mapState("SysInfo", ["onlineUserCount"]),
-    ...mapState("NormalModal", ["isNoticeModalVisible"]),
-
-    // 置顶公告
-    pinnedNotices() {
-      return this.notices.filter((notice) => notice.top);
-    },
-
-    // 普通公告
-    regularNotices() {
-      return this.notices.filter((notice) => !notice.top);
-    },
   },
 
   watch: {
     $route() {
       this.$nextTick(() => {
         this.resizeCharts();
+        this.selectBooks();
+        this.selectLogs();
       });
     },
   },
 
   methods: {
-    ...mapMutations("NormalModal", ["setNoticeModalVisible"]),
-
-    // 选择公告时，传递数据给 NoticeBox 组件
-    openNotice(notice) {
-      this.selectedNotice = notice;
+    // 动态图标
+    logIconType(log) {
+      const type = log.type;
+      switch (type) {
+        case "登录":
+          return "ri-login-box-line";
+        case "登出":
+          return "ri-logout-box-line";
+        case "注册":
+          return "ri-user-add-line";
+        case "注销":
+          return "ri-user-unfollow-line";
+        case "更新":
+          return "ri-refresh-line";
+        case "新增":
+          return "ri-add-circle-line";
+        case "删除":
+          return "ri-delete-bin-5-line";
+        case "借阅":
+          return "ri-book-open-line";
+        case "归还":
+          return "ri-book-line";
+        default:
+          return null;
+      }
     },
 
-    // 获取公告数据
-    async selectNotice() {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectNotice"
-        );
-        this.notices = response.data.notice || [];
-
-        if (this.notices.length === 0) {
-          this.selectedNotice = { info: "未找到任何公告记录" };
-        }
-      } catch (error) {
-        console.error(error.response?.data?.error || error.message);
-        this.selectedNotice = { info: "获取公告数据失败" };
+    // 动态颜色
+    logColorType(log) {
+      const type = log.type;
+      switch (type) {
+        case "登录":
+          return "color: green;";
+        case "登出":
+          return "color: orange;";
+        case "注册":
+          return "color: #00bfff;";
+        case "注销":
+          return "color: #ff0000;";
+        case "更新":
+          return "color: #ff00ff;";
+        case "新增":
+          return "color: limegreen;";
+        case "删除":
+          return "color: #ff0000;";
+        case "借阅":
+          return "color: #964B00;";
+        case "归还":
+          return "color: goldenrod;";
+        default:
+          return null;
       }
     },
 
@@ -329,6 +323,21 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "获取图书数据失败";
+      }
+    },
+
+    // 获取日志
+    async selectLogs() {
+      try {
+        const response = await axios.get("http://localhost:3000/api/selectLog");
+        this.logs = response.data.log || [];
+        this.logs.sort((a, b) => b.id - a.id);
+        if (this.logs.length === 0) {
+          this.boxMsg = "未找到任何日志记录";
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取日志数据失败";
       }
     },
 
@@ -408,94 +417,6 @@ export default {
 
       this.historyCountChart.setOption(option);
     },
-
-    // // 初始化图书分类占比图表
-    // initBookMenusChart() {
-    //   const chartContainer = this.$refs.bookTypeChartContainer;
-    //   this.bookTypeChart = echarts.init(chartContainer);
-
-    //   const bookTypes = this.getBookMenus();
-    //   const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
-
-    //   const data = bookTypes.map((item) => ({
-    //     name: item.name,
-    //     value: (item.value / totalBooks) * 100, // 计算占比
-    //   }));
-
-    //   const option = {
-    //     series: [
-    //       {
-    //         name: "图书分类",
-    //         type: "pie",
-    //         radius: ["50%", "70%"], // 设置环形图的内外半径
-    //         avoidLabelOverlap: false,
-    //         itemStyle: {
-    //           borderRadius: 10,
-    //           borderColor: "#fff",
-    //           borderWidth: 2,
-    //         },
-    //         label: {
-    //           show: true,
-    //           position: "outside",
-    //         },
-    //         data: data,
-    //       },
-    //     ],
-    //   };
-
-    //   this.bookTypeChart.setOption(option);
-    // },
-
-    // // 更新图书分类占比图表
-    // updateBookMenusChart() {
-    //   const bookTypes = this.getBookMenus();
-    //   const totalBooks = bookTypes.reduce((sum, item) => sum + item.value, 0);
-
-    //   const data = bookTypes.map((item) => ({
-    //     name: item.name,
-    //     value: (item.value / totalBooks) * 100, // 计算占比
-    //   }));
-
-    //   const option = {
-    //     series: [
-    //       {
-    //         name: "图书分类",
-    //         type: "pie",
-    //         radius: ["50%", "70%"], // 设置环形图的内外半径
-    //         avoidLabelOverlap: false,
-    //         itemStyle: {
-    //           borderRadius: 10,
-    //           borderColor: "#fff",
-    //           borderWidth: 2,
-    //         },
-    //         label: {
-    //           show: true,
-    //           position: "outside",
-    //         },
-    //         data: data, // 更新数据
-    //       },
-    //     ],
-    //   };
-
-    //   this.bookTypeChart.setOption(option);
-    // },
-
-    // // 统计每种分类的图书数量
-    // getBookMenus() {
-    //   this.typeCount = {}; // 重置分类计数
-    //   this.books.forEach((book) => {
-    //     if (this.typeCount[book.menu]) {
-    //       this.typeCount[book.menu]++;
-    //     } else {
-    //       this.typeCount[book.menu] = 1;
-    //     }
-    //   });
-
-    //   return Object.entries(this.typeCount).map(([name, value]) => ({
-    //     name,
-    //     value,
-    //   }));
-    // },
 
     // 初始化CPU图表
     initCpuChart() {
@@ -826,7 +747,7 @@ export default {
   overflow: visible;
 } */
 
-.notice-chart-container {
+.log-chart-container {
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -836,11 +757,11 @@ export default {
   -ms-overflow-style: none;
 }
 
-.notice-box {
+.log-box {
   margin-left: 7.5%;
 }
 
-.notice-chart-container::-webkit-scrollbar {
+.log-chart-container::-webkit-scrollbar {
   display: none;
 }
 
@@ -864,7 +785,7 @@ export default {
   grid-row: 3 / 4;
 } */
 
-.notice-ratio {
+.log-ratio {
   grid-column: 1 / 4;
   grid-row: 3 / 4;
 }
@@ -874,7 +795,7 @@ export default {
   grid-row: 2 / 3;
 }
 
-.notice-form {
+.log-form {
   position: absolute;
   display: flex;
   width: 100%;
@@ -886,26 +807,20 @@ export default {
   z-index: 0;
 }
 
-.notice-list {
+.log-list {
   list-style: none;
   padding: 0;
 }
 
-.notice-item {
+.log-item {
   padding: 10px;
   border-bottom: 1px solid #ddd;
   cursor: pointer;
   z-index: 1;
 }
 
-.notice-item:hover {
+.log-item:hover {
   background-color: #f0f0f0;
-}
-
-.top-notice {
-  color: red;
-  font-weight: bold;
-  margin-right: 5px;
 }
 
 @keyframes fade-in {
