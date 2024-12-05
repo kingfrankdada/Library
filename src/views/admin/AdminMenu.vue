@@ -1,147 +1,509 @@
 <template>
   <div class="admin-menu">
-    <div class="menu-box">
-      <!-- 分类查看 -->
-      <div @click="openSelectModal">
-        <NormalViewBox class="menu-box-item">
-          <div class="title-container">
-            <h1>PREVIEW</h1>
-            <h3>查看并编辑所有分类</h3>
-          </div>
-          <div class="img-container">
-            <img v-lazy="'/assets/images/background4.png'" alt="menu" />
-          </div>
-        </NormalViewBox>
-      </div>
-      <!-- 分类查看模态框 -->
-      <NormalModal
-        v-if="isSelectModalVisible"
-        class="select-modal"
-        size="large"
-      >
-        <div class="select-text">
-          所有分类
-          <div class="search-box">
-            <i class="ri-search-line" @click="toggleSearch"></i>
-            <input
-              v-if="isSearch"
-              v-model="searchText"
-              ref="searchRef"
-              class="search-input"
-              type="text"
-              placeholder="搜索名称"
-            />
-          </div>
-          <div class="select-tips">*双击分类属性可进行编辑</div>
-        </div>
-        <SelectMenu :searchText="searchText"></SelectMenu>
-      </NormalModal>
-
-      <!-- 分类添加 -->
-      <div @click="openAddModal">
-        <NormalViewBox class="menu-box-item">
-          <div class="title-container">
-            <h1>INCREASE</h1>
-            <h3>添加新的分类</h3>
-          </div>
-          <div class="img-container">
-            <img v-lazy="'/assets/images/background1.png'" alt="menu" />
-          </div>
-        </NormalViewBox>
-      </div>
-      <!-- 分类添加模态框 -->
-      <NormalModal v-if="isAddModalVisible" class="select-modal" size="large">
-        <div class="select-text">添加分类</div>
-        <AddMenu></AddMenu>
-      </NormalModal>
+    <!-- 搜索框 -->
+    <div class="search-box">
+      <input type="text" v-model="searchText" placeholder="搜索分类标题" />
     </div>
+
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <label @click="isAddModalVisible = true">
+        <i class="ri-menu-add-line"></i>
+        添加分类
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          v-model="showRecentDays"
+          @change="filterByRecentDays"
+        />
+        仅显示最近七天
+      </label>
+      <label>
+        <input type="checkbox" v-model="enableSelection" />
+        启用复选框
+      </label>
+      <!-- 全选 -->
+      <label v-show="enableSelection">
+        <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
+        全选
+      </label>
+      <label v-show="enableSelection" @click="deleteSelectedMenus">
+        <i class="ri-delete-bin-5-fill"></i>
+        删除选中
+      </label>
+    </div>
+
+    <!-- 分类表格 -->
+    <table v-if="paginatedMenus.length > 0">
+      <thead>
+        <tr>
+          <th v-if="enableSelection">
+            <input
+              type="checkbox"
+              v-model="selectPage"
+              @change="toggleSelectPage"
+            />
+          </th>
+          <th @click="sortMenus('id')">
+            ID
+            <span :class="getSortIcon('id')"></span>
+          </th>
+          <th @click="sortMenus('title')">
+            分类*
+            <span :class="getSortIcon('title')"></span>
+          </th>
+          <!-- <th>状态*</th> -->
+          <th>删除</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(menu, index) in paginatedMenus" :key="index">
+          <!-- 点击单元格触发复选框 -->
+          <td v-if="enableSelection" @click="toggleCheckbox(menu.id)">
+            <input type="checkbox" :value="menu.id" v-model="selectedMenus" />
+          </td>
+          <td>{{ menu.id }}</td>
+          <td>
+            <InputTag v-model="menu.title" @input="updateMenu(menu)"></InputTag>
+          </td>
+          <!-- <td>
+            <select v-model="menu.state" @change="updateMenu(menu)">
+              <option value="1">正常</option>
+              <option value="0">关闭</option>
+            </select>
+          </td> -->
+          <td>
+            <button class="del-btn" title="删除" @click="delMenu(menu)">
+              <i class="ri-delete-bin-5-fill"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+
+    <!-- 编辑分类模态框 -->
+    <EditTag
+      v-if="editMsg"
+      class="select-modal"
+      :editMsg="editMsg"
+      :editId="editId"
+      :editName="editName"
+      @update="updateMenu"
+      @close="editMsg = null"
+    ></EditTag>
+
+    <!-- 分类添加模态框 -->
+    <NormalModal
+      v-if="isAddModalVisible"
+      class="select-modal"
+      @close="closeModal"
+      size="large"
+    >
+      <div class="select-text">添加分类</div>
+      <AddMenu></AddMenu>
+    </NormalModal>
+
+    <!-- 分页控制 -->
+    <div class="pagination">
+      <span>每页显示：</span>
+      <select v-model="pageSize" @change="handlePageSizeChange">
+        <option :value="10">10</option>
+        <option :value="20">20</option>
+        <option :value="50">50</option>
+      </select>
+      <button @click="firstPage">首页</button>
+      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
+      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        下一页
+      </button>
+      <button @click="lastPage">尾页</button>
+    </div>
+
+    <!-- 自定义弹窗捕获 -->
+    <AlertBox
+      v-if="alertMsg"
+      :message="alertMsg"
+      @close="alertMsg = null"
+    ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
-import NormalViewBox from "@/components/NormalViewBox.vue";
-import NormalModal from "@/components/NormalModal.vue";
-import SelectMenu from "@/components/admin/SelectMenu.vue";
+import axios from "axios";
+import AlertBox from "@/components/AlertBox.vue";
+import MessageBox from "@/components/MessageBox.vue";
+import InputTag from "@/components/InputTag.vue";
 import AddMenu from "@/components/admin/AddMenu.vue";
+import EditTag from "@/components/EditTag.vue";
+import NormalModal from "@/components/NormalModal.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "AdminMenu",
+
   components: {
-    NormalViewBox,
-    NormalModal,
-    SelectMenu,
     AddMenu,
+    AlertBox,
+    MessageBox,
+    InputTag,
+    EditTag,
+    NormalModal,
   },
 
   data() {
     return {
-      isSearch: false, // 搜索框是否处于激活状态
-      searchText: "", // 搜索框的值
+      alertMsg: "",
+      message: "",
+      boxMsg: "暂无数据...",
+      editMsg: "", // 编辑分类传入数据
+      editId: null, // 存储编辑的分类 ID
+      editName: "",
+      menus: [],
+      searchText: "",
+      sortColumn: null,
+      sortOrder: "asc",
+      pageSize: 10, // 每页显示的条数
+      currentPage: 1, // 当前页
+      showRecentDays: false,
+      enableSelection: false, // 是否启用复选框
+      selectAll: false, // 全选
+      selectPage: false, // 当页全选
+      selectedMenus: [], // 选中
+      isAddModalVisible: false,
     };
   },
 
   computed: {
-    ...mapState("NormalModal", [
-      "isSelectModalVisible",
-      "isAddModalVisible",
-      "isUpdateModalVisible",
-    ]),
-    ...mapState("AdminLeftGuide", ["isLeftGuideVisible"]),
-  },
+    ...mapState("UserInfo", ["userInfo"]),
 
-  watch: {
-    isLeftGuideVisible(newVal) {
-      this.updateModalPosition(newVal);
-    },
-  },
+    // 筛选后的分类
+    filteredMenus() {
+      const filterList = this.searchText.toLowerCase();
+      let menus = [...this.menus];
 
-  methods: {
-    ...mapMutations("NormalModal", [
-      "setSelectModalVisible",
-      "setAddModalVisible",
-      "setUpdateModalVisible",
-    ]),
-
-    updateModalPosition(isVisible) {
-      this.$nextTick(() => {
-        const selectModal = document.querySelector(".select-modal");
-        if (selectModal) {
-          selectModal.style.left = isVisible ? "0%" : "-7.5%";
-        }
-      });
-    },
-
-    toggleSearch() {
-      this.isSearch = !this.isSearch;
-      if (this.isSearch) {
-        this.$nextTick(() => {
-          this.$refs.searchRef.focus();
-        });
-      } else {
-        this.searchText = "";
+      // 启用最近七天筛选
+      if (this.showRecentDays) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        menus = menus.filter((menu) => new Date(menu.adddate) >= sevenDaysAgo);
       }
+
+      // 根据搜索框内容筛选
+      return menus
+        .filter((menu) => menu.title.toLowerCase().includes(filterList))
+        .sort((a, b) => new Date(b.id) - new Date(a.id));
     },
 
-    openSelectModal() {
-      this.setSelectModalVisible(true);
-      this.syncPosition();
+    // 排序后的分类
+    sortedMenus() {
+      const menus = [...this.filteredMenus];
+      if (this.sortColumn) {
+        menus.sort((a, b) => {
+          const aVal = a[this.sortColumn];
+          const bVal = b[this.sortColumn];
+          if (this.sortOrder === "asc") {
+            return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+          } else {
+            return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+          }
+        });
+      }
+      return menus;
     },
 
-    openAddModal() {
-      this.setAddModalVisible(true);
-      this.syncPosition();
+    // 当前页显示的分类
+    paginatedMenus() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.sortedMenus.slice(start, end);
     },
 
-    syncPosition() {
-      this.updateModalPosition(this.isLeftGuideVisible);
+    // 总页数
+    totalPages() {
+      return Math.ceil(this.filteredMenus.length / this.pageSize);
     },
   },
 
   mounted() {
-    this.updateModalPosition(this.isLeftGuideVisible);
-    this.setAddModalVisible(false);
-    this.setSelectModalVisible(false);
+    this.selectMenus();
+  },
+
+  watch: {
+    selectedMenus: {
+      handler() {
+        // 更新全页全选状态
+        const allIds = this.filteredMenus.map((menu) => menu.id);
+        this.selectAll = allIds.every((id) => this.selectedMenus.includes(id));
+
+        // 更新当页全选状态
+        const currentPageIds = this.paginatedMenus.map((menu) => menu.id);
+        this.selectPage = currentPageIds.every((id) =>
+          this.selectedMenus.includes(id)
+        );
+      },
+      deep: true,
+    },
+
+    currentPage() {
+      const currentPageIds = this.paginatedMenus.map((menu) => menu.id);
+      this.selectPage = currentPageIds.every((id) =>
+        this.selectedMenus.includes(id)
+      );
+    },
+
+    searchText() {
+      this.currentPage = 1;
+      this.resetSelection();
+    },
+  },
+
+  methods: {
+    // 点击单元格切换复选框
+    toggleCheckbox(menuId) {
+      if (this.selectedMenus.includes(menuId)) {
+        this.selectedMenus = this.selectedMenus.filter((id) => id !== menuId);
+      } else {
+        this.selectedMenus.push(menuId);
+      }
+    },
+
+    // 日期格式化
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    },
+
+    // 打开编辑模态框
+    openEdit(menu) {
+      this.editName = menu.title;
+      this.editMsg = menu.info;
+      this.editId = menu.id;
+    },
+
+    // 筛选最近七天
+    filterByRecentDays() {
+      this.currentPage = 1;
+      this.resetSelection();
+    },
+
+    // 全页全选
+    toggleSelectAll() {
+      if (this.selectAll) {
+        this.selectedMenus = this.filteredMenus.map((menu) => menu.id);
+      } else {
+        this.selectedMenus = [];
+      }
+    },
+
+    // 当页全选
+    toggleSelectPage() {
+      const currentPageIds = this.paginatedMenus.map((menu) => menu.id);
+      if (this.selectPage) {
+        this.selectedMenus = Array.from(
+          new Set([...this.selectedMenus, ...currentPageIds])
+        );
+      } else {
+        this.selectedMenus = this.selectedMenus.filter(
+          (id) => !currentPageIds.includes(id)
+        );
+      }
+    },
+
+    // 还原复选框状态
+    resetSelection() {
+      this.selectedMenus = [];
+      this.selectAll = false;
+      this.selectPage = false;
+    },
+
+    // 关闭模态框
+    closeModal() {
+      this.isAddModalVisible = false;
+      this.selectMenus();
+      this.currentPage = 1;
+    },
+
+    async selectMenus() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/selectMenu"
+        );
+        this.menus = response.data.menus || [];
+        if (this.menus.length === 0) {
+          this.boxMsg = "未找到任何分类记录";
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.boxMsg = "获取分类数据失败";
+      }
+    },
+
+    // 删除分类
+    async delMenu(menu) {
+      try {
+        await axios.post(`http://localhost:3000/api/delMenu/${menu.id}`, menu);
+        // this.alertMsg = "删除分类成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "删除分类失败";
+      }
+
+      // 添加删除日志
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      const newLog = {
+        username: this.userInfo.username,
+        userIP: this.userInfo.userIP,
+        type: "删除",
+        info: `删除分类：${menu.title}`,
+        adddate: adddate,
+      };
+
+      try {
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "添加日志失败";
+      }
+
+      this.selectMenus();
+    },
+
+    // 删除选中的分类
+    async deleteSelectedMenus() {
+      if (this.selectedMenus.length === 0) {
+        this.alertMsg = "请选择要删除的分类";
+        return;
+      }
+
+      // 构造日志信息
+      const deletedTitles = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        // 删除选中的分类
+        for (const menuId of this.selectedMenus) {
+          const menu = this.menus.find((n) => n.id === menuId);
+          if (menu) {
+            deletedTitles.push(menu.title);
+            await axios.post(`http://localhost:3000/api/delMenu/${menuId}`);
+          }
+        }
+
+        // 添加批量删除日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "删除",
+          info: `批量删除分类：${deletedTitles.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedMenus = [];
+        this.selectMenus();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "删除成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "删除失败";
+      }
+    },
+
+    async updateMenu(menu) {
+      try {
+        await axios.post(`http://localhost:3000/api/updateMenu/${menu.id}`, {
+          title: menu.title,
+          info: menu.info,
+          top: menu.top,
+        });
+        // 添加更新日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `更新分类：${menu.title || menu.name}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+        this.selectMenus();
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "更新分类数据失败";
+      }
+    },
+
+    // 排序分类
+    sortMenus(column) {
+      if (this.sortColumn === column) {
+        this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        this.sortColumn = column;
+        this.sortOrder = "asc";
+      }
+    },
+
+    // 获取排序图标
+    getSortIcon(column) {
+      if (this.sortColumn === column) {
+        return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
+      }
+      return "sort-icon";
+    },
+
+    // 首页
+    firstPage() {
+      this.currentPage = 1;
+    },
+
+    // 上一页
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+
+    // 下一页
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+
+    // 尾页
+    lastPage() {
+      this.currentPage = this.totalPages;
+    },
+
+    handlePageSizeChange() {
+      this.currentPage = 1;
+      this.resetSelection();
+      this.selectMenus();
+    },
   },
 };
 </script>
@@ -150,16 +512,122 @@ export default {
 .admin-menu {
   height: 100%;
   width: 85%;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  overflow-y: scroll;
   background: var(--background-color);
+  overflow-y: auto;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.search-box input {
+  width: 60%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: var(--text-color);
+  background-color: #f9f9f9;
+  font-size: 16px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.toolbar label {
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.toolbar label:last-child:hover {
+  color: red;
+}
+
+table {
+  margin-left: 20px;
+  width: calc(100% - 40px);
+  border-collapse: collapse;
+  margin-top: 5px;
+  margin-bottom: 50px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+  max-width: 125px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+th {
+  background-color: var(--first-color);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+td {
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+td:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s;
+}
+
+td:last-child:hover {
+  background-color: #f9f9f9;
+}
+
+.menu-type-icon {
+  margin-left: 5px;
+}
+
+button {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--first-color);
+  border-radius: 5px;
+  background-color: var(--white-color);
+  color: var(--first-color);
+  font-weight: var(--font-medium);
+}
+
+button:hover {
+  background-color: var(--first-color);
+  color: var(--white-color);
+  transition: 0.4s;
+}
+
+select {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
 }
 
 .select-modal {
-  width: 115%;
-  height: 110%;
-  transition: left 0.4s ease;
+  position: fixed;
+  z-index: 9999;
+  left: 7.5%;
 }
 
 .select-text {
@@ -175,88 +643,53 @@ export default {
   margin-left: 20px;
 }
 
-.search-box {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-}
-
-.ri-search-line::before {
+.menu-info {
   cursor: pointer;
 }
 
-.search-input {
-  border: 1px solid var(--first-color);
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin-left: 10px;
-  color: var(--first-color);
-  font-size: 15px;
-  font-weight: var(--font-medium);
-  outline: none;
+.sort-icon {
+  margin-left: 5px;
+}
+.sort-asc-icon::after {
+  content: "▲";
+}
+.sort-desc-icon::after {
+  content: "▼";
 }
 
-.title-container {
+.pagination {
+  position: sticky;
+  height: 12.5%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 50%;
-  height: 100%;
-  transition: all 0.4s ease;
-  background: var(--white-color);
+  bottom: 40px;
+  gap: 20px;
+  z-index: 1;
+  background: var(--background-color);
 }
 
-.menu-box-item {
-  justify-content: left;
+.pagination span {
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  width: 80px;
   align-items: center;
-  text-align: left;
-  transition: all 0.4s ease;
-}
-
-.menu-box-item:hover .title-container {
   justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
+  justify-items: center;
 }
 
-.menu-box-item:hover h1,
-.menu-box-item:hover h3 {
-  text-align: center;
-  margin: 0;
+.pagination select {
+  width: 100px;
+  padding: 5px;
+  border-radius: 4px;
 }
 
-.menu-box-item h1 {
-  font-family: var(--body-font);
-  font-size: 40px;
-  color: var(--first-color);
-  margin-bottom: 10px;
-  transition: all 1s ease;
-}
-
-.menu-box-item h3 {
-  font-family: var(--body-font);
-  font-size: 20px;
-  color: var(--first-color);
-  text-align: left;
-  margin-left: 10px;
-  transition: all 1s ease;
-}
-
-.select-tips {
-  position: absolute;
-  right: 20px;
-  transform: translateY(-50%);
-  margin-right: 20px;
-  text-align: right;
-  font-size: 15px;
-  color: var(--text-color);
-}
-
-.select-menu {
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

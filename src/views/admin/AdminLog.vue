@@ -10,7 +10,7 @@
     </div>
 
     <!-- 工具栏 -->
-    <div v-if="paginatedLogs.length > 0" class="toolbar">
+    <div class="toolbar">
       <label>
         <input
           type="checkbox"
@@ -74,7 +74,7 @@
       </thead>
       <tbody>
         <tr v-for="(log, index) in paginatedLogs" :key="index">
-          <td v-if="enableSelection">
+          <td v-if="enableSelection" @click="toggleCheckbox(log.id)">
             <input type="checkbox" :value="log.id" v-model="selectedLogs" />
           </td>
           <td :title="log.id">{{ log.id }}</td>
@@ -97,7 +97,7 @@
       </tbody>
     </table>
 
-    <p v-else>{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
 
     <!-- 分页控制 -->
     <div class="pagination">
@@ -109,7 +109,7 @@
       </select>
       <button @click="firstPage">首页</button>
       <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
       <button @click="nextPage" :disabled="currentPage === totalPages">
         下一页
       </button>
@@ -304,6 +304,15 @@ export default {
       }
     },
 
+    // 点击单元格切换复选框
+    toggleCheckbox(logId) {
+      if (this.selectedLogs.includes(logId)) {
+        this.selectedLogs = this.selectedLogs.filter((id) => id !== logId);
+      } else {
+        this.selectedLogs.push(logId);
+      }
+    },
+
     filterByRecentDays() {
       this.currentPage = 1;
       this.resetSelection();
@@ -479,7 +488,7 @@ export default {
 
 table {
   margin-left: 20px;
-  width: 100%;
+  width: calc(100% - 40px);
   border-collapse: collapse;
   margin-top: 5px;
   margin-bottom: 50px;
@@ -492,7 +501,7 @@ td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #eaeaea;
-  max-width: 200px;
+  max-width: 125px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -520,6 +529,7 @@ td:hover {
 td:last-child:hover {
   background-color: #f9f9f9;
 }
+
 .log-type-icon {
   margin-left: 5px;
 }

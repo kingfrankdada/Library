@@ -28,7 +28,7 @@ export default {
     editName: {
       type: String,
       required: true,
-    }
+    },
   },
   data() {
     return {
@@ -50,7 +50,7 @@ export default {
       this.$emit("update", {
         id: this.editId,
         info: this.editableInfo,
-        name: this.editName
+        name: this.editName,
       });
       this.close();
     },

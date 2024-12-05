@@ -72,6 +72,7 @@ export default {
       "setEditNoticeModalVisible",
     ]),
     close() {
+      this.$emit("close");
       this.setLoginModalVisible(false);
       this.setLogoutModalVisible(false);
       this.setRegModalVisible(false);

@@ -58,12 +58,18 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import AlertBox from "../AlertBox.vue";
+import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -71,6 +77,7 @@ export default {
 
   components: {
     AlertBox,
+    MessageBox,
   },
 
   computed: {
@@ -87,6 +94,7 @@ export default {
         adddate: "",
       },
       alertMsg: "",
+      message: "",
     };
   },
   methods: {
@@ -104,7 +112,7 @@ export default {
       try {
         await axios.post("http://localhost:3000/api/addNotice", this.newNotice);
         // this.alertMsg = "公告添加成功";
-        this.alertMsg = "公告添加成功，请前往公告管理查看";
+        this.message = "公告添加成功，请前往公告管理查看";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

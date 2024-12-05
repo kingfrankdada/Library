@@ -10,7 +10,7 @@
     </div>
 
     <!-- 工具栏 -->
-    <div v-if="paginatedCredits.length > 0" class="toolbar">
+    <div class="toolbar">
       <label>
         <input
           type="checkbox"
@@ -70,7 +70,7 @@
       </select>
       <button @click="firstPage">首页</button>
       <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
       <button @click="nextPage" :disabled="currentPage === totalPages">
         下一页
       </button>
@@ -318,7 +318,7 @@ export default {
 }
 
 table {
-  width: 100%;
+  width: calc(100% - 40px);
   margin-left: 20px;
   border-collapse: collapse;
   margin-top: 5px;
@@ -332,7 +332,7 @@ td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #eaeaea;
-  max-width: 200px;
+  max-width: 125px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

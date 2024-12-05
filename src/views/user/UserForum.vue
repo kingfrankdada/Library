@@ -33,7 +33,7 @@
             </div>
           </div>
         </div>
-        <p v-else>{{ boxMsg }}</p>
+        <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
       </div>
 
       <div
