@@ -32,6 +32,14 @@
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
         全选
       </label>
+      <label v-show="enableSelection" @click="topSelectedNotices">
+        <i class="ri-expand-up-down-fill"></i>
+        置顶
+      </label>
+      <label v-show="enableSelection" @click="untopSelectedNotices">
+        <i class="ri-contract-up-down-fill"></i>
+        取消置顶
+      </label>
       <label v-show="enableSelection" @click="deleteSelectedNotices">
         <i class="ri-delete-bin-5-fill"></i>
         删除选中
@@ -427,14 +435,12 @@ export default {
         return;
       }
 
-      // 构造日志信息
       const deletedTitles = [];
       const adddate = new Date().toLocaleString("sv-SE", {
         timeZoneName: "short",
       });
 
       try {
-        // 删除选中的公告
         for (const noticeId of this.selectedNotices) {
           const notice = this.notices.find((n) => n.id === noticeId);
           if (notice) {
@@ -463,6 +469,106 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "删除失败";
+      }
+    },
+
+    // 置顶选中的公告
+    async topSelectedNotices() {
+      if (this.selectedNotices.length === 0) {
+        this.alertMsg = "请选择要置顶的公告";
+        return;
+      }
+
+      const toppedTitles = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const noticeId of this.selectedNotices) {
+          const notice = this.notices.find((n) => n.id === noticeId);
+          if (notice) {
+            toppedTitles.push(notice.title);
+            await axios.post(
+              `http://localhost:3000/api/updateNotice/${noticeId}`,
+              {
+                ...notice,
+                top: true,
+              }
+            );
+          }
+        }
+
+        // 添加置顶日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量置顶公告：${toppedTitles.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedNotices = [];
+        this.selectNotices();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "置顶成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "置顶失败";
+      }
+    },
+
+    // 取消置顶选中的公告
+    async untopSelectedNotices() {
+      if (this.selectedNotices.length === 0) {
+        this.alertMsg = "请选择要取消置顶的公告";
+        return;
+      }
+
+      const untoppedTitles = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const noticeId of this.selectedNotices) {
+          const notice = this.notices.find((n) => n.id === noticeId);
+          if (notice) {
+            untoppedTitles.push(notice.title);
+            await axios.post(
+              `http://localhost:3000/api/updateNotice/${noticeId}`,
+              {
+                ...notice,
+                top: false,
+              }
+            );
+          }
+        }
+
+        // 添加取消置顶日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量取消置顶公告：${untoppedTitles.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedNotices = [];
+        this.selectNotices();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "取消置顶成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "取消置顶失败";
       }
     },
 

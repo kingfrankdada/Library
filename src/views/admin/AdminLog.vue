@@ -134,6 +134,7 @@
 import axios from "axios";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "AdminLog",
@@ -161,6 +162,7 @@ export default {
   },
 
   computed: {
+    ...mapState("UserInfo", ["userInfo"]),
     // 筛选后的日志
     filteredLogs() {
       const filterList = this.searchText.toLowerCase();
@@ -217,6 +219,9 @@ export default {
   },
 
   mounted() {
+    if (this.userInfo.role != 0) {
+      this.$router.push("/admin");
+    }
     this.selectLogs();
   },
 

@@ -32,6 +32,14 @@
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
         全选
       </label>
+      <label v-show="enableSelection" @click="banSelectedUsers">
+        <i class="ri-prohibited-line"></i>
+        封禁
+      </label>
+      <label v-show="enableSelection" @click="unbanSelectedUsers">
+        <i class="ri-checkbox-circle-line"></i>
+        取消封禁
+      </label>
       <label v-show="enableSelection" @click="deleteSelectedUsers">
         <i class="ri-delete-bin-5-fill"></i>
         删除选中
@@ -378,7 +386,7 @@ export default {
         const response = await axios.get(
           "http://localhost:3000/api/selectUser"
         );
-        console.log(response);
+        // console.log(response);
         this.users =
           response.data.users.map((user) => ({
             ...user,
@@ -427,10 +435,16 @@ export default {
 
       this.selectUsers();
     },
+
     // 删除选中的用户
     async deleteSelectedUsers() {
       if (this.selectedUsers.length === 0) {
         this.alertMsg = "请选择要删除的用户";
+        return;
+      }
+
+      if (this.userInfo.role != 0) {
+        this.alertMsg = "权限不足";
         return;
       }
 
@@ -472,7 +486,116 @@ export default {
         this.alertMsg = "删除失败";
       }
     },
+    
+    // 封禁选中用户
+    async banSelectedUsers() {
+      if (this.selectedUsers.length === 0) {
+        this.alertMsg = "请选择要封禁的用户";
+        return;
+      }
 
+      if (this.userInfo.role != 0) {
+        this.alertMsg = "权限不足";
+        return;
+      }
+
+      const bannedUsernames = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const userId of this.selectedUsers) {
+          const user = this.users.find((u) => u.id === userId);
+          if (user && user.state != 0) {
+            bannedUsernames.push(user.username);
+            await axios.post(`http://localhost:3000/api/updateUser/${userId}`, {
+              role: user.role,
+              state: 0,
+              credit_count: user.credit_count,
+              username: user.username,
+              email: user.email,
+            });
+          }
+        }
+
+        // 添加批量封禁日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量封禁用户：${bannedUsernames.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedUsers = [];
+        this.selectUsers();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "封禁成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "封禁失败";
+      }
+    },
+
+    // 取消封禁选中用户
+    async unbanSelectedUsers() {
+      if (this.selectedUsers.length === 0) {
+        this.alertMsg = "请选择要取消封禁的用户";
+        return;
+      }
+
+      if (this.userInfo.role != 0) {
+        this.alertMsg = "权限不足";
+        return;
+      }
+
+      const unbannedUsernames = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const userId of this.selectedUsers) {
+          const user = this.users.find((u) => u.id === userId);
+          if (user && user.state == 0) {
+            unbannedUsernames.push(user.username);
+            await axios.post(`http://localhost:3000/api/updateUser/${userId}`, {
+              role: user.role,
+              state: 1,
+              credit_count: user.credit_count,
+              username: user.username,
+              email: user.email,
+            });
+          }
+        }
+
+        // 添加批量取消封禁日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量取消封禁用户：${unbannedUsernames.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedUsers = [];
+        this.selectUsers();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "取消封禁成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "取消封禁失败";
+      }
+    },
     async updateUser(user) {
       try {
         await axios.post(`http://localhost:3000/api/updateUser/${user.id}`, {
@@ -670,6 +793,11 @@ button:hover {
   background-color: var(--first-color);
   color: var(--white-color);
   transition: 0.4s;
+}
+
+.del-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 select {

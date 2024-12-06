@@ -32,6 +32,14 @@
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
         全选
       </label>
+      <label v-show="enableSelection" @click="closeSelectedBooks">
+        <i class="ri-prohibited-line"></i>
+        关闭
+      </label>
+      <label v-show="enableSelection" @click="openSelectedBooks">
+        <i class="ri-checkbox-circle-line"></i>
+        开放
+      </label>
       <label v-show="enableSelection" @click="deleteSelectedBooks">
         <i class="ri-delete-bin-5-fill"></i>
         删除选中
@@ -522,6 +530,99 @@ export default {
       }
     },
 
+    // 开放选中图书
+    async openSelectedBooks() {
+      if (this.selectedBooks.length === 0) {
+        this.alertMsg = "请选择要开放的图书";
+        return;
+      }
+
+      const openedTitles = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const bookId of this.selectedBooks) {
+          const book = this.books.find((b) => b.id === bookId);
+          if (book && book.state != 1) {
+            openedTitles.push(book.name);
+            await axios.post(`http://localhost:3000/api/updateBook/${bookId}`, {
+              ...book,
+              state: 1,
+            });
+          }
+        }
+
+        // 添加批量开放日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量开放图书：${openedTitles.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedBooks = [];
+        this.selectBooks();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "开放选中成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "开放选中失败";
+      }
+    },
+
+    // 关闭选中图书
+    async closeSelectedBooks() {
+      if (this.selectedBooks.length === 0) {
+        this.alertMsg = "请选择要关闭的图书";
+        return;
+      }
+
+      const closedTitles = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const bookId of this.selectedBooks) {
+          const book = this.books.find((b) => b.id === bookId);
+          if (book && book.state != 0) {
+            closedTitles.push(book.name);
+            await axios.post(`http://localhost:3000/api/updateBook/${bookId}`, {
+              ...book,
+              state: 0,
+            });
+          }
+        }
+
+        // 添加批量关闭日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量关闭图书：${closedTitles.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await axios.post("http://localhost:3000/api/addLog", newLog);
+
+        // 重置状态
+        this.selectedBooks = [];
+        this.selectBooks();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "关闭选中成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "关闭选中失败";
+      }
+    },
     async updateBook(book) {
       try {
         await axios.post(

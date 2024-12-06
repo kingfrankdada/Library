@@ -18,7 +18,7 @@
               <span class="card-form-count">{{ books.length }}</span>
             </div>
             <div class="card-form-item">
-              <h4>系统日志数</h4>
+              <h4>{{ userInfo.role != 0 ? "借阅信息数" : "系统日志数" }}</h4>
               <span class="card-form-count">{{ logs.length }}</span>
             </div>
           </div>
@@ -71,7 +71,9 @@
         </div>
         <!-- 公告卡片 -->
         <div class="card log-ratio">
-          <div class="card-title">系统日志</div>
+          <div class="card-title">
+            {{ userInfo.role != 0 ? "借阅信息" : "系统日志" }}
+          </div>
           <div class="card-body">
             <div class="log-chart-container">
               <ul class="log-list">
@@ -148,9 +150,9 @@ export default {
   },
 
   created() {
-    // if (this.userInfo.role != 1 || this.userInfo.role != 0) {
-    //   this.$router.push("/home");
-    // }
+    if (this.userInfo.role != 1 && this.userInfo.role != 0) {
+      this.$router.push("/home");
+    }
     this.getSystemInfo();
   },
 
@@ -332,6 +334,12 @@ export default {
         const response = await axios.get("http://localhost:3000/api/selectLog");
         this.logs = response.data.log || [];
         this.logs.sort((a, b) => b.id - a.id);
+        // 如果不为超级管理员，只显示借阅和归还日志
+        if (this.userInfo.role != 0) {
+          this.logs = this.logs.filter(
+            (log) => log.type === "借阅" || log.type === "归还"
+          );
+        }
         if (this.logs.length === 0) {
           this.boxMsg = "未找到任何日志记录";
         }
@@ -815,7 +823,6 @@ export default {
 .log-item {
   padding: 10px;
   border-bottom: 1px solid #ddd;
-  cursor: pointer;
   z-index: 1;
 }
 

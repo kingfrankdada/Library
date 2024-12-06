@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索借阅信息图书或用户"
+        placeholder="搜索借阅信息或用户"
       />
     </div>
 
