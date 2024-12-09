@@ -103,7 +103,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import { mapState } from "vuex";
 
@@ -143,9 +144,7 @@ export default {
     // 获取图书，导入到图书列表
     async selectBooks() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectBook"
-        );
+        const response = await api.get(endpoints.selectBook);
         this.books = response.data.books || [];
         this.filteredBooks = [...this.books];
       } catch (error) {
@@ -157,9 +156,7 @@ export default {
     // 获取用户，导入到用户列表
     async selectUsers() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectUser"
-        );
+        const response = await api.get(endpoints.selectUser);
         this.users = response.data.users || [];
         this.filteredUsers = [...this.users];
       } catch (error) {
@@ -209,7 +206,7 @@ export default {
       }
 
       try {
-        await axios.post("http://localhost:3000/api/borrow", {
+        await api.post(endpoints.borrow, {
           username: this.newBorrow.username,
           bookname: this.newBorrow.bookname,
           start_date: this.newBorrow.start_date,
@@ -230,7 +227,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         this.alertMsg = "借阅添加成功，请前借阅管理查看";
         this.resetForm(); // 提交后重置表单

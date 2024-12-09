@@ -21,9 +21,10 @@
 </template>
 
 <script scoped>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
 import NormalModal from "@/components/NormalModal";
-import axios from "axios";
 
 export default {
   name: "DelUser",
@@ -63,19 +64,14 @@ export default {
           creditCount: 0,
           adddate: adddate,
         };
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 删除信誉分信息
-        await axios.post(
-          `http://localhost:3000/api/delCredit/${this.userInfo.username}`
-        );
+        await api.post(endpoints.delCredit(this.userInfo.username));
         const user = {
           id: this.userId,
         };
-        await axios.post(
-          `http://localhost:3000/api/delUser/${this.userId}`,
-          user
-        );
+        await api.post(endpoints.delUser(this.userId), user);
         // this.alertMsg = "删除用户成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

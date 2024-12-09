@@ -113,6 +113,8 @@
 </template>
 
 <script>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import NormalModal from "@/components/NormalModal.vue";
@@ -122,7 +124,6 @@ import DelUser from "@/components/user/DelUser.vue";
 import { mapState, mapMutations } from "vuex";
 import { eventBus } from "@/utils/eventBus";
 import UserLeftGuide from "@/components/user/UserLeftGuide.vue";
-import axios from "axios";
 import * as echarts from "echarts";
 
 export default {
@@ -241,8 +242,8 @@ export default {
 
     async selectUsersByUserName() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectUser/${this.userInfo.username}`
+        const response = await api.get(
+          endpoints.selectUserByUsername(this.userInfo.username)
         );
         const users = response.data.users;
         this.users =

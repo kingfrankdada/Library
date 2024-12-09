@@ -18,9 +18,10 @@
 </template>
 
 <script scoped>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
 import NormalModal from "@/components/NormalModal";
-import axios from "axios";
 
 export default {
   name: "PublicLogout",
@@ -50,7 +51,7 @@ export default {
         creditCount: 0,
         adddate: adddate,
       };
-      await axios.post("http://localhost:3000/api/addLog", newLog).then(() => {
+      await api.post(endpoints.addLog, newLog).then(() => {
         this.setUserInfo({
           role: "",
           username: "",

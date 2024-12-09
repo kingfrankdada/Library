@@ -61,7 +61,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
@@ -102,7 +103,7 @@ export default {
         return;
       }
       try {
-        await axios.post("http://localhost:3000/api/reg", this.newUser);
+        await api.post(endpoints.reg, this.newUser);
         // this.alertMsg = "用户添加成功";
         this.message = "用户添加成功，初始密码为：" + this.newUser.password;
 
@@ -118,7 +119,7 @@ export default {
           creditCount: 0,
           adddate: adddate,
         };
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         this.resetForm(); // 提交后重置表单
       } catch (error) {

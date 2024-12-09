@@ -53,7 +53,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import { mapState } from "vuex";
 
@@ -92,10 +93,7 @@ export default {
         return;
       }
       try {
-        await axios.post(
-          "http://localhost:3000/api/addMessage",
-          this.newMessage
-        );
+        await api.post(endpoints.addMessage, this.newMessage);
         // this.alertMsg = "论坛留言添加成功";
         this.alertMsg = "论坛留言添加成功，请前往论坛留言管理查看";
         this.resetForm(); // 提交后重置表单

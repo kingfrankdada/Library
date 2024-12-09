@@ -53,7 +53,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
 import NormalModal from "@/components/NormalModal";
 import NoticeBox from "@/components/NoticeBox.vue";
@@ -102,9 +103,7 @@ export default {
     // 获取公告数据
     async selectNotice() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectNotice"
-        );
+        const response = await api.get(endpoints.selectNotice);
         this.notices = response.data.notice || [];
         this.notices.sort((a, b) => new Date(b.adddate) - new Date(a.adddate));
         if (this.notices.length === 0) {

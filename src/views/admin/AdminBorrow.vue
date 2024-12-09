@@ -232,7 +232,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -440,9 +441,7 @@ export default {
 
     async selectBorrows() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectBorrow"
-        );
+        const response = await api.get(endpoints.selectBorrow);
         this.borrows = response.data.record || [];
         if (this.borrows.length === 0) {
           this.boxMsg = "未找到任何借阅记录";
@@ -456,10 +455,7 @@ export default {
     // 删除借阅信息
     async delBorrow(borrow) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/delBorrow/${borrow.id}`,
-          borrow
-        );
+        await api.post(endpoints.delBorrow(borrow.id), borrow);
         // this.alertMsg = "删除借阅信息成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -480,7 +476,7 @@ export default {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "添加日志失败";
@@ -508,7 +504,7 @@ export default {
           const borrow = this.borrows.find((n) => n.id === borrowId);
           if (borrow) {
             deletedTitles.push(borrow.title);
-            await axios.post(`http://localhost:3000/api/delBorrow/${borrowId}`);
+            await api.post(endpoints.delBorrow(borrowId));
           }
         }
 
@@ -521,7 +517,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedBorrows = [];
@@ -537,10 +533,7 @@ export default {
 
     async updateBorrow(borrow) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/updateBorrow/${borrow.id}`,
-          borrow
-        );
+        await api.post(endpoints.updateBorrow(borrow.id), borrow);
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {
           timeZoneName: "short",
@@ -554,7 +547,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
         this.selectBorrows();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

@@ -47,7 +47,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState } from "vuex";
 import AlertBox from "@/components/AlertBox.vue";
 
@@ -85,8 +86,8 @@ export default {
   methods: {
     async selectMessageByUserName() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectMessage/${this.userInfo.username}`
+        const response = await api.get(
+          endpoints.selectMessageByUsername(this.userInfo.username)
         );
         this.messages = response.data.message || [];
       } catch (error) {
@@ -107,7 +108,7 @@ export default {
     // 删除评论
     async delComment(messageId) {
       try {
-        await axios.post(`http://localhost:3000/api/delMessage/${messageId}`);
+        await api.post(endpoints.delMessage(messageId));
         this.alertMsg = "评论删除成功";
         this.selectMessageByUserName();
       } catch (error) {

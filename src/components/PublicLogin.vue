@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapMutations, mapState } from "vuex";
 import axios from "axios";
 import AlertBox from "@/components/AlertBox";
@@ -110,9 +112,7 @@ export default {
             error.message
           );
           try {
-            const localResponse = await axios.get(
-              "http://localhost:3000/api/getLocalIP"
-            );
+            const localResponse = await api.get(endpoints.getLocalIP);
             userIP = localResponse.data.ip;
           } catch (localError) {
             console.error("获取本地IP失败，使用默认IP:", localError.message);
@@ -123,7 +123,7 @@ export default {
           timeZoneName: "short",
         });
 
-        const response = await axios.post("http://localhost:3000/api/login", {
+        const response = await api.post(endpoints.login, {
           username: this.username,
           password: this.password,
         });
@@ -149,7 +149,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         this.setLoginModalVisible(false);
       } catch (error) {

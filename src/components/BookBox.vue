@@ -62,8 +62,9 @@
 </template>
 
 <script>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState } from "vuex";
-import axios from "axios";
 import AlertBox from "./AlertBox.vue";
 import MessageBox from "./MessageBox.vue";
 
@@ -138,8 +139,8 @@ export default {
     // 查询当前用户信息
     async selectUsersByUserName() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectUser/${this.userInfo.username}`
+        const response = await api.get(
+          endpoints.selectUserByUsername(this.userInfo.username)
         );
         const users = response.data.users;
         this.users =
@@ -158,12 +159,9 @@ export default {
     // 检查是否已收藏
     async checkIfFavorited() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/checkFavorite`,
-          {
-            params: { bookName: this.book.name, user: this.userInfo.username },
-          }
-        );
+        const response = await api.get(endpoints.checkFavorite, {
+          params: { bookName: this.book.name, user: this.userInfo.username },
+        });
         this.isFavorited = response.data.isFavorited;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -197,7 +195,7 @@ export default {
         adddate: this.book.adddate,
       };
       try {
-        await axios.post("http://localhost:3000/api/addFavorite", newFavorite);
+        await api.post(endpoints.addFavorite(newFavorite));
         this.message = "收藏成功，请前往用户中心-我的收藏查看";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -207,8 +205,8 @@ export default {
 
     async cancelFavorite() {
       try {
-        await axios.post(
-          `http://localhost:3000/api/delFavorite/${this.userInfo.username}/${this.book.name}`
+        await api.post(
+          endpoints.delFavorite(this.userInfo.username, this.book.name)
         );
         // this.alertMsg = "取消收藏成功，请前往用户中心-我的收藏查看";
         this.$emit("reSelect");

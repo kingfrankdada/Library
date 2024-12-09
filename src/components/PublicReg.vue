@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
 import axios from "axios";
 import AlertBox from "@/components/AlertBox";
@@ -109,7 +111,7 @@ export default {
       } else {
         this.adddate = new Date().toISOString().split("T")[0];
         try {
-          const response = await axios.post("http://localhost:3000/api/reg", {
+          const response = await api.post(endpoints.reg, {
             username: this.username,
             usertoken: this.usertoken,
             password: this.password,
@@ -123,10 +125,25 @@ export default {
           // alert(`注册成功：用户 ${response.data.username}`);
 
           // 获取用户的 IP 地址
-          const ipResponse = await axios.get(
-            "https://api.ipify.org?format=json"
-          );
-          const userIP = ipResponse.data.ip;
+          let userIP = "127.0.0.1";
+          try {
+            const ipResponse = await axios.get(
+              "https://api.ipify.org?format=json",
+              { timeout: 2000 }
+            );
+            userIP = ipResponse.data.ip;
+          } catch (error) {
+            console.warn(
+              "无法通过公网API获取IP地址，尝试本地获取:",
+              error.message
+            );
+            try {
+              const localResponse = await api.get(endpoints.getLocalIP);
+              userIP = localResponse.data.ip;
+            } catch (localError) {
+              console.error("获取本地IP失败，使用默认IP:", localError.message);
+            }
+          }
 
           this.setUserInfo({
             role: response.data.role,
@@ -148,7 +165,7 @@ export default {
             creditCount: 0,
             adddate: adddate,
           };
-          await axios.post("http://localhost:3000/api/addLog", newLog);
+          await api.post(endpoints.addLog, newLog);
 
           // 添加信誉分表初始化信息
           const newCredit = {
@@ -158,7 +175,7 @@ export default {
             adddate: adddate,
           };
 
-          await axios.post("http://localhost:3000/api/addCredit", newCredit);
+          await api.post(endpoints.addCredit, newCredit);
 
           this.alertMsg = `注册成功：用户 ${response.data.username}`;
 

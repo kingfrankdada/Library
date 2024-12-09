@@ -92,7 +92,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import { mapState } from "vuex";
@@ -204,9 +205,7 @@ export default {
 
     async selectCredits() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectCredit"
-        );
+        const response = await api.get(endpoints.selectCredit);
         this.credits = response.data.credit || [];
         // 过滤当前用户的信誉分
         this.credits = this.credits.filter(

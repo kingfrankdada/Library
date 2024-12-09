@@ -138,7 +138,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -337,9 +338,7 @@ export default {
 
     async selectMenus() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectMenu"
-        );
+        const response = await api.get(endpoints.selectMenu);
         this.menus = response.data.menus || [];
         if (this.menus.length === 0) {
           this.boxMsg = "未找到任何分类记录";
@@ -353,7 +352,7 @@ export default {
     // 删除分类
     async delMenu(menu) {
       try {
-        await axios.post(`http://localhost:3000/api/delMenu/${menu.id}`, menu);
+        await api.post(endpoints.delMenu(menu.id), menu);
         // this.alertMsg = "删除分类成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -374,7 +373,7 @@ export default {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "添加日志失败";
@@ -402,7 +401,7 @@ export default {
           const menu = this.menus.find((n) => n.id === menuId);
           if (menu) {
             deletedTitles.push(menu.title);
-            await axios.post(`http://localhost:3000/api/delMenu/${menuId}`);
+            await api.post(endpoints.delMenu(menuId));
           }
         }
 
@@ -415,7 +414,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedMenus = [];
@@ -431,7 +430,7 @@ export default {
 
     async updateMenu(menu) {
       try {
-        await axios.post(`http://localhost:3000/api/updateMenu/${menu.id}`, {
+        await api.post(endpoints.updateMenu(menu.id), {
           title: menu.title,
           info: menu.info,
           top: menu.top,
@@ -449,7 +448,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
         this.selectMenus();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

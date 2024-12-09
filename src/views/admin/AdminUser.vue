@@ -186,7 +186,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -383,9 +384,7 @@ export default {
 
     async selectUsers() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectUser"
-        );
+        const response = await api.get(endpoints.selectUser);
         // console.log(response);
         this.users =
           response.data.users.map((user) => ({
@@ -405,7 +404,7 @@ export default {
     // 删除用户
     async delUser(user) {
       try {
-        await axios.post(`http://localhost:3000/api/delUser/${user.id}`, user);
+        await api.post(endpoints.delUser(user.id), user);
         // this.alertMsg = "删除用户成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -427,7 +426,7 @@ export default {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "添加日志失败";
@@ -460,7 +459,7 @@ export default {
           const user = this.users.find((u) => u.id === userId);
           if (user) {
             deletedUsernames.push(user.username);
-            await axios.post(`http://localhost:3000/api/delUser/${userId}`);
+            await api.post(endpoints.delUser(userId));
           }
         }
 
@@ -473,7 +472,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedUsers = [];
@@ -486,7 +485,7 @@ export default {
         this.alertMsg = "删除失败";
       }
     },
-    
+
     // 封禁选中用户
     async banSelectedUsers() {
       if (this.selectedUsers.length === 0) {
@@ -509,7 +508,7 @@ export default {
           const user = this.users.find((u) => u.id === userId);
           if (user && user.state != 0) {
             bannedUsernames.push(user.username);
-            await axios.post(`http://localhost:3000/api/updateUser/${userId}`, {
+            await api.post(endpoints.updateUser(userId), {
               role: user.role,
               state: 0,
               credit_count: user.credit_count,
@@ -528,7 +527,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedUsers = [];
@@ -564,7 +563,7 @@ export default {
           const user = this.users.find((u) => u.id === userId);
           if (user && user.state == 0) {
             unbannedUsernames.push(user.username);
-            await axios.post(`http://localhost:3000/api/updateUser/${userId}`, {
+            await api.post(endpoints.updateUser(userId), {
               role: user.role,
               state: 1,
               credit_count: user.credit_count,
@@ -583,7 +582,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedUsers = [];
@@ -598,7 +597,7 @@ export default {
     },
     async updateUser(user) {
       try {
-        await axios.post(`http://localhost:3000/api/updateUser/${user.id}`, {
+        await api.post(endpoints.updateUser(user.id), {
           role: user.role,
           state: user.state,
           credit_count: user.creditCount,
@@ -620,7 +619,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 添加信誉分表更新信息
         const newCredit = {
@@ -630,7 +629,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addCredit", newCredit);
+        await api.post(endpoints.addCredit, newCredit);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新用户数据失败";

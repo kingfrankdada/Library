@@ -13,15 +13,19 @@ const port = 3000;
 const wsport = 8081;
 const saltRounds = 10;
 
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV}`
+});
+
 app.use(cors());
 app.use(bodyParser.json());
 
-// MySQL 数据库连接 开发环境测试demo
+// MySQL 数据库连接
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '123456',
-  database: 'library'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 // 初始化数据库连接
@@ -1424,5 +1428,12 @@ function dailyOverCheck() {
 
 app.listen(port, () => {
   console.log(`服务器正在监听 http://localhost:${port}`);
+  console.log('当前环境:', process.env.NODE_ENV);
+  console.log('数据库配置:', {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+  });
+
   dailyOverCheck(); // 开发环境，启动时执行逾期检查
 });

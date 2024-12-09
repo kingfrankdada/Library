@@ -68,7 +68,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import { mapState } from "vuex";
 
@@ -105,9 +106,7 @@ export default {
   methods: {
     async selectMessages() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectMessage"
-        );
+        const response = await api.get(endpoints.selectMessage);
         this.messages = response.data.message || [];
 
         if (this.messages.length === 0) {
@@ -139,15 +138,12 @@ export default {
     // 更新留言到服务器
     async updateMessage(message) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/updateMessage/${message.id}`,
-          {
-            title: message.title,
-            info: message.info,
-            views: message.views,
-            likes: message.likes,
-          }
-        );
+        await api.post(endpoints.updateMessage(message.id), {
+          title: message.title,
+          info: message.info,
+          views: message.views,
+          likes: message.likes,
+        });
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新论坛留言数据失败";
@@ -165,10 +161,7 @@ export default {
         return;
       }
       try {
-        await axios.post(
-          "http://localhost:3000/api/addMessage",
-          this.newMessage
-        );
+        await api.post(endpoints.addMessage, this.newMessage);
         this.resetForm();
         this.selectMessages();
       } catch (error) {
@@ -192,10 +185,7 @@ export default {
     // 删除留言
     async delMessage(message) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/delMessage/${message.id}`,
-          message
-        );
+        await api.post(endpoints.delMessage(message.id), message);
         this.alertMsg = "删除论坛留言成功";
         this.selectMessages();
       } catch (error) {

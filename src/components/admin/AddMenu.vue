@@ -40,7 +40,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import { mapState } from "vuex";
 
@@ -71,7 +72,7 @@ export default {
         return;
       }
       try {
-        await axios.post("http://localhost:3000/api/addMenu", this.newMenu);
+        await api.post(endpoints.addMenu, this.newMenu);
         this.alertMsg = "分类添加成功";
 
         // 添加更新日志
@@ -86,7 +87,7 @@ export default {
           creditCount: 0,
           adddate: adddate,
         };
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
         
         this.resetForm(); // 提交后重置表单
       } catch (error) {

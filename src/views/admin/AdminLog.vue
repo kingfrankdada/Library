@@ -131,7 +131,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import { mapState } from "vuex";
@@ -355,7 +356,7 @@ export default {
 
     async selectLogs() {
       try {
-        const response = await axios.get("http://localhost:3000/api/selectLog");
+        const response = await api.get(endpoints.selectLog);
         this.logs = response.data.log || [];
         if (this.logs.length === 0) {
           this.boxMsg = "未找到任何日志记录";
@@ -368,7 +369,7 @@ export default {
 
     async delLog(log) {
       try {
-        await axios.post(`http://localhost:3000/api/delLog/${log.id}`, log);
+        await api.post(endpoints.delLog(log.id));
         // this.alertMsg = "删除日志成功";
         this.selectLogs();
       } catch (error) {
@@ -385,7 +386,7 @@ export default {
       }
       try {
         for (const logId of this.selectedLogs) {
-          await axios.post(`http://localhost:3000/api/delLog/${logId}`);
+          await api.post(endpoints.delLog(logId));
         }
         this.selectedLogs = [];
         this.selectLogs();

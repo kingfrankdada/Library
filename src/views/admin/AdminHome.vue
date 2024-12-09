@@ -106,12 +106,13 @@
 </template>
 
 <script>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import HeaderGuide from "@/components/HeaderGuide";
 import AdminLeftGuide from "@/components/admin/AdminLeftGuide";
 import AlertBox from "@/components/AlertBox.vue";
 import * as echarts from "echarts";
 import { mapState } from "vuex";
-import axios from "axios";
 
 export default {
   name: "AdminHome",
@@ -269,9 +270,7 @@ export default {
     // 获取系统信息
     async getSystemInfo() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/systemInfo"
-        );
+        const response = await api.get(endpoints.systemInfo);
         this.systemInfo = response.data;
       } catch (error) {
         console.error("获取系统信息失败:", error);
@@ -281,9 +280,7 @@ export default {
     // 获取历史在线用户
     async getDailyUser() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectDailyUser"
-        );
+        const response = await api.get(endpoints.selectDailyUser);
         // console.log(response);
         const dailyUser = response.data.dailyUser;
 
@@ -308,9 +305,7 @@ export default {
     // 获取所有图书
     async selectBooks() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectBook"
-        );
+        const response = await api.get(endpoints.selectBook);
         const books = response.data.books;
         this.books = books || [];
 
@@ -331,7 +326,7 @@ export default {
     // 获取日志
     async selectLogs() {
       try {
-        const response = await axios.get("http://localhost:3000/api/selectLog");
+        const response = await api.get(endpoints.selectLog);
         this.logs = response.data.log || [];
         this.logs.sort((a, b) => b.id - a.id);
         // 如果不为超级管理员，只显示借阅和归还日志

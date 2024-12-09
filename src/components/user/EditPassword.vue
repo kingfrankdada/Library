@@ -62,7 +62,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
@@ -106,15 +107,12 @@ export default {
         } else if (this.newPassword.length < 6) {
           this.alertMsg = "密码不能少于6位";
         } else {
-          await axios.post(
-            `http://localhost:3000/api/resetPassword/${this.userId}`,
-            {
-              id: this.userId,
-              username: this.userInfo.username,
-              password: this.newPassword,
-              oldPassword: this.oldPassword,
-            }
-          );
+          await api.post(endpoints.resetPassword(this.userId), {
+            id: this.userId,
+            username: this.userInfo.username,
+            password: this.newPassword,
+            oldPassword: this.oldPassword,
+          });
           this.$emit("logout");
         }
       } catch (error) {

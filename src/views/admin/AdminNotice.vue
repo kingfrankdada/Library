@@ -170,7 +170,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -379,9 +380,7 @@ export default {
 
     async selectNotices() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectNotice"
-        );
+        const response = await api.get(endpoints.selectNotice);
         this.notices = response.data.notice || [];
         if (this.notices.length === 0) {
           this.boxMsg = "未找到任何公告记录";
@@ -395,10 +394,7 @@ export default {
     // 删除公告
     async delNotice(notice) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/delNotice/${notice.id}`,
-          notice
-        );
+        await api.post(endpoints.delNotice(notice.id), notice);
         // this.alertMsg = "删除公告成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -419,7 +415,7 @@ export default {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "添加日志失败";
@@ -445,7 +441,7 @@ export default {
           const notice = this.notices.find((n) => n.id === noticeId);
           if (notice) {
             deletedTitles.push(notice.title);
-            await axios.post(`http://localhost:3000/api/delNotice/${noticeId}`);
+            await api.post(endpoints.delNotice(noticeId));
           }
         }
 
@@ -458,7 +454,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedNotices = [];
@@ -489,13 +485,10 @@ export default {
           const notice = this.notices.find((n) => n.id === noticeId);
           if (notice) {
             toppedTitles.push(notice.title);
-            await axios.post(
-              `http://localhost:3000/api/updateNotice/${noticeId}`,
-              {
-                ...notice,
-                top: true,
-              }
-            );
+            await api.post(endpoints.updateNotice(noticeId), {
+              ...notice,
+              top: true,
+            });
           }
         }
 
@@ -508,7 +501,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedNotices = [];
@@ -539,13 +532,10 @@ export default {
           const notice = this.notices.find((n) => n.id === noticeId);
           if (notice) {
             untoppedTitles.push(notice.title);
-            await axios.post(
-              `http://localhost:3000/api/updateNotice/${noticeId}`,
-              {
-                ...notice,
-                top: false,
-              }
-            );
+            await api.post(endpoints.updateNotice(noticeId), {
+              ...notice,
+              top: false,
+            });
           }
         }
 
@@ -558,7 +548,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedNotices = [];
@@ -574,14 +564,11 @@ export default {
 
     async updateNotice(notice) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/updateNotice/${notice.id}`,
-          {
-            title: notice.title,
-            info: notice.info,
-            top: notice.top,
-          }
-        );
+        await api.post(endpoints.updateNotice(notice.id), {
+          title: notice.title,
+          info: notice.info,
+          top: notice.top,
+        });
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {
           timeZoneName: "short",
@@ -595,7 +582,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
         this.selectNotices();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

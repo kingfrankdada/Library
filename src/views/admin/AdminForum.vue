@@ -172,7 +172,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -390,9 +391,7 @@ export default {
 
     async selectMessages() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectMessage"
-        );
+        const response = await api.get(endpoints.selectMessage);
         this.messages = response.data.message || [];
         if (this.messages.length === 0) {
           this.boxMsg = "未找到任何留言记录";
@@ -406,10 +405,7 @@ export default {
     // 删除留言
     async delMessage(message) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/delMessage/${message.id}`,
-          message
-        );
+        await api.post(endpoints.delMessage(message.id), message);
         // this.alertMsg = "删除留言成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -430,7 +426,7 @@ export default {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "添加日志失败";
@@ -458,9 +454,7 @@ export default {
           const message = this.messages.find((n) => n.id === messageId);
           if (message) {
             deletedTitles.push(message.title);
-            await axios.post(
-              `http://localhost:3000/api/delMessage/${messageId}`
-            );
+            await api.post(endpoints.delMessage(messageId));
           }
         }
 
@@ -473,7 +467,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedMessages = [];
@@ -489,15 +483,12 @@ export default {
 
     async updateMessage(message) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/updateMessage/${message.id}`,
-          {
-            title: message.title,
-            info: message.info,
-            views: message.views,
-            likes: message.likes,
-          }
-        );
+        await api.post(endpoints.updateMessage(message.id), {
+          title: message.title,
+          info: message.info,
+          views: message.views,
+          likes: message.likes,
+        });
 
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {
@@ -512,7 +503,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
         this.selectMessages();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

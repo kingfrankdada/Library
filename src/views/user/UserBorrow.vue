@@ -130,7 +130,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import { mapState } from "vuex";
@@ -229,8 +230,8 @@ export default {
     // 获取用户借阅记录
     async fetchBorrowBorrows() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectBorrow/${this.userInfo.username}`
+        const response = await api.get(
+          endpoints.selectBorrowByUsername(this.userInfo.username)
         );
         this.records = response.data.record || [];
         if (this.records.length === 0) {
@@ -265,7 +266,7 @@ export default {
         return;
       }
       try {
-        await axios.post("http://localhost:3000/api/return", {
+        await api.post(endpoints.return, {
           id: record.id,
           username: this.userInfo.username,
           bookname: record.bookname,
@@ -284,7 +285,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         this.message = "归还成功，感谢您的支持";
         this.fetchBorrowBorrows();
@@ -402,7 +403,6 @@ td:hover {
 td:last-child:hover {
   background-color: #f9f9f9;
 }
-
 
 button {
   cursor: pointer;

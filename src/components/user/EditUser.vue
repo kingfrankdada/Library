@@ -42,7 +42,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import InputTag from "../InputTag.vue";
 import MessageBox from "../MessageBox.vue";
@@ -87,8 +88,8 @@ export default {
   methods: {
     async selectUsersByUserName() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectUser/${this.userInfo.username}`
+        const response = await api.get(
+          endpoints.selectUserByUsername(this.userInfo.username)
         );
         const users = response.data.users;
         this.users =
@@ -130,10 +131,25 @@ export default {
         return;
       }
       try {
-        await axios.post(`http://localhost:3000/api/updateUser/${user.id}`, {
+        await api.post(endpoints.updateUser(user.id), {
           username: user.username,
           email: user.email,
         });
+
+        // 添加更新日志
+        const adddate = new Date().toLocaleString("sv-SE", {
+          timeZoneName: "short",
+        });
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `更新用户：${user.username}`,
+          creditCount: 0,
+          adddate: adddate,
+        };
+        await api.post(endpoints.addLog, newLog);
+
         this.alertMsg = "更新用户数据成功";
         this.$emit("close");
       } catch (error) {

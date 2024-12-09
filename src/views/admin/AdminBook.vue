@@ -219,7 +219,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -426,9 +427,7 @@ export default {
 
     async selectMenuTitles() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/menuTitles"
-        );
+        const response = await api.get(endpoints.menuTitles);
         this.menuTitles = response.data.titles;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -438,9 +437,7 @@ export default {
 
     async selectBooks() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectBook"
-        );
+        const response = await api.get(endpoints.selectBook);
         this.books = response.data.books || [];
         if (this.books.length === 0) {
           this.boxMsg = "未找到任何图书记录";
@@ -454,7 +451,7 @@ export default {
     // 删除图书
     async delBook(book) {
       try {
-        await axios.post(`http://localhost:3000/api/delBook/${book.id}`, book);
+        await api.post(endpoints.delBook(book.id), book);
         // this.alertMsg = "删除图书成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -475,7 +472,7 @@ export default {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "添加日志失败";
@@ -503,7 +500,7 @@ export default {
           const book = this.books.find((n) => n.id === bookId);
           if (book) {
             deletedTitles.push(book.name);
-            await axios.post(`http://localhost:3000/api/delBook/${bookId}`);
+            await api.post(endpoints.delBook(bookId), book);
           }
         }
 
@@ -516,7 +513,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedBooks = [];
@@ -547,7 +544,7 @@ export default {
           const book = this.books.find((b) => b.id === bookId);
           if (book && book.state != 1) {
             openedTitles.push(book.name);
-            await axios.post(`http://localhost:3000/api/updateBook/${bookId}`, {
+            await api.post(endpoints.updateBook(bookId), {
               ...book,
               state: 1,
             });
@@ -563,7 +560,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedBooks = [];
@@ -594,7 +591,7 @@ export default {
           const book = this.books.find((b) => b.id === bookId);
           if (book && book.state != 0) {
             closedTitles.push(book.name);
-            await axios.post(`http://localhost:3000/api/updateBook/${bookId}`, {
+            await api.post(endpoints.updateBook(bookId), {
               ...book,
               state: 0,
             });
@@ -610,7 +607,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         // 重置状态
         this.selectedBooks = [];
@@ -625,10 +622,7 @@ export default {
     },
     async updateBook(book) {
       try {
-        await axios.post(
-          `http://localhost:3000/api/updateBook/${book.id}`,
-          book
-        );
+        await api.post(endpoints.updateBook(book.id), book);
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {
           timeZoneName: "short",
@@ -642,7 +636,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
         this.selectBooks();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

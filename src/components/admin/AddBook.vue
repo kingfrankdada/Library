@@ -131,7 +131,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
 import { mapState } from "vuex";
 
@@ -169,9 +170,7 @@ export default {
   methods: {
     async fetchMenuTitles() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/menuTitles"
-        );
+        const response = await api.get(endpoints.menuTitles);
         this.menuTitles = response.data.titles;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -212,10 +211,7 @@ export default {
         formData.append("file", this.selectedImage);
 
         try {
-          const response = await axios.post(
-            "http://localhost:3000/api/uploadImage",
-            formData
-          );
+          const response = await api.post(endpoints.uploadImage, formData);
           this.newBook.img = response.data.fileName;
         } catch (error) {
           console.error(error.response?.data?.error || error.message);
@@ -246,7 +242,7 @@ export default {
 
       try {
         await this.uploadImage(); // 上传图片
-        await axios.post("http://localhost:3000/api/addBook", this.newBook);
+        await api.post(endpoints.addBook, this.newBook);
         // 自动推送
         if (this.isNoticeActive) {
           const newNotice = {
@@ -257,7 +253,7 @@ export default {
             adddate: new Date().toISOString().split("T")[0],
           };
           try {
-            await axios.post("http://localhost:3000/api/addNotice", newNotice);
+            await api.post(endpoints.addNotice, newNotice);
             // 添加更新日志
             const adddate = new Date().toLocaleString("sv-SE", {
               timeZoneName: "short",
@@ -270,7 +266,7 @@ export default {
               creditCount: 0,
               adddate: adddate,
             };
-            await axios.post("http://localhost:3000/api/addLog", newLog);
+            await api.post(endpoints.addLog, newLog);
           } catch (error) {
             console.error(error.response?.data?.error || error.message);
             this.alertMsg = "公告添加失败";

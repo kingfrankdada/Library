@@ -88,7 +88,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState } from "vuex";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
@@ -182,12 +183,9 @@ export default {
     // 检查是否已收藏
     async checkIfFavorited() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/checkFavorite`,
-          {
-            params: { bookName: this.book.name, user: this.userInfo.username },
-          }
-        );
+        const response = await api.get(endpoints.checkFavorite, {
+          params: { bookName: this.book.name, user: this.userInfo.username },
+        });
         this.isFavorited = response.data.isFavorited;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -196,8 +194,8 @@ export default {
 
     async selectFavorite() {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/selectFavorite/${this.userInfo.username}`
+        const response = await api.get(
+          endpoints.selectFavorite(this.userInfo.username)
         );
         this.books = response.data.favorite || [];
         if (this.books.length === 0) {
@@ -211,9 +209,7 @@ export default {
 
     async selectMenus() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/selectMenu"
-        );
+        const response = await api.get(endpoints.selectMenu);
         this.menus = response.data.menus;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

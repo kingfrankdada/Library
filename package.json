@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "concurrently \"vue-cli-service serve\" \"npm run start-server\"",
+    "serve": "cross-env NODE_ENV=development concurrently \"yarn start-frontend\" \"yarn start-server\"",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "start-server": "nodemon --watch src/db/server.js src/db/server.js"
+    "start-server": "cross-env NODE_ENV=development nodemon --watch src/db/server.js src/db/server.js",
+    "start-frontend": "vue-cli-service serve",
+    "serve-prod": "cross-env NODE_ENV=production concurrently \"yarn start-frontend\" \"yarn start-server-prod\"",
+    "start-server-prod": "cross-env NODE_ENV=production node src/db/server.js"
   },
   "dependencies": {
     "axios": "^1.7.4",
@@ -15,6 +17,8 @@
     "concurrently": "^8.2.2",
     "core-js": "^3.8.3",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "echarts": "^5.5.1",
     "express": "^4.19.2",
     "install": "^0.13.0",

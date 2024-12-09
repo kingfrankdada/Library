@@ -82,8 +82,9 @@
 </template>
 
 <script>
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
 import { mapState } from "vuex";
-import axios from "axios";
 import AlertBox from "./AlertBox.vue";
 import MessageBox from "./MessageBox.vue";
 
@@ -195,7 +196,7 @@ export default {
       }
 
       try {
-        await axios.post("http://localhost:3000/api/borrow", {
+        await api.post(endpoints.borrow, {
           username: this.userInfo.username,
           bookname: this.book.name,
           start_date: new Date().toISOString().split("T")[0],
@@ -216,7 +217,7 @@ export default {
           adddate: adddate,
         };
 
-        await axios.post("http://localhost:3000/api/addLog", newLog);
+        await api.post(endpoints.addLog, newLog);
 
         this.message = `借阅成功: ${this.book.name}`;
         this.$emit("reSelect");
