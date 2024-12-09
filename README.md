@@ -30,7 +30,7 @@ yarn install
 
 ### 启动开发服务器
 
-运行以下命令启动开发服务器（包含VUE CLI 与 Node）：
+运行以下命令启动开发服务器（包含Vue CLI 与 Node）：
 
 ```bash
 yarn serve
@@ -50,6 +50,12 @@ yarn start-server
 
 ```bash
 yarn build
+```
+
+运行以下命令使用Vue CLI进行生产环境构建（包含Node）：
+
+```bash
+yarn serve-prod
 ```
 
 ## 功能模块

@@ -73,6 +73,7 @@
               type="number"
               placeholder="输入借阅天数或自动计算"
               @change="updateOverDateFromDays"
+              :min="1"
             />
           </td>
         </tr>
@@ -309,13 +310,22 @@ button:hover {
 
 input[type="text"],
 input[type="number"],
-input[type="date"],
 select {
   width: 100%;
   height: 30px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+input[type="date"],
+select {
+  height: 30px;
+  padding: 5px;
   resize: none;
   outline: none;
   box-sizing: border-box;

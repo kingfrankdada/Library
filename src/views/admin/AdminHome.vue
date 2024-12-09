@@ -455,7 +455,7 @@ export default {
               roundCap: true,
               clip: false,
               itemStyle: {
-                borderWidth: 1,
+                borderWidth: 0,
                 borderColor: "#464646",
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                   {
@@ -563,7 +563,7 @@ export default {
               roundCap: true,
               clip: false,
               itemStyle: {
-                borderWidth: 1,
+                borderWidth: 0,
                 borderColor: "#464646",
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                   {

@@ -37,7 +37,12 @@
         <tr>
           <td>价格*</td>
           <td>
-            <input v-model="newBook.price" type="text" placeholder="输入价格" />
+            <input
+              v-model="newBook.price"
+              type="number"
+              placeholder="输入价格"
+              :min="1"
+            />
           </td>
         </tr>
         <tr>
@@ -55,8 +60,9 @@
           <td>
             <input
               v-model="newBook.num"
-              type="text"
+              type="number"
               placeholder="输入库存数量"
+              :min="1"
             />
           </td>
         </tr>
