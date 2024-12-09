@@ -73,7 +73,7 @@ export default {
   width: 60%;
   height: 60%;
   background-color: var(--white-color);
-  border-radius: 10px;
+  border-radius: 3px;
   position: relative;
   display: flex;
   flex-direction: column;

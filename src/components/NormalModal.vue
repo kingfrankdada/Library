@@ -113,7 +113,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 3px;
   position: relative;
   display: flex;
   flex-direction: column;

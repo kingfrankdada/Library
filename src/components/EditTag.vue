@@ -78,7 +78,7 @@ export default {
   width: 50%;
   height: 60%;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 3px;
   position: relative;
   display: flex;
   flex-direction: column;
