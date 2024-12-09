@@ -148,9 +148,13 @@
             {{ book.info }}
           </td>
           <td>
-            <select v-model="book.state" @change="updateBook(book)">
-              <option value="1">正常</option>
-              <option value="0">关闭</option>
+            <select
+              :style="{ color: book.state === 1 ? 'green' : 'red' }"
+              v-model="book.state"
+              @change="updateBook(book)"
+            >
+              <option style="color: green" value="1">正常</option>
+              <option style="color: red" value="0">关闭</option>
             </select>
           </td>
           <td>{{ book.adddate }}</td>

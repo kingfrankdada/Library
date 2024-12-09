@@ -216,7 +216,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取信誉分数据失败";
+        this.boxMsg = "未找到任何信誉分记录";
       }
     },
     // 排序信誉分

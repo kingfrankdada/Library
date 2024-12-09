@@ -159,10 +159,21 @@
             ></InputTag>
           </td>
           <td>
-            <select v-model="borrow.state" @change="updateBorrow(borrow)">
-              <option value="2">已逾期</option>
-              <option value="1">借阅中</option>
-              <option value="0">已归还</option>
+            <select
+              :style="{
+                color:
+                  borrow.state === 2
+                    ? 'red'
+                    : borrow.state === 1
+                    ? 'orange'
+                    : 'green',
+              }"
+              v-model="borrow.state"
+              @change="updateBorrow(borrow)"
+            >
+              <option style="color: red" value="2">已逾期</option>
+              <option style="color: orange" value="1">借阅中</option>
+              <option style="color: green" value="0">已归还</option>
             </select>
           </td>
           <td>{{ borrow.credit_delta || "-" }}</td>

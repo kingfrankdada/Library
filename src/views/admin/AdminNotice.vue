@@ -100,9 +100,13 @@
             {{ notice.info }}
           </td>
           <td>
-            <select v-model="notice.top" @change="updateNotice(notice)">
-              <option value="1">置顶</option>
-              <option value="0">正常</option>
+            <select
+              :style="{ color: notice.top === 1 ? 'red' : 'green' }"
+              v-model="notice.top"
+              @change="updateNotice(notice)"
+            >
+              <option style="color: red" value="1">置顶</option>
+              <option style="color: green" value="0">正常</option>
             </select>
           </td>
           <td>

@@ -115,9 +115,13 @@
             <InputTag v-model="user.email" @input="updateUser(user)"></InputTag>
           </td>
           <td>
-            <select v-model="user.state" @change="updateUser(user)">
-              <option value="1">正常</option>
-              <option value="0">封禁</option>
+            <select
+              :style="{ color: user.state === 0 ? 'red' : 'green' }"
+              v-model="user.state"
+              @change="updateUser(user)"
+            >
+              <option style="color: green" value="1">正常</option>
+              <option style="color: red" value="0">封禁</option>
             </select>
           </td>
           <td>
@@ -630,6 +634,7 @@ export default {
         };
 
         await api.post(endpoints.addCredit, newCredit);
+        this.selectUsers();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新用户数据失败";
