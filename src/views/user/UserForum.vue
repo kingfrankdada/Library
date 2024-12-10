@@ -108,6 +108,8 @@ export default {
       try {
         const response = await api.get(endpoints.selectMessage);
         this.messages = response.data.message || [];
+        // 隔断处理，保留最新100条留言
+        this.messages = this.messages.slice(-100);
 
         if (this.messages.length === 0) {
           this.boxMsg = "未找到任何论坛留言记录";

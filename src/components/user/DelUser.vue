@@ -96,7 +96,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .delete {
   display: flex;
   flex-direction: column;
@@ -155,12 +155,12 @@ export default {
 
 .delete-btn:hover {
   background-color: red;
-  border-radius: 0 0 0 10px;
+  border-radius: 0 0 0 2px;
   color: var(--white-color);
 }
 
 .cancel-btn:hover {
   background-color: var(--border-color);
-  border-radius: 0 0 10px 0;
+  border-radius: 0 0 2px 0;
 }
 </style>

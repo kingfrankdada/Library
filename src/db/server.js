@@ -1318,11 +1318,54 @@ app.post('/api/return', (req, res) => {
   });
 });
 
-// 自动检查逾期方法
 function dailyOverCheck() {
   console.log("开始逾期检查...");
   const today = new Date().toISOString().split("T")[0];
 
+  // 查询所有状态为 1 和 2 的借阅记录
+  const fetchRecordsQuery = `
+    SELECT id, start_date, username 
+    FROM record 
+    WHERE state IN (1, 2)
+  `;
+  connection.query(fetchRecordsQuery, (fetchErr, records) => {
+    if (fetchErr) {
+      console.error("查询借阅记录失败:", fetchErr.stack);
+      return;
+    }
+
+    records.forEach((record) => {
+      const {
+        id,
+        start_date
+      } = record;
+
+      // 计算借阅天数
+      const record_days = Math.max(
+        1,
+        Math.ceil((new Date(today) - new Date(start_date)) / (1000 * 60 * 60 * 24))
+      );
+      
+      const updateDaysQuery = `
+        UPDATE record 
+        SET record_days = ?
+        WHERE id = ?
+      `;
+      connection.query(updateDaysQuery, [record_days, id], (updateErr) => {
+        if (updateErr) {
+          console.error(`更新 record_days 失败（ID: ${id}）:`, updateErr.stack);
+        } else {
+          console.log(`更新 record_days 成功（ID: ${id}, 借阅天数: ${record_days}）`);
+        }
+      });
+    });
+
+    performOverdueCheck(today);
+  });
+}
+
+// 逾期检查
+function performOverdueCheck(today) {
   const query = `
     SELECT r.id, r.over_date, r.last_penalty_date, r.username, r.credit_delta, u.credit_count
     FROM record r
@@ -1421,7 +1464,6 @@ function dailyOverCheck() {
       }
     });
 
-    // 逾期检查完成，反馈更新几条记录
     console.log("逾期检查完成,已更新" + results.length + "条记录");
   });
 }
