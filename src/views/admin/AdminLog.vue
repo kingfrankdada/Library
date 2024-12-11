@@ -77,17 +77,27 @@
           <td v-if="enableSelection" @click="toggleCheckbox(log.id)">
             <input type="checkbox" :value="log.id" v-model="selectedLogs" />
           </td>
-          <td :title="log.id">{{ log.id }}</td>
-          <td :title="log.username">{{ log.username }}</td>
-          <td :title="log.user_ip">{{ log.user_ip }}</td>
-          <td :style="logIconColor(log)" :title="log.type">
+          <td :title="log.id" @click="openInfo(log.id)">{{ log.id }}</td>
+          <td :title="log.username" @click="openInfo(log.username)">
+            {{ log.username }}
+          </td>
+          <td :title="log.user_ip" @click="openInfo(log.user_ip)">
+            {{ log.user_ip }}
+          </td>
+          <td
+            :style="logIconColor(log)"
+            :title="log.type"
+            @click="openInfo(log.type)"
+          >
             {{ log.type }}
             <span class="log-type-icon">
               <i :class="logIconType(log)"></i>
             </span>
           </td>
-          <td :title="log.info">{{ log.info }}</td>
-          <td :title="log.adddate">{{ log.adddate }}</td>
+          <td :title="log.info" @click="openInfo(log.info)">{{ log.info }}</td>
+          <td :title="log.adddate" @click="openInfo(log.adddate)">
+            {{ log.adddate }}
+          </td>
           <td>
             <button :title="'删除日志'" class="del-btn" @click="delLog(log)">
               <i class="ri-delete-bin-5-fill"></i>
@@ -125,6 +135,7 @@
     <MessageBox
       v-if="message"
       :message="message"
+      :showCopyButton="showCopyButton"
       @close="message = null"
     ></MessageBox>
   </div>
@@ -148,6 +159,7 @@ export default {
       alertMsg: "",
       message: "",
       boxMsg: "暂无数据...",
+      showCopyButton: false,
       logs: [],
       searchText: "",
       sortColumn: null,
@@ -415,6 +427,12 @@ export default {
         return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
       }
       return "sort-icon";
+    },
+
+    // 查看日志详情
+    openInfo(text) {
+      this.showCopyButton = true;
+      this.message = "查看详情：" + text;
     },
 
     // 首页

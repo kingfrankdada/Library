@@ -400,13 +400,6 @@ export default {
       return `${year}-${month}-${day}`;
     },
 
-    // 打开编辑模态框
-    openEdit(borrow) {
-      this.editName = borrow.title;
-      this.editMsg = borrow.info;
-      this.editId = borrow.id;
-    },
-
     // 筛选最近七天
     filterByRecentDays() {
       this.currentPage = 1;
@@ -482,7 +475,7 @@ export default {
         username: this.userInfo.username,
         userIP: this.userInfo.userIP,
         type: "删除",
-        info: `删除借阅信息：${borrow.title}`,
+        info: `删除借阅信息：${borrow.bookname}`,
         adddate: adddate,
       };
 
@@ -514,7 +507,7 @@ export default {
         for (const borrowId of this.selectedBorrows) {
           const borrow = this.borrows.find((n) => n.id === borrowId);
           if (borrow) {
-            deletedTitles.push(borrow.title);
+            deletedTitles.push(borrow.bookname);
             await api.post(endpoints.delBorrow(borrowId));
           }
         }

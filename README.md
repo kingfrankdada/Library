@@ -94,6 +94,10 @@ yarn serve-prod
 
 ```plaintext
 # .env.development
+
+VUE_APP_API_BASE_URL=your_api_base_url
+
+# Database configuration
 DB_HOST=your_database_host
 DB_USER=your_username
 DB_PASSWORD=your_password

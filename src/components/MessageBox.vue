@@ -7,7 +7,7 @@
         <i
           v-if="showCopyButton"
           class="ri-file-copy-line"
-          @click="copyToClipboard"
+          @click="copyText"
         ></i>
       </div>
       <div class="close-form" @click="close">
@@ -42,17 +42,17 @@ export default {
         this.close();
       }
     },
-    copyToClipboard() {
-      // 提取密码信息
-      const passwordMatch = this.message.match(/初始密码为：(.*)$/);
-      const password = passwordMatch ? passwordMatch[1].trim() : "";
-      if (!password) {
-        alert("未找到可复制的密码");
+    copyText() {
+      // 提取复制信息
+      const textMatch = this.message.match(/(?:初始密码为|查看详情)：(.*)$/);
+      const text = textMatch ? textMatch[1].trim() : "";
+      if (!text) {
+        alert("未找到可复制的文本");
         return;
       }
 
       navigator.clipboard
-        .writeText(password)
+        .writeText(text)
         .then(() => {
           alert("复制成功");
         })
@@ -92,6 +92,11 @@ export default {
   align-items: center;
 }
 
+.message-text{
+  padding: 10px;
+  text-align: center;
+}
+
 .close-form {
   width: 100%;
   height: 25%;
@@ -123,7 +128,7 @@ export default {
 
 .close-form:hover {
   background: var(--border-color);
-  border-radius: 0 0 10px 10px;
+  border-radius: 0 0 2px 2px;
 }
 
 .close-button {

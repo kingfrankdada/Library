@@ -102,7 +102,7 @@ export default {
 
 .close-form:hover {
   background: var(--border-color);
-  border-radius: 0 0 10px 10px;
+  border-radius: 0 0 2px 2px;
 }
 
 .close-button {
