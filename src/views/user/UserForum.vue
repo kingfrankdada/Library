@@ -110,6 +110,8 @@ export default {
         this.messages = response.data.message || [];
         // 隔断处理，保留最新100条留言
         this.messages = this.messages.slice(-100);
+        // 不显示屏蔽的留言
+        this.messages = this.messages.filter((message) => message.state == 1);
 
         if (this.messages.length === 0) {
           this.boxMsg = "未找到任何论坛留言记录";

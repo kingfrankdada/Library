@@ -2,7 +2,14 @@
   <div class="message" @click="handleClickOutside">
     <div class="message-content">
       <span class="close-button" @click="close">&times;</span>
-      {{ message }}
+      <div class="message-text">
+        {{ message }}
+        <i
+          v-if="showCopyButton"
+          class="ri-file-copy-line"
+          @click="copyToClipboard"
+        ></i>
+      </div>
       <div class="close-form" @click="close">
         <div class="close-form-item">确定</div>
         <div class="close-form-loading"></div>
@@ -15,16 +22,16 @@
 export default {
   name: "MessageBox",
 
-  created() {},
-
   props: {
     message: {
       type: String,
       default: "系统错误！",
     },
+    showCopyButton: {
+      type: Boolean,
+      default: false,
+    },
   },
-
-  computed: {},
 
   methods: {
     close() {
@@ -34,6 +41,24 @@ export default {
       if (event.target.classList.contains("message")) {
         this.close();
       }
+    },
+    copyToClipboard() {
+      // 提取密码信息
+      const passwordMatch = this.message.match(/初始密码为：(.*)$/);
+      const password = passwordMatch ? passwordMatch[1].trim() : "";
+      if (!password) {
+        alert("未找到可复制的密码");
+        return;
+      }
+
+      navigator.clipboard
+        .writeText(password)
+        .then(() => {
+          alert("复制成功");
+        })
+        .catch(() => {
+          alert("复制失败，请手动复制");
+        });
     },
   },
 };

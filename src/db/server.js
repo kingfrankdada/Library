@@ -1088,6 +1088,7 @@ app.post('/api/borrow', (req, res) => {
     days
   } = req.body;
   const adddate = new Date().toISOString().split('T')[0];
+  const record_days = 1;
   const state = 1;
 
   // 查询是否已借阅此书且未归还
@@ -1111,10 +1112,10 @@ app.post('/api/borrow', (req, res) => {
 
     // 插入借阅记录
     const insertQuery = `
-      INSERT INTO record (username, bookname, start_date, over_date, days, state, adddate)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO record (username, bookname, start_date, over_date, days, record_days, state, adddate)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [username, bookname, start_date, over_date, days, state, adddate];
+    const values = [username, bookname, start_date, over_date, days, record_days, state, adddate];
     connection.query(insertQuery, values, (insertErr, insertResults) => {
       if (insertErr) {
         console.error('借阅失败:', insertErr.stack);

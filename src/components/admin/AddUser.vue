@@ -55,6 +55,7 @@
     <MessageBox
       v-if="message"
       :message="message"
+      :showCopyButton="showCopyButton"
       @close="message = null"
     ></MessageBox>
   </div>
@@ -87,6 +88,7 @@ export default {
       },
       alertMsg: "",
       message: "",
+      showCopyButton: false,
     };
   },
 
@@ -106,6 +108,7 @@ export default {
         await api.post(endpoints.reg, this.newUser);
         // this.alertMsg = "用户添加成功";
         this.message = "用户添加成功，初始密码为：" + this.newUser.password;
+        this.showCopyButton = true;
 
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {

@@ -32,6 +32,14 @@
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
         全选
       </label>
+      <label v-show="enableSelection" @click="banSelectedMessages">
+        <i class="ri-prohibited-line"></i>
+        屏蔽
+      </label>
+      <label v-show="enableSelection" @click="unbanSelectedMessages">
+        <i class="ri-checkbox-circle-line"></i>
+        取消屏蔽
+      </label>
       <label v-show="enableSelection" @click="deleteSelectedMessages">
         <i class="ri-delete-bin-5-fill"></i>
         删除选中
@@ -68,6 +76,10 @@
           <th @click="sortMessages('likes')">
             点赞数*
             <span :class="getSortIcon('likes')"></span>
+          </th>
+          <th @click="sortMessages('state')">
+            状态*
+            <span :class="getSortIcon('state')"></span>
           </th>
           <th>删除</th>
         </tr>
@@ -106,6 +118,16 @@
               v-model="message.likes"
               @input="updateMessage(message)"
             ></InputTag>
+          </td>
+          <td>
+            <select
+              :style="{ color: message.state === 1 ? 'green' : 'red' }"
+              v-model="message.state"
+              @change="updateMessage(message)"
+            >
+              <option style="color: green" value="1">正常</option>
+              <option style="color: red" value="0">屏蔽</option>
+            </select>
           </td>
           <td>
             <button class="del-btn" title="删除" @click="delMessage(message)">
@@ -481,6 +503,105 @@ export default {
       }
     },
 
+    // 批量屏蔽选中公告
+    async banSelectedMessages() {
+      if (this.selectedMessages.length === 0) {
+        this.alertMsg = "请选择要屏蔽的公告";
+        return;
+      }
+
+      if (this.userInfo.role != 0) {
+        this.alertMsg = "权限不足";
+        return;
+      }
+
+      const bannedMessages = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const messageId of this.selectedMessages) {
+          const message = this.messages.find((m) => m.id === messageId);
+          if (message && message.state != 0) {
+            bannedMessages.push(message.title);
+            await api.post(endpoints.updateMessage(messageId), {
+              ...message,
+              state: 0,
+            });
+          }
+        }
+
+        // 添加批量屏蔽日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量屏蔽公告：${bannedMessages.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await api.post(endpoints.addLog, newLog);
+
+        // 重置状态
+        this.selectedMessages = [];
+        this.selectMessages();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "屏蔽成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "屏蔽失败";
+      }
+    },
+
+    // 批量取消屏蔽选中公告
+    async unbanSelectedMessages() {
+      if (this.selectedMessages.length === 0) {
+        this.alertMsg = "请选择要取消屏蔽的公告";
+        return;
+      }
+
+      const unbannedMessages = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const messageId of this.selectedMessages) {
+          const message = this.messages.find((m) => m.id === messageId);
+          if (message && message.state == 0) {
+            unbannedMessages.push(message.title);
+            await api.post(endpoints.updateMessage(messageId), {
+              ...message,
+              state: 1,
+            });
+          }
+        }
+
+        // 添加批量取消屏蔽日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量取消屏蔽公告：${unbannedMessages.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await api.post(endpoints.addLog, newLog);
+
+        // 重置状态
+        this.selectedMessages = [];
+        this.selectMessages();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "取消屏蔽成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "取消屏蔽失败";
+      }
+    },
+
     async updateMessage(message) {
       try {
         await api.post(endpoints.updateMessage(message.id), {
@@ -488,6 +609,7 @@ export default {
           info: message.info,
           views: message.views,
           likes: message.likes,
+          state: message.state,
         });
 
         // 添加更新日志
