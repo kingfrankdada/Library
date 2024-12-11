@@ -232,9 +232,9 @@ export default {
   },
 
   mounted() {
-    if (this.userInfo.role != 0) {
-      this.$router.push("/admin");
-    }
+    // if (this.userInfo.role != 0) {
+    //   this.$router.push("/admin");
+    // }
     this.selectLogs();
   },
 
@@ -370,6 +370,11 @@ export default {
       try {
         const response = await api.get(endpoints.selectLog);
         this.logs = response.data.log || [];
+        if (this.userInfo.role != 0) {
+          this.logs = this.logs.filter(
+            (log) => log.type === "借阅" || log.type === "归还"
+          );
+        }
         if (this.logs.length === 0) {
           this.boxMsg = "未找到任何日志记录";
         }

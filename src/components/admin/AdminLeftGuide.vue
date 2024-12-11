@@ -90,12 +90,12 @@ export default {
 
     // 权限过滤，管理员不能查看系统日志，只有超管拥有全部权限
     filteredMenuList() {
-      if (this.userInfo.role == 1) {
-        return this.menuList.filter(
-          // (item) => item.name !== "user" && item.name !== "log"
-          (item) => item.name !== "log"
-        );
-      }
+      // if (this.userInfo.role == 1) {
+      //   return this.menuList.filter(
+      //     // (item) => item.name !== "user" && item.name !== "log"
+      //     (item) => item.name !== "log"
+      //   );
+      // }
       return this.menuList;
     },
   },
