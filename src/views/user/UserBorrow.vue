@@ -33,6 +33,10 @@
             预计归还日期
             <span :class="getSortIcon('over_date')"></span>
           </th>
+          <th @click="sortBorrows('days')">
+            预计借阅天数
+            <span :class="getSortIcon('days')"></span>
+          </th>
           <th @click="sortBorrows('bookname')">
             书名
             <span :class="getSortIcon('bookname')"></span>
@@ -60,6 +64,7 @@
         <tr v-for="record in paginatedBorrows" :key="record.id">
           <td :title="record.start_date">{{ record.start_date }}</td>
           <td :title="record.over_date">{{ record.over_date }}</td>
+          <td :title="record.days">{{ record.days || "-" }}</td>
           <td :title="record.bookname">{{ record.bookname }}</td>
           <td :title="record.return_date || '借阅中'">
             {{ record.return_date || "借阅中" }}
