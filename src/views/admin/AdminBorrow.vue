@@ -32,6 +32,10 @@
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
         全选
       </label>
+      <label v-show="enableSelection" @click="returnSelectedBorrows">
+        <i class="ri-text-wrap"></i>
+        归还
+      </label>
       <label v-show="enableSelection" @click="deleteSelectedBorrows">
         <i class="ri-delete-bin-5-fill"></i>
         删除选中
@@ -158,24 +162,19 @@
               @input="updateBorrow(borrow)"
             ></InputTag>
           </td>
-          <td>
+          <td v-if="borrow.state != 0">
             <select
               :style="{
-                color:
-                  borrow.state === 2
-                    ? 'red'
-                    : borrow.state === 1
-                    ? 'orange'
-                    : 'green',
+                color: borrow.state === 2 ? 'red' : 'orange',
               }"
               v-model="borrow.state"
               @change="updateBorrow(borrow)"
             >
               <option style="color: red" value="2">已逾期</option>
               <option style="color: orange" value="1">借阅中</option>
-              <option style="color: green" value="0">已归还</option>
             </select>
           </td>
+          <td v-else style="color: green">已归还</td>
           <td>{{ borrow.credit_delta || "-" }}</td>
           <td>{{ borrow.adddate }}</td>
           <td>
@@ -543,6 +542,15 @@ export default {
           timeZoneName: "short",
         });
 
+        // 如果状态为 0,表示已归还,需要调用归还api
+        if (borrow.state == 0) {
+          await api.post(endpoints.return, {
+            id: borrow.id,
+            username: this.userInfo.username,
+            bookname: borrow.bookname,
+          });
+        }
+
         const newLog = {
           username: this.userInfo.username,
           userIP: this.userInfo.userIP,
@@ -556,6 +564,59 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "更新借阅信息数据失败";
+      }
+    },
+
+    // 归还选中借阅信息
+    async returnSelectedBorrows() {
+      if (this.selectedBorrows.length === 0) {
+        this.alertMsg = "请选择要归还的借阅信息";
+        return;
+      }
+
+      const toppedTitles = [];
+      const adddate = new Date().toLocaleString("sv-SE", {
+        timeZoneName: "short",
+      });
+
+      try {
+        for (const borrowId of this.selectedBorrows) {
+          const borrow = this.borrows.find((n) => n.id === borrowId);
+          if (borrow) {
+            toppedTitles.push(borrow.bookname);
+            await api.post(endpoints.updateBorrow(borrowId), {
+              ...borrow,
+              state: 0,
+            });
+
+            await api.post(endpoints.return, {
+              id: borrow.id,
+              username: this.userInfo.username,
+              bookname: borrow.bookname,
+            });
+          }
+        }
+
+        // 添加操作日志
+        const newLog = {
+          username: this.userInfo.username,
+          userIP: this.userInfo.userIP,
+          type: "更新",
+          info: `批量归还：${toppedTitles.join(", ")}`,
+          adddate: adddate,
+        };
+
+        await api.post(endpoints.addLog, newLog);
+
+        // 重置状态
+        this.selectedBorrows = [];
+        this.selectBorrows();
+        this.resetSelection();
+        this.currentPage = 1;
+        this.message = "操作成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "操作失败";
       }
     },
 
