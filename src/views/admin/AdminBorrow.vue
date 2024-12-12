@@ -575,6 +575,10 @@ export default {
       }
 
       const toppedTitles = [];
+      // 先过滤掉已经处于归还状态的借阅信息
+      this.selectedBorrows = this.selectedBorrows.filter(
+        (borrowId) => this.borrows.find((n) => n.id === borrowId)?.state !== 0
+      );
       const adddate = new Date().toLocaleString("sv-SE", {
         timeZoneName: "short",
       });
