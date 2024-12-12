@@ -14,12 +14,20 @@
         v-for="message in filteredMessages"
         :key="message.id"
         class="comment-item"
+        :disabled="message.state === 0"
       >
         <div class="comment-header">
-          <span class="title">{{ message.title }}</span>
+          <span class="title">{{
+            message.state === 0 ? "违规评论" : message.title
+          }}</span>
           <span class="timestamp">{{ formatDate(message.adddate) }}</span>
         </div>
-        <div class="comment-body">{{ message.info }}</div>
+        <div class="comment-body">
+          <span v-if="message.state === 0" style="color: red"
+            >[该评论涉嫌违规，已屏蔽]</span
+          >
+          <span v-else>{{ message.info }}</span>
+        </div>
         <div class="comment-footer">
           <i class="ri-eye-line"></i>
           {{ message.views }}
@@ -158,6 +166,11 @@ export default {
   position: relative;
   padding: 15px;
   margin-bottom: 5px;
+}
+
+.comment-item[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .comment-header {

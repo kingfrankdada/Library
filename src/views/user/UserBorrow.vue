@@ -94,7 +94,10 @@
           <td>
             <div v-if="!record.return_date" class="action-buttons">
               <button @click="handleReturn(record)">归还</button>
-              <button @click="handleRenew(record)" v-if="record.is_renew === 0">
+              <button
+                @click="handleRenew(record)"
+                v-if="record.is_renew === 0 && record.state === 1"
+              >
                 续借
               </button>
             </div>
@@ -175,7 +178,7 @@ export default {
         },
       ],
 
-      books: [], // 缓存图书
+      books: [], // 缓存续借图书
       selectedBorrowBook: null, // 续借的图书
 
       searchText: "",

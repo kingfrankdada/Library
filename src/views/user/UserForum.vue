@@ -8,18 +8,30 @@
             class="message-item"
             v-for="message in messages"
             :key="message.id"
+            :disabled="message.state === 0"
           >
             <div class="message-header">
-              <strong>{{ message.title }}</strong>
+              <strong>{{
+                message.state === 0 ? "违规评论" : message.title
+              }}</strong>
             </div>
-            <p class="message-info">{{ message.info }}</p>
+            <p class="message-info">
+              <span v-if="message.state === 0" style="color: red"
+                >[该评论涉嫌违规，已屏蔽]</span
+              >
+              <span v-else>{{ message.info }}</span>
+            </p>
             <div class="message-footer">
               <span class="message-details">
                 {{ message.adduser }} 发表于 {{ message.adddate }}
                 <i class="ri-eye-line"></i>
                 {{ message.views }}
                 <!-- 显示浏览量 -->
-                <i class="ri-thumb-up-line" @click="likeMessage(message)"></i>
+                <i
+                  class="ri-thumb-up-line"
+                  :disabled="message.state === 0"
+                  @click="likeMessage(message)"
+                ></i>
                 {{ message.likes }}
                 <!-- 显示点赞量 -->
               </span>
@@ -111,7 +123,7 @@ export default {
         // 隔断处理，保留最新100条留言
         this.messages = this.messages.slice(-100);
         // 不显示屏蔽的留言
-        this.messages = this.messages.filter((message) => message.state == 1);
+        // this.messages = this.messages.filter((message) => message.state == 1);
 
         if (this.messages.length === 0) {
           this.boxMsg = "未找到任何论坛留言记录";
@@ -129,14 +141,18 @@ export default {
 
     // 浏览量
     viewMessage(message) {
-      message.views++;
-      this.updateMessage(message);
+      if (message.state !== 0) {
+        message.views++;
+        this.updateMessage(message);
+      }
     },
 
     // 点赞功能
     likeMessage(message) {
-      message.likes++;
-      this.updateMessage(message);
+      if (message.state !== 0) {
+        message.likes++;
+        this.updateMessage(message);
+      }
     },
 
     // 更新留言到服务器
@@ -251,6 +267,11 @@ export default {
   background-color: #f9f9f9;
 }
 
+.message-item[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .message-header {
   display: flex;
   justify-content: space-between;
@@ -268,6 +289,10 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+}
+
+.message-details i[disabled] {
+  cursor: not-allowed;
 }
 
 .message-date {
