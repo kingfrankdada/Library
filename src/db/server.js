@@ -1401,10 +1401,12 @@ function performOverdueCheck(today) {
       const new_credit_delta = 5 * overtime;
 
       if (!userPenaltyMap[username]) {
+        // console.log("现在信誉分：" + credit_count),
         userPenaltyMap[username] = {
-          originalCredit: credit_count + (credit_delta || 0), // 恢复到扣分前的状态
+          originalCredit: credit_count + (results.filter(r => r.username === username).reduce((acc, r) => acc + (r.credit_delta || 0), 0)), // 恢复到扣分前的状态
           totalPenalty: 0,
         };
+        // console.log("恢复后原始信誉分:" + userPenaltyMap[username].originalCredit);
       }
 
       // 累积新的扣分
