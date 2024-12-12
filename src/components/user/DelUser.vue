@@ -61,7 +61,7 @@ export default {
           userIP: this.userInfo.userIP,
           type: "注销",
           info: `用户${this.userInfo.username}于${adddate}注销`,
-          creditCount: 0,
+          creditCount: null,
           adddate: adddate,
         };
         await api.post(endpoints.addLog, newLog);

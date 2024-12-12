@@ -1096,9 +1096,9 @@ app.post('/api/borrow', (req, res) => {
     SELECT * FROM record 
     WHERE username = ? AND bookname = ? AND return_date IS NULL
   `;
-  connection.query(checkQuery, [username, bookname], (checkErr, results) => {
-    if (checkErr) {
-      console.error('检查借阅记录失败:', checkErr.stack);
+  connection.query(checkQuery, [username, bookname], (err, results) => {
+    if (err) {
+      console.error('检查借阅记录失败:', err.stack);
       return res.status(500).json({
         error: '服务器内部错误'
       });
@@ -1188,6 +1188,61 @@ app.post('/api/updateBorrow/:id', (req, res) => {
     }
     res.json({
       message: '借阅信息更新成功'
+    });
+  });
+});
+
+// 续借api
+app.post('/api/renew', (req, res) => {
+  const {
+    username,
+    bookname,
+    start_date,
+    over_date,
+    days
+  } = req.body;
+
+  // 查询是否有未归还的借阅记录
+  const checkQuery = `
+    SELECT * FROM record 
+    WHERE username = ? AND bookname = ? AND return_date IS NULL AND is_renew = 0
+  `;
+  connection.query(checkQuery, [username, bookname], (err, results) => {
+    if (err) {
+      console.error('查询借阅记录失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        error: '已经续借过该书，请先归还后再续借',
+      });
+    }
+
+    const recordId = results[0].id; // 获取借阅记录ID
+
+    // 更新借阅记录的日期信息
+    const updateQuery = `
+      UPDATE record
+      SET start_date = ?, over_date = ?, days = days + ?, is_renew = 1, state = 1
+      WHERE id = ?
+    `;
+    const values = [start_date, over_date, days, recordId];
+    connection.query(updateQuery, values, (updateErr) => {
+      if (updateErr) {
+        console.error('续借失败:', updateErr.stack);
+        return res.status(500).json({
+          error: '服务器内部错误'
+        });
+      }
+
+      // 返回续借成功信息
+      res.json({
+        message: '续借成功',
+        recordId: recordId,
+      });
     });
   });
 });

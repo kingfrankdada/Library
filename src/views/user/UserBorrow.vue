@@ -92,9 +92,12 @@
           </td>
 
           <td>
-            <button v-if="!record.return_date" @click="handleReturn(record)">
-              归还
-            </button>
+            <div v-if="!record.return_date" class="action-buttons">
+              <button @click="handleReturn(record)">归还</button>
+              <button @click="handleRenew(record)" v-if="record.is_renew === 0">
+                续借
+              </button>
+            </div>
             <span v-else>已归还</span>
           </td>
         </tr>
@@ -119,6 +122,13 @@
       </button>
       <button @click="lastPage">尾页</button>
     </div>
+    <!-- 图书借阅模态框 -->
+    <RenewBox
+      v-if="selectedBorrowBook"
+      :book="selectedBorrowBook"
+      @reSelect="fetchBorrowBorrows"
+      @close="selectedBorrowBook = null"
+    ></RenewBox>
 
     <!-- 自定义弹窗捕获 -->
     <AlertBox
@@ -139,6 +149,7 @@ import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
+import RenewBox from "@/components/RenewBox.vue";
 import { mapState } from "vuex";
 import { eventBus } from "@/utils/eventBus";
 
@@ -147,10 +158,26 @@ export default {
   components: {
     AlertBox,
     MessageBox,
+    RenewBox,
   },
   data() {
     return {
       records: [], // 用户的借阅记录
+      users: [
+        {
+          id: 0,
+          username: "",
+          email: "",
+          password: "",
+          credit_count: 0,
+          state: 0,
+          adddate: "",
+        },
+      ],
+
+      books: [], // 缓存图书
+      selectedBorrowBook: null, // 续借的图书
+
       searchText: "",
       alertMsg: "",
       message: "",
@@ -221,6 +248,7 @@ export default {
 
   mounted() {
     this.fetchBorrowBorrows();
+    this.selectUsersByUserName();
   },
   watch: {
     searchText() {
@@ -245,6 +273,26 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.boxMsg = "获取借阅记录失败";
+      }
+    },
+
+    // 查询当前用户信息
+    async selectUsersByUserName() {
+      try {
+        const response = await api.get(
+          endpoints.selectUserByUsername(this.userInfo.username)
+        );
+        const users = response.data.users;
+        this.users =
+          users.map((user) => ({
+            ...user,
+          })) || {};
+        if (this.users.length === 0) {
+          this.alertMsg = "未找到任何用户记录";
+        }
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "获取用户数据失败";
       }
     },
 
@@ -286,7 +334,7 @@ export default {
           userIP: this.userInfo.userIP,
           type: "归还",
           info: `用户${this.userInfo.username}于${adddate}归还图书${record.bookname}`,
-          creditCount: 0,
+          creditCount: null,
           adddate: adddate,
         };
 
@@ -299,6 +347,30 @@ export default {
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "归还失败，请稍后再试";
+      }
+    },
+
+    // 续借图书
+    async handleRenew(record) {
+      if (!this.userInfo.usertoken) {
+        this.alertMsg = "请先登录";
+        return;
+      }
+      if (this.users[0].credit_count <= 50) {
+        this.alertMsg = "信誉分过低，无法续借";
+        return;
+      }
+
+      // 使用selectBookByBookname先查找对应图书存入this.books中
+      try {
+        const response = await api.get(
+          endpoints.selectBookByBookname(record.bookname)
+        );
+        this.books = response.data.books || [];
+        this.selectedBorrowBook = this.books[0];
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = "获取图书数据失败";
       }
     },
 
@@ -411,7 +483,7 @@ td:last-child:hover {
 
 button {
   cursor: pointer;
-  width: 75%;
+  width: 100%;
   height: 30px;
   border: 1px solid var(--first-color);
   border-radius: 5px;
@@ -421,6 +493,30 @@ button {
 }
 
 button:hover {
+  background-color: var(--first-color);
+  color: var(--white-color);
+  transition: 0.4s;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-buttons button {
+  flex: 1;
+  cursor: pointer;
+  height: 30px;
+  width: 50%;
+  border: 1px solid var(--first-color);
+  border-radius: 5px;
+  background-color: var(--white-color);
+  color: var(--first-color);
+  font-weight: var(--font-medium);
+  text-align: center;
+}
+
+.action-buttons button:hover {
   background-color: var(--first-color);
   color: var(--white-color);
   transition: 0.4s;

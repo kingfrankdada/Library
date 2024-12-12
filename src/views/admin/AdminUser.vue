@@ -425,7 +425,7 @@ export default {
         userIP: this.userInfo.userIP,
         type: "删除",
         info: `删除用户：${user.username}`,
-        creditCount: 0,
+        creditCount: null,
         adddate: adddate,
       };
 

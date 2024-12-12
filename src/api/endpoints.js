@@ -43,6 +43,7 @@ export const endpoints = {
   addCredit: "/addCredit",
   delCredit: (username) => `/delCredit/${username}`,
   borrow: "/borrow",
+  renew: "/renew",
   selectBorrow: "/selectBorrow",
   selectBorrowByUsername: (username) => `/selectBorrow/${username}`,
   updateBorrow: (id) => `/updateBorrow/${id}`,

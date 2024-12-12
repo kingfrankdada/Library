@@ -92,9 +92,17 @@ export default {
   align-items: center;
 }
 
-.message-text{
+.message-text {
   padding: 10px;
   text-align: center;
+}
+
+.message-text i {
+  cursor: pointer;
+}
+
+.message-text i:hover {
+  color: var(--first-color);
 }
 
 .close-form {

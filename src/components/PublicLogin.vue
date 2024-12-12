@@ -145,7 +145,7 @@ export default {
           userIP: userIP,
           type: "登录",
           info: `用户${username}于${adddate}登录`,
-          creditCount: 0,
+          creditCount: null,
           adddate: adddate,
         };
 

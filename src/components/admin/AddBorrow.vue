@@ -224,7 +224,7 @@ export default {
           userIP: this.userInfo.userIP,
           type: "借阅",
           info: `用户${this.newBorrow.username}于${adddate}借阅图书：${this.newBorrow.bookname}`,
-          creditCount: 0,
+          creditCount: null,
           adddate: adddate,
         };
 

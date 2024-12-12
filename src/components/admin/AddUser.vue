@@ -119,7 +119,7 @@ export default {
           userIP: this.userInfo.userIP,
           type: "新增",
           info: `新增用户：${this.newUser.username}`,
-          creditCount: 0,
+          creditCount: null,
           adddate: adddate,
         };
         await api.post(endpoints.addLog, newLog);

@@ -1,8 +1,8 @@
 <template>
-  <div class="borrow" @click="handleClickOutside">
-    <div class="borrow-content">
+  <div class="renew" @click="handleClickOutside">
+    <div class="renew-content">
       <span class="close-button" @click="close">&times;</span>
-      <div class="borrow-form">
+      <div class="renew-form">
         <div class="book-image">
           <img
             v-lazy="
@@ -32,18 +32,18 @@
         &nbsp;&nbsp;&nbsp;&nbsp;{{ book.info }}
       </div>
 
-      <!-- 借阅表单 -->
-      <div class="borrow-actions">
-        <div class="borrow-inputs">
+      <!-- 续借表单 -->
+      <div class="renew-actions">
+        <div class="renew-inputs">
           <div>
-            <label for="borrow-days">预计借阅天数 (最大30天):</label>
+            <label for="renew-days">预计续借天数 (最大7天):</label>
             <input
-              id="borrow-days"
+              id="renew-days"
               type="number"
-              v-model="borrowDays"
+              v-model="renewDays"
               placeholder="输入天数"
               min="1"
-              max="30"
+              max="7"
             />
           </div>
           <div>
@@ -58,8 +58,8 @@
           </div>
         </div>
         <div class="buttons">
-          <button class="action-button borrow-button" @click="handleBorrow">
-            确认借阅
+          <button class="action-button renew-button" @click="handleRenew">
+            确认续借
           </button>
           <button class="action-button cancel-button" @click="handleCancel">
             取消
@@ -89,7 +89,7 @@ import AlertBox from "./AlertBox.vue";
 import MessageBox from "./MessageBox.vue";
 
 export default {
-  name: "BorrowBox",
+  name: "RenewBox",
   props: {
     book: {
       type: Object,
@@ -113,7 +113,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      borrowDays: 1, // 默认借阅一天
+      renewDays: 1, // 默认续借一天
       overDate: new Date(new Date().setDate(new Date().getDate() + 1))
         .toISOString()
         .split("T")[0], // 默认日期为明天
@@ -132,8 +132,8 @@ export default {
   },
 
   watch: {
-    // 当借阅天数发生变化时更新归还日期
-    borrowDays(newDays) {
+    // 当续借天数发生变化时更新归还日期
+    renewDays(newDays) {
       if (newDays && newDays > 0) {
         const newDate = new Date();
         newDate.setDate(newDate.getDate() + parseInt(newDays, 10));
@@ -141,7 +141,7 @@ export default {
       }
     },
 
-    // 当归还日期发生变化时更新借阅天数
+    // 当归还日期发生变化时更新续借天数
     overDate(newDate) {
       if (newDate) {
         const startDate = new Date(this.minOverDate);
@@ -149,7 +149,7 @@ export default {
         const diffDays = Math.ceil(
           (endDate - startDate) / (1000 * 60 * 60 * 24)
         );
-        this.borrowDays = diffDays > 0 ? diffDays : 1;
+        this.renewDays = diffDays > 0 ? diffDays : 1;
       }
     },
   },
@@ -160,51 +160,51 @@ export default {
     },
 
     handleClickOutside(event) {
-      if (event.target.classList.contains("borrow")) {
+      if (event.target.classList.contains("renew")) {
         this.close();
       }
     },
 
-    // 计算最大归还日期（当前日期 + 30天）
+    // 计算最大归还日期（当前日期 + 7天）
     calMaxOverDate() {
       const maxDate = new Date();
-      maxDate.setDate(maxDate.getDate() + 30);
+      maxDate.setDate(maxDate.getDate() + 7);
       return maxDate.toISOString().split("T")[0];
     },
 
-    // 借阅逻辑
-    async handleBorrow() {
+    // 续借逻辑
+    async handleRenew() {
       if (!this.userInfo.usertoken) {
         this.alertMsg = "请先登录";
         return;
       }
 
-      if (!this.borrowDays || !this.overDate) {
-        this.alertMsg = "请填写预计借阅天数和归还日期";
+      if (!this.renewDays || !this.overDate) {
+        this.alertMsg = "请填写预计续借天数和归还日期";
         return;
       }
 
       if (this.book.num <= 0) {
-        this.alertMsg = "库存不足，无法借阅";
+        this.alertMsg = "库存不足，无法续借";
         return;
       }
 
-      // 借阅天数超过 30 天
-      if (this.borrowDays > 30) {
-        this.alertMsg = "借阅天数不能超过30天";
+      // 续借天数超过 7 天
+      if (this.renewDays > 7) {
+        this.alertMsg = "续借天数不能超过7天";
         return;
       }
 
       try {
-        await api.post(endpoints.borrow, {
+        await api.post(endpoints.renew, {
           username: this.userInfo.username,
           bookname: this.book.name,
           start_date: new Date().toISOString().split("T")[0],
           over_date: this.overDate,
-          days: this.borrowDays,
+          days: this.renewDays,
         });
 
-        // 添加借阅日志
+        // 添加续借日志
         const adddate = new Date().toLocaleString("sv-SE", {
           timeZoneName: "short",
         });
@@ -212,24 +212,21 @@ export default {
           username: this.userInfo.username,
           userIP: this.userInfo.userIP,
           type: "借阅",
-          info: `用户${this.userInfo.username}于${adddate}借阅图书：${this.book.name}`,
+          info: `用户${this.userInfo.username}于${adddate}续借图书：${this.book.name}`,
           creditCount: null,
           adddate: adddate,
         };
 
         await api.post(endpoints.addLog, newLog);
 
-        this.message = `借阅成功: ${this.book.name}`;
+        this.message = `续借成功: ${this.book.name}`;
         this.$emit("reSelect");
       } catch (error) {
         const errorMessage = error.response?.data?.error || error.message;
         console.error(errorMessage);
-
-        if (error.response?.status === 400) {
-          this.alertMsg = errorMessage; // 已借阅
-        } else {
-          this.alertMsg = "借阅失败，请稍后再试";
-        }
+        if (error.response?.status === 404) {
+          this.alertMsg = "已经续借过该图书";
+        } else this.alertMsg = "续借失败，请重试";
       }
     },
 
@@ -242,7 +239,7 @@ export default {
 
 
 <style scoped>
-.borrow {
+.renew {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -257,7 +254,7 @@ export default {
   animation: fade-in 0.5s;
 }
 
-.borrow-content {
+.renew-content {
   width: 60%;
   max-height: 80%;
   background-color: var(--white-color);
@@ -271,7 +268,7 @@ export default {
   overflow-y: auto;
 }
 
-.borrow-form {
+.renew-form {
   display: flex;
   gap: 20px;
   width: 100%;
@@ -318,26 +315,26 @@ export default {
   overflow-y: auto;
 }
 
-.borrow-actions {
+.renew-actions {
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-top: 20px;
 }
 
-.borrow-inputs {
+.renew-inputs {
   height: 50px;
   display: flex;
   gap: 10px;
 }
 
-.borrow-inputs label {
+.renew-inputs label {
   font-size: 14px;
   color: #333;
   font-weight: bold;
 }
 
-.borrow-inputs input {
+.renew-inputs input {
   padding: 10px;
   height: 40px;
   border: 1px solid #ddd;
@@ -361,13 +358,13 @@ export default {
   transition: background-color 0.4s;
 }
 
-.borrow-button {
+.renew-button {
   color: var(--first-color);
   border: 1px solid var(--first-color);
   background-color: var(--white-color);
 }
 
-.borrow-button:hover {
+.renew-button:hover {
   background-color: var(--first-color);
   color: var(--white-color);
   transition: 0.4s;

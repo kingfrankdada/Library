@@ -120,12 +120,13 @@ CREATE TABLE `record` (
     `credit_delta` int DEFAULT NULL,
     `last_penalty_date` varchar(255) DEFAULT NULL,
     `state` int DEFAULT NULL,
+    `is_renew` int DEFAULT '0',
     `adddate` varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `userid` (`username`),
     KEY `book` (`bookname`),
     CONSTRAINT `record_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`)
-) ENGINE = InnoDB AUTO_INCREMENT = 49 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci
+) ENGINE = InnoDB AUTO_INCREMENT = 73 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci
 
 -- 用户表 user
 CREATE TABLE `user` (
