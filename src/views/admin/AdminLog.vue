@@ -11,6 +11,14 @@
 
     <!-- 工具栏 -->
     <div class="toolbar">
+      <label v-if="userInfo.role == 0">
+        <input
+          type="checkbox"
+          :checked="isLogActive"
+          @change="toggleLog($event.target.checked)"
+        />
+        启用日志记录功能
+      </label>
       <label>
         <input
           type="checkbox"
@@ -146,7 +154,7 @@ import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "AdminLog",
@@ -176,6 +184,7 @@ export default {
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
+    ...mapState("SysInfo", ["isLogActive"]),
     // 筛选后的日志
     filteredLogs() {
       const filterList = this.searchText.toLowerCase();
@@ -268,6 +277,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations("SysInfo", ["setLogActive"]),
     // 动态图标
     logIconType(log) {
       const type = log.type;
@@ -319,6 +329,18 @@ export default {
           return "color: goldenrod;";
         default:
           return null;
+      }
+    },
+
+    // 切换日志功能开关状态
+    async toggleLog(status) {
+      this.setLogActive(status);
+      try {
+        const response = await api.post(endpoints.isLogActive, { status });
+        this.message = response.data.message;
+      } catch (error) {
+        console.error("切换日志功能失败:", error.message);
+        this.message = "切换日志功能失败";
       }
     },
 

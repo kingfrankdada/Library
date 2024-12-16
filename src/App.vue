@@ -24,8 +24,9 @@
 </template>
 
 <script>
-// import { mapState } from "vuex";
-import { mapMutations } from "vuex";
+import api from "@/api/api";
+import { endpoints } from "@/api/endpoints";
+import { mapMutations, mapState } from "vuex";
 export default {
   name: "app",
 
@@ -37,6 +38,12 @@ export default {
 
   computed: {
     // ...mapState("WebSocket", ["onlineUserCount"]),
+    ...mapState("SysInfo", ["isLogActive"]),
+  },
+
+  mounted() {
+    this.connectWebSocket();
+    this.syncLogState();
   },
 
   methods: {
@@ -49,7 +56,8 @@ export default {
       "setAddModalVisible",
       "setUpdateModalVisible",
     ]),
-    ...mapMutations("SysInfo", ["setOnlineUserCount"]),
+
+    ...mapMutations("SysInfo", ["setOnlineUserCount", "setLogActive"]),
 
     // 获取在线用户数
     connectWebSocket() {
@@ -67,10 +75,18 @@ export default {
         console.log("WebSocket 连接已关闭");
       };
     },
-  },
 
-  mounted() {
-    this.connectWebSocket();
+    // 同步日志状态
+    async syncLogState() {
+      try {
+        const response = await api.post(endpoints.isLogActive, {
+          status: this.isLogActive,
+        });
+        console.log(response.data.message);
+      } catch (error) {
+        console.error("同步日志状态失败:", error.message);
+      }
+    },
   },
 };
 </script>

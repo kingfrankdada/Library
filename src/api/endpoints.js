@@ -49,4 +49,5 @@ export const endpoints = {
   updateBorrow: (id) => `/updateBorrow/${id}`,
   delBorrow: (id) => `/delBorrow/${id}`,
   return: "/return",
+  isLogActive: "/isLogActive",
 };

@@ -1,10 +1,14 @@
 const state = {
   onlineUserCount: 0,
+  isLogActive: true,
 };
 
 const mutations = {
-  setOnlineUserCount(state, onlineUserCount) {
-    state.onlineUserCount = onlineUserCount
+  setOnlineUserCount(payload, onlineUserCount) {
+    payload.onlineUserCount = onlineUserCount
+  },
+  setLogActive(state, isLogActive) {
+    state.isLogActive = isLogActive
   },
 };
 

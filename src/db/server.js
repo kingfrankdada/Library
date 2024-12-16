@@ -13,6 +13,8 @@ const port = 3000;
 const wsport = 8081;
 const saltRounds = 10;
 
+let isLogActive = true; // 默认启用日志
+
 require('dotenv').config({
   path: `.env.${process.env.NODE_ENV}`
 });
@@ -171,9 +173,9 @@ function logOnlineUsers() {
     if (results.length === 0) {
       const onlineUserCount = onlineUsers.size || 0; // 获取当前在线人数，如果没有在线则为 0
       const query = 'INSERT INTO daily_user (sys_date, user_count) VALUES (?, ?)';
-      connection.query(query, [sysDate, onlineUserCount], (insertErr) => {
-        if (insertErr) {
-          console.error('插入每日记录失败:', insertErr.stack);
+      connection.query(query, [sysDate, onlineUserCount], (err) => {
+        if (err) {
+          console.error('插入每日记录失败:', err.stack);
         } else {
           console.log(`已插入当日(${sysDate})在线人数: ${onlineUserCount}`);
         }
@@ -929,20 +931,53 @@ app.post('/api/delFavoriteByBookName/:bookName', (req, res) => {
 
 // 添加日志api
 app.post('/api/addLog', (req, res) => {
+  // 检查日志开关状态
+  if (!isLogActive) {
+    return res.json({
+      message: '日志记录功能已关闭，未记录日志',
+    });
+  }
+
   const newLog = req.body;
-  const query = 'INSERT INTO log (username, user_ip, type, info, credit_count, adddate) VALUES (?, ?, ?, ?, ?, ?)';
-  const values = [newLog.username, newLog.userIP, newLog.type, newLog.info, newLog.creditCount, newLog.adddate];
+  const query =
+    'INSERT INTO log (username, user_ip, type, info, credit_count, adddate) VALUES (?, ?, ?, ?, ?, ?)';
+  const values = [
+    newLog.username,
+    newLog.userIP,
+    newLog.type,
+    newLog.info,
+    newLog.creditCount,
+    newLog.adddate,
+  ];
+
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加日志失败:', err.stack);
       return res.status(500).json({
-        error: '服务器内部错误'
+        error: '服务器内部错误',
       });
     }
     res.json({
       message: '日志添加成功',
-      logId: results.insertId
+      logId: results.insertId,
     });
+  });
+});
+
+// 日志开关状态设置api
+app.post("/api/isLogActive", (req, res) => {
+  const {
+    status
+  } = req.body;
+  if (typeof status !== "boolean") {
+    return res.status(400).json({
+      error: "无效的状态值"
+    });
+  }
+  isLogActive = status;
+  console.log(`日志记录已${status ? "启用" : "关闭"}`);
+  res.json({
+    message: `日志记录已${status ? "启用" : "关闭"}`
   });
 });
 
@@ -1110,15 +1145,35 @@ app.post('/api/borrow', (req, res) => {
       });
     }
 
+    // 一次借阅不能超过5本
+    const countQuery = `
+      SELECT COUNT(*) AS count FROM record 
+      WHERE username = ? AND return_date IS NULL
+    `;
+    connection.query(countQuery, [username], (err, countResults) => {
+      if (err) {
+        console.error('检查借阅记录失败:', err.stack);
+        return res.status(500).json({
+          error: '服务器内部错误'
+        });
+      }
+
+      if (countResults[0].count >= 5) {
+        return res.status(400).json({
+          error: '一次借阅不能超过5本',
+        });
+      }
+    });
+
     // 插入借阅记录
     const insertQuery = `
       INSERT INTO record (username, bookname, start_date, over_date, days, record_days, state, adddate)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [username, bookname, start_date, over_date, days, record_days, state, adddate];
-    connection.query(insertQuery, values, (insertErr, insertResults) => {
-      if (insertErr) {
-        console.error('借阅失败:', insertErr.stack);
+    connection.query(insertQuery, values, (err, insertResults) => {
+      if (err) {
+        console.error('借阅失败:', err.stack);
         return res.status(500).json({
           error: '服务器内部错误'
         });
@@ -1126,9 +1181,9 @@ app.post('/api/borrow', (req, res) => {
 
       // 更新图书表，将图书数量-1
       const updateBookQuery = 'UPDATE book SET num = num - 1 WHERE name = ?';
-      connection.query(updateBookQuery, [bookname], (updateErr) => {
-        if (updateErr) {
-          console.error('更新图书数量失败:', updateErr.stack);
+      connection.query(updateBookQuery, [bookname], (err) => {
+        if (err) {
+          console.error('更新图书数量失败:', err.stack);
         }
       });
 
@@ -1216,7 +1271,7 @@ app.post('/api/renew', (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({
+      return res.status(400).json({
         error: '已经续借过该书，请先归还后再续借',
       });
     }
@@ -1230,9 +1285,9 @@ app.post('/api/renew', (req, res) => {
       WHERE id = ?
     `;
     const values = [start_date, over_date, days, recordId];
-    connection.query(updateQuery, values, (updateErr) => {
-      if (updateErr) {
-        console.error('续借失败:', updateErr.stack);
+    connection.query(updateQuery, values, (err) => {
+      if (err) {
+        console.error('续借失败:', err.stack);
         return res.status(500).json({
           error: '服务器内部错误'
         });
@@ -1317,9 +1372,9 @@ app.post('/api/return', (req, res) => {
       SET return_date = ?, record_days = ?, overtime = ?, credit_delta = ?, state = 0
       WHERE username = ? AND id = ?
     `;
-    connection.query(updateQuery, [return_date, record_days, overtime, credit_delta, username, id], (updateErr) => {
-      if (updateErr) {
-        console.error('归还失败:', updateErr.stack);
+    connection.query(updateQuery, [return_date, record_days, overtime, credit_delta, username, id], (err) => {
+      if (err) {
+        console.error('归还失败:', err.stack);
         return res.status(500).json({
           error: '归还失败'
         });
@@ -1357,9 +1412,9 @@ app.post('/api/return', (req, res) => {
         `;
         const creditInfo = `归还图书：${bookname}`;
         const insertValues = [username, username, creditInfo, return_date];
-        connection.query(insertCreditQuery, insertValues, (insertErr) => {
-          if (insertErr) {
-            console.error('插入信誉分记录失败:', insertErr.stack);
+        connection.query(insertCreditQuery, insertValues, (err) => {
+          if (err) {
+            console.error('插入信誉分记录失败:', err.stack);
             return res.status(500).json({
               error: '插入信誉分记录失败'
             });
@@ -1384,9 +1439,9 @@ function dailyOverCheck() {
     FROM record 
     WHERE state IN (1, 2)
   `;
-  connection.query(fetchRecordsQuery, (fetchErr, records) => {
-    if (fetchErr) {
-      console.error("查询借阅记录失败:", fetchErr.stack);
+  connection.query(fetchRecordsQuery, (err, records) => {
+    if (err) {
+      console.error("查询借阅记录失败:", err.stack);
       return;
     }
 
@@ -1407,21 +1462,21 @@ function dailyOverCheck() {
         SET record_days = ?
         WHERE id = ?
       `;
-      connection.query(updateDaysQuery, [record_days, id], (updateErr) => {
-        if (updateErr) {
-          console.error(`更新 record_days 失败（ID: ${id}）:`, updateErr.stack);
+      connection.query(updateDaysQuery, [record_days, id], (err) => {
+        if (err) {
+          console.error(`更新 record_days 失败（ID: ${id}）:`, err.stack);
         } else {
           console.log(`更新 record_days 成功（ID: ${id}, 借阅天数: ${record_days}）`);
         }
       });
     });
 
-    performOverdueCheck(today);
+    recordOverCheck(today);
   });
 }
 
 // 逾期检查
-function performOverdueCheck(today) {
+function recordOverCheck(today) {
   const query = `
     SELECT r.id, r.over_date, r.last_penalty_date, r.username, r.credit_delta, u.credit_count
     FROM record r
@@ -1473,9 +1528,9 @@ function performOverdueCheck(today) {
         SET overtime = ?, credit_delta = ?, last_penalty_date = ?, state = 2
         WHERE id = ?
       `;
-      connection.query(updateBorrowQuery, [overtime, new_credit_delta, today, id], (updateErr) => {
-        if (updateErr) {
-          console.error(`更新记录失败（ID: ${id}）:`, updateErr.stack);
+      connection.query(updateBorrowQuery, [overtime, new_credit_delta, today, id], (err) => {
+        if (err) {
+          console.error(`更新记录失败（ID: ${id}）:`, err.stack);
           return;
         }
       });
@@ -1510,9 +1565,9 @@ function performOverdueCheck(today) {
       `;
       const creditInfo = `借阅超期，扣除总共${totalPenalty}分（共逾期${totalPenalty / 5}天）`;
       const insertValues = [username, updated_credit, creditInfo, today];
-      connection.query(insertCreditLogQuery, insertValues, (insertErr) => {
-        if (insertErr) {
-          console.error(`插入信誉分记录失败（用户名: ${username}）:`, insertErr.stack);
+      connection.query(insertCreditLogQuery, insertValues, (err) => {
+        if (err) {
+          console.error(`插入信誉分记录失败（用户名: ${username}）:`, err.stack);
           return;
         }
         console.log(`插入信誉分记录成功（用户名: ${username}, 当前信誉分: ${updated_credit}）`);

@@ -222,11 +222,11 @@ export default {
         this.message = `借阅成功: ${this.book.name}`;
         this.$emit("reSelect");
       } catch (error) {
-        const errorMessage = error.response?.data?.error || error.message;
-        console.error(errorMessage);
+        const errMsg = error.response?.data?.error || error.message;
+        console.error(errMsg);
 
         if (error.response?.status === 400) {
-          this.alertMsg = errorMessage; // 已借阅
+          this.alertMsg = errMsg; // 已借阅
         } else {
           this.alertMsg = "借阅失败，请稍后再试";
         }

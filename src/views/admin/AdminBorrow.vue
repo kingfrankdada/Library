@@ -175,7 +175,9 @@
             </select>
           </td>
           <td v-else style="color: green">已归还</td>
-          <td>{{ borrow.credit_delta || "-" }}</td>
+          <td :style="borrow.credit_delta > 0 ? 'color: red' : 'color: green'">
+            {{ borrow.credit_delta ? "-" + borrow.credit_delta : "-" }}
+          </td>
           <td>{{ borrow.adddate }}</td>
           <td>
             <button class="del-btn" title="删除" @click="delBorrow(borrow)">
@@ -574,7 +576,7 @@ export default {
         return;
       }
 
-      const toppedTitles = [];
+      const borrowedBooks = [];
       // 先过滤掉已经处于归还状态的借阅信息
       this.selectedBorrows = this.selectedBorrows.filter(
         (borrowId) => this.borrows.find((n) => n.id === borrowId)?.state !== 0
@@ -587,7 +589,7 @@ export default {
         for (const borrowId of this.selectedBorrows) {
           const borrow = this.borrows.find((n) => n.id === borrowId);
           if (borrow) {
-            toppedTitles.push(borrow.bookname);
+            borrowedBooks.push(borrow.bookname);
             await api.post(endpoints.updateBorrow(borrowId), {
               ...borrow,
               state: 0,
@@ -606,7 +608,7 @@ export default {
           username: this.userInfo.username,
           userIP: this.userInfo.userIP,
           type: "更新",
-          info: `批量归还：${toppedTitles.join(", ")}`,
+          info: `批量归还：${borrowedBooks.join(", ")}`,
           adddate: adddate,
         };
 
