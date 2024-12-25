@@ -10,7 +10,7 @@
           @click="openBook(book)"
         >
           <i
-            class="book-collection"
+            class="book-icon"
             :class="
               book.state === 1 ? 'ri-information-line' : 'ri-prohibited-line'
             "
@@ -364,7 +364,7 @@ export default {
   cursor: not-allowed;
 }
 
-.book-card .book-collection {
+.book-card .book-icon {
   position: absolute;
   top: 10px;
   right: 10px;

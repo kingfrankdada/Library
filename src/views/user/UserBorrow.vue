@@ -144,6 +144,12 @@
       :message="message"
       @close="message = null"
     ></MessageBox>
+    <ReturnBox
+      v-if="returnMsg"
+      :returnMsg="returnMsg"
+      :book="returnBook"
+      @close="returnMsg = null"
+    ></ReturnBox>
   </div>
 </template>
 
@@ -152,6 +158,7 @@ import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
+import ReturnBox from "@/components/ReturnBox.vue";
 import RenewBox from "@/components/RenewBox.vue";
 import { mapState } from "vuex";
 import { eventBus } from "@/utils/eventBus";
@@ -162,6 +169,7 @@ export default {
     AlertBox,
     MessageBox,
     RenewBox,
+    ReturnBox,
   },
   data() {
     return {
@@ -180,6 +188,8 @@ export default {
 
       books: [], // 缓存续借图书
       selectedBorrowBook: null, // 续借的图书
+      returnMsg: "",
+      returnBook: null,
 
       searchText: "",
       alertMsg: "",
@@ -343,7 +353,8 @@ export default {
 
         await api.post(endpoints.addLog, newLog);
 
-        this.message = "归还成功，感谢您的支持";
+        this.returnBook = this.records.find((item) => item.id === record.id);
+        this.returnMsg = "归还成功，请对此次借阅进行评价";
         this.fetchBorrowBorrows();
         // 刷新eharts
         eventBus.$emit("borrow-returned");

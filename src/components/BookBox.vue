@@ -19,9 +19,15 @@
         <!-- 右侧图书其他信息 -->
         <div class="book-info">
           <p class="book-title">{{ book.name }}</p>
+          <!-- 评分信息 -->
+          <p v-if="book.score !== null && book.score !== undefined">
+            <strong>评分:</strong> {{ (+book.score).toFixed(1) + " / 5" }} 共
+            {{ book.num_score || 0 }} 人参与
+          </p>
+          <p v-else><strong>评分:</strong> 暂无</p>
           <p><strong>作者:</strong> {{ book.author }}</p>
           <p><strong>分类:</strong> {{ book.menu }}</p>
-          <p><strong>价格:</strong> {{ book.price }}元</p>
+          <!-- <p><strong>价格:</strong> {{ book.price }}元</p> -->
           <p><strong>出版社:</strong> {{ book.press }}</p>
           <p><strong>库存数量:</strong> {{ book.num }}本</p>
           <p><strong>入库日期:</strong> {{ book.adddate }}</p>
@@ -80,6 +86,8 @@ export default {
         price: "未知价格",
         press: "未知出版社",
         num: 0,
+        score: 0,
+        num_score: 0,
         img: "image-add-fill.png",
         info: "暂无更多信息",
         state: 1,

@@ -133,6 +133,11 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
@@ -140,12 +145,14 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
+import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "AddBook",
   components: {
     AlertBox,
+    MessageBox,
   },
 
   data() {
@@ -164,6 +171,7 @@ export default {
       },
       menuTitles: [],
       alertMsg: "",
+      message: "",
       selectedImage: null, // 暂存选中的图片
       isNoticeActive: true, // 默认开启自动推送
     };
@@ -278,7 +286,7 @@ export default {
             this.alertMsg = "公告添加失败";
           }
         }
-        this.alertMsg = "图书添加成功";
+        this.message = "图书添加成功";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

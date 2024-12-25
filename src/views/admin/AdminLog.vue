@@ -337,6 +337,7 @@ export default {
       this.setLogActive(status);
       try {
         const response = await api.post(endpoints.isLogActive, { status });
+        this.showCopyButton = false;
         this.message = response.data.message;
       } catch (error) {
         console.error("切换日志功能失败:", error.message);

@@ -91,6 +91,10 @@
             状态*
             <span :class="getSortIcon('state')"></span>
           </th>
+          <th @click="sortBooks('score')">
+            评分*
+            <span :class="getSortIcon('score')"></span>
+          </th>
           <th @click="sortBooks('adddate')">
             添加日期
             <span :class="getSortIcon('adddate')"></span>
@@ -156,6 +160,9 @@
               <option style="color: green" value="1">正常</option>
               <option style="color: red" value="0">关闭</option>
             </select>
+          </td>
+          <td>
+            <InputTag v-model="book.score" @input="updateBook(book)"></InputTag>
           </td>
           <td>{{ book.adddate }}</td>
           <td>

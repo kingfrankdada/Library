@@ -1366,65 +1366,88 @@ app.post('/api/return', (req, res) => {
     // 计算信誉分变化（逾期一天扣5分）
     const credit_delta = 5 * overtime;
 
-    // 更新借阅记录
-    const updateQuery = `
-      UPDATE record 
-      SET return_date = ?, record_days = ?, overtime = ?, credit_delta = ?, state = 0
-      WHERE username = ? AND id = ?
+    // 查询当前用户的信誉分
+    const selectUserQuery = `
+      SELECT credit_count FROM user WHERE username = ?
     `;
-    connection.query(updateQuery, [return_date, record_days, overtime, credit_delta, username, id], (err) => {
-      if (err) {
-        console.error('归还失败:', err.stack);
+    connection.query(selectUserQuery, [username], (userErr, userResults) => {
+      if (userErr) {
+        console.error('查询用户信誉分失败:', userErr.stack);
         return res.status(500).json({
-          error: '归还失败'
+          error: '查询用户信誉分失败'
         });
       }
 
-      // 更新图书表
-      const updateBookQuery = 'UPDATE book SET num = num + 1 WHERE name = ?';
-      connection.query(updateBookQuery, [bookname], (bookErr) => {
-        if (bookErr) {
-          console.error('更新图书数量失败:', bookErr.stack);
-          return res.status(500).json({
-            error: '更新图书数量失败'
-          });
-        }
-      });
+      const current_credit = userResults[0] ?.credit_count || 0;
 
-      // 恢复用户信誉分
-      const updateUserCreditQuery = `
-        UPDATE user 
-        SET credit_count = credit_count + ?
-        WHERE username = ?
+      // 计算最终恢复后的信誉分（不能超过 100）
+      const updated_credit = Math.min(100, current_credit + credit_delta);
+
+      // 更新借阅记录
+      const updateQuery = `
+        UPDATE record 
+        SET return_date = ?, record_days = ?, overtime = ?, credit_delta = ?, state = 0
+        WHERE username = ? AND id = ?
       `;
-      connection.query(updateUserCreditQuery, [credit_delta, username], (creditErr) => {
-        if (creditErr) {
-          console.error('更新用户信誉分失败:', creditErr.stack);
-          return res.status(500).json({
-            error: '更新用户信誉分失败'
-          });
-        }
-
-        // 插入信誉分变动记录
-        const insertCreditQuery = `
-          INSERT INTO credit (username, credit_count, info, adddate)
-          VALUES (?, (SELECT credit_count FROM user WHERE username = ?), ?, ?)
-        `;
-        const creditInfo = `归还图书：${bookname}`;
-        const insertValues = [username, username, creditInfo, return_date];
-        connection.query(insertCreditQuery, insertValues, (err) => {
-          if (err) {
-            console.error('插入信誉分记录失败:', err.stack);
+      connection.query(
+        updateQuery,
+        [return_date, record_days, overtime, credit_delta, username, id],
+        (updateErr) => {
+          if (updateErr) {
+            console.error('归还失败:', updateErr.stack);
             return res.status(500).json({
-              error: '插入信誉分记录失败'
+              error: '归还失败'
             });
           }
-          res.json({
-            message: '归还成功',
-            credit_delta,
+
+          // 更新图书表
+          const updateBookQuery = 'UPDATE book SET num = num + 1 WHERE name = ?';
+          connection.query(updateBookQuery, [bookname], (bookErr) => {
+            if (bookErr) {
+              console.error('更新图书数量失败:', bookErr.stack);
+              return res.status(500).json({
+                error: '更新图书数量失败'
+              });
+            }
+
+            // 更新用户信誉分
+            const updateUserCreditQuery = `
+              UPDATE user 
+              SET credit_count = ? 
+              WHERE username = ?
+            `;
+            connection.query(updateUserCreditQuery, [updated_credit, username], (creditErr) => {
+              if (creditErr) {
+                console.error('更新用户信誉分失败:', creditErr.stack);
+                return res.status(500).json({
+                  error: '更新用户信誉分失败'
+                });
+              }
+
+              // 插入信誉分变动记录
+              const insertCreditQuery = `
+                INSERT INTO credit (username, credit_count, info, adddate)
+                VALUES (?, ?, ?, ?)
+              `;
+              const creditInfo = `归还图书：${bookname}`;
+              const insertValues = [username, updated_credit, creditInfo, return_date];
+              connection.query(insertCreditQuery, insertValues, (err) => {
+                if (err) {
+                  console.error('插入信誉分记录失败:', err.stack);
+                  return res.status(500).json({
+                    error: '插入信誉分记录失败'
+                  });
+                }
+                res.json({
+                  message: '归还成功',
+                  credit_delta,
+                  final_credit: updated_credit,
+                });
+              });
+            });
           });
-        });
-      });
+        }
+      );
     });
   });
 });
