@@ -16,20 +16,24 @@
       </div>
 
       <div class="login-form" @keyup.enter="handleLogin">
-        <input
-          v-focus
-          v-model="username"
-          class="username"
-          type="text"
-          placeholder="Enter your username"
-        />
-        <input
-          v-model="password"
-          class="password"
-          type="password"
-          placeholder="Enter your password"
-        />
-        <button @click="handleLogin" class="login-btn">SUBMIT</button>
+        <form>
+          <input
+            v-focus
+            v-model="username"
+            class="username"
+            type="text"
+            placeholder="Enter your username"
+            autocomplete="username"
+          />
+          <input
+            v-model="password"
+            class="password"
+            type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+          <button @click="handleLogin" class="login-btn">SUBMIT</button>
+        </form>
       </div>
       <div class="reg-change-btn">
         <div class="reg-change-btn-item" @click="changeRegModal">

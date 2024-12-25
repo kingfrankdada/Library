@@ -9,32 +9,37 @@
       <span>高校图书管理系统</span>
     </div>
     <div class="reg-form" @keyup.enter="handleReg">
-      <input
-        v-focus
-        v-model="username"
-        class="username"
-        type="text"
-        placeholder="Enter your username"
-      />
-      <input
-        v-model="password"
-        class="password"
-        type="password"
-        placeholder="Enter your password"
-      />
-      <input
-        v-model="confirmPassword"
-        class="confirmPassword"
-        type="password"
-        placeholder="Enter your password again"
-      />
-      <input
-        v-model="email"
-        class="email"
-        type="email"
-        placeholder="Enter your email"
-      />
-      <button @click="handleReg" class="reg-btn">SUBMIT</button>
+      <form>
+        <input
+          v-focus
+          v-model="username"
+          class="username"
+          type="text"
+          placeholder="Enter your username"
+          autocomplete="username"
+        />
+        <input
+          v-model="password"
+          class="password"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="new-password"
+        />
+        <input
+          v-model="confirmPassword"
+          class="confirmPassword"
+          type="password"
+          placeholder="Enter your password again"
+          autocomplete="new-password"
+        />
+        <input
+          v-model="email"
+          class="email"
+          type="email"
+          placeholder="Enter your email"
+        />
+        <button @click="handleReg" class="reg-btn">SUBMIT</button>
+      </form>
     </div>
     <div class="login-change-btn">
       <div class="login-change-btn-item" @click="changeLoginModal">

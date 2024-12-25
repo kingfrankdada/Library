@@ -17,7 +17,7 @@ Vue.use(VueLazyload, {
 
 Vue.filter('formatDate', function (value) {
   if (!value) return '';
-  return value.split('T')[0]; // 将日期部分提取出来
+  return value.split('T')[0]; 
 });
 
 Vue.directive('focus', {
