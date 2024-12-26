@@ -31,7 +31,12 @@
         <tr>
           <td>添加用户</td>
           <td>
-            {{ userInfo.username }}
+            <!-- {{ userInfo.username }} -->
+            <input
+              v-model="newMessage.adduser"
+              type="text"
+              placeholder="输入论坛留言添加用户"
+            />
           </td>
         </tr>
         <tr>
@@ -49,6 +54,11 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
@@ -56,6 +66,7 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
+import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -63,6 +74,7 @@ export default {
 
   components: {
     AlertBox,
+    MessageBox,
   },
 
   computed: {
@@ -80,11 +92,12 @@ export default {
         likes: 0,
       },
       alertMsg: "",
+      message: "",
     };
   },
   methods: {
     async submitForm() {
-      this.newMessage.adduser = this.userInfo.username;
+      // this.newMessage.adduser = this.userInfo.username;
       this.newMessage.adddate = new Date().toISOString().split("T")[0];
       this.newMessage.views = 0;
       this.newMessage.likes = 0;
@@ -95,7 +108,7 @@ export default {
       try {
         await api.post(endpoints.addMessage, this.newMessage);
         // this.alertMsg = "论坛留言添加成功";
-        this.alertMsg = "论坛留言添加成功，请前往论坛留言管理查看";
+        this.message = "论坛留言添加成功，请前往论坛留言管理查看";
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);

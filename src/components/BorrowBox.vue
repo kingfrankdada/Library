@@ -306,10 +306,12 @@ export default {
 }
 
 .book-description {
+  white-space: pre-wrap;
   margin-top: 20px;
   font-size: 16px;
   color: var(--text-color);
   width: 100%;
+  max-height: 150px;
   text-align: left;
   padding: 20px;
   border-top: 1px solid #ddd;

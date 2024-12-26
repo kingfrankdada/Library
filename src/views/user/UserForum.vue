@@ -23,7 +23,10 @@
             </p>
             <div class="message-footer">
               <span class="message-details">
-                {{ message.adduser }} 发表于 {{ message.adddate }}
+                {{
+                  message.adduser == userInfo.username ? "你" : message.adduser
+                }}
+                发表于 {{ message.adddate }}
                 <i class="ri-eye-line"></i>
                 {{ message.views }}
                 <!-- 显示浏览量 -->
@@ -64,6 +67,10 @@
           class="input-info"
         ></textarea>
         <button @click="submitForm" class="submit-button">提交留言</button>
+        <div class="input-anonymous">
+          <input type="checkbox" v-model="isAnonymous" />
+          <label>匿名发表</label>
+        </div>
       </div>
       <div v-else>
         <i class="ri-alert-line">&nbsp;请先登录再进行留言</i>
@@ -100,6 +107,7 @@ export default {
       messages: [],
       alertMsg: "",
       boxMsg: "正在加载论坛留言...",
+      isAnonymous: false,
     };
   },
 
@@ -172,7 +180,11 @@ export default {
 
     // 提交新留言
     async submitForm() {
-      this.newMessage.adduser = this.userInfo.username;
+      if (this.isAnonymous) {
+        this.newMessage.adduser = "匿名用户";
+      } else {
+        this.newMessage.adduser = this.userInfo.username;
+      }
       this.newMessage.adddate = new Date().toISOString().split("T")[0];
       this.newMessage.views = 0;
       this.newMessage.likes = 0;
@@ -344,6 +356,12 @@ export default {
   outline: none;
   box-sizing: border-box;
   overflow: auto;
+}
+
+.input-anonymous {
+  position: absolute;
+  right: 40px;
+  bottom: 45px;
 }
 
 .submit-button {

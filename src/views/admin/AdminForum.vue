@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索留言名，角色或注册信息"
+        placeholder="搜索留言名，发表用户或日期"
       />
     </div>
 
@@ -69,6 +69,7 @@
             详情内容*
             <span :class="getSortIcon('info')"></span>
           </th>
+          <th @click="sortMessages('adduser')">发表用户*</th>
           <th @click="sortMessages('views')">
             浏览数*
             <span :class="getSortIcon('views')"></span>
@@ -106,6 +107,12 @@
             @dblclick="openEdit(message)"
           >
             {{ message.info }}
+          </td>
+          <td>
+            <InputTag
+              v-model="message.adduser"
+              @input="updateMessage(message)"
+            ></InputTag>
           </td>
           <td>
             <InputTag
@@ -607,6 +614,7 @@ export default {
         await api.post(endpoints.updateMessage(message.id), {
           title: message.title,
           info: message.info,
+          adduser: message.adduser,
           views: message.views,
           likes: message.likes,
           state: message.state,

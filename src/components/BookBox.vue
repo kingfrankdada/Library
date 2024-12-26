@@ -20,7 +20,7 @@
         <div class="book-info">
           <p class="book-title">{{ book.name }}</p>
           <!-- 评分信息 -->
-          <p v-if="book.score !== null && book.score !== undefined">
+          <p v-if="book.score !== null && book.score !== undefined && book.score != 0">
             <strong>评分:</strong> {{ (+book.score).toFixed(1) + " / 5" }} 共
             {{ book.num_score || 0 }} 人参与
           </p>
@@ -317,10 +317,12 @@ export default {
 }
 
 .book-description {
+  white-space: pre-wrap;
   margin-top: 20px;
   font-size: 16px;
   color: var(--text-color);
   width: 100%;
+  max-height: 200px;
   text-align: left;
   padding: 20px;
   border-top: 1px solid #ddd;

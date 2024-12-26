@@ -303,6 +303,8 @@ export default {
 }
 
 .book-description {
+  white-space: pre-wrap;
+  max-height: 150px;
   margin-top: 20px;
   font-size: 16px;
   color: var(--text-color);
