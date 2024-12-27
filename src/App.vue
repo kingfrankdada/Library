@@ -174,6 +174,7 @@ html {
 
 body,
 input,
+textarea,
 button {
   font-family: var(--body-font);
   font-size: var(--normal-font-size);

@@ -91,6 +91,7 @@ import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "@/components/AlertBox.vue";
 import { mapState } from "vuex";
+import debounce from "lodash/debounce";
 
 export default {
   name: "UserForum",
@@ -108,6 +109,7 @@ export default {
       alertMsg: "",
       boxMsg: "正在加载论坛留言...",
       isAnonymous: false,
+      likedMessages: new Set(),
     };
   },
 
@@ -156,12 +158,16 @@ export default {
     },
 
     // 点赞功能
-    likeMessage(message) {
-      if (message.state !== 0) {
+    likeMessage: debounce(function (message) {
+      if (message.state !== 0 && !this.likedMessages.has(message.id)) {
         message.likes++;
         this.updateMessage(message);
+        this.likedMessages.add(message.id);
+        setTimeout(() => {
+          this.likedMessages.delete(message.id);
+        }, 5000);
       }
-    },
+    }),
 
     // 更新留言到服务器
     async updateMessage(message) {
@@ -362,6 +368,10 @@ export default {
   position: absolute;
   right: 40px;
   bottom: 45px;
+}
+
+.input-anonymous input{
+  margin-right: 5px;
 }
 
 .submit-button {

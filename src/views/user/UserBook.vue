@@ -151,8 +151,7 @@ export default {
           const isCategoryMatch = this.selectedCategory
             ? book.menu === this.selectedCategory
             : true;
-
-          // 正则搜索
+            
           const isNameMatch = searchQuery
             ? book.name.toLowerCase().includes(searchQuery)
             : true;
