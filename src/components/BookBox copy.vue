@@ -37,23 +37,20 @@
           <p><strong>入库日期:</strong> {{ book.adddate }}</p>
         </div>
 
-        <!-- 底部简介 -->
-        <div class="book-description">
-          &nbsp;&nbsp;&nbsp;&nbsp;{{ book.info }}
+        <!-- 相关评论 -->
+        <div v-if="bookMessages.length" class="book-message">
+          <p class="message-title">读者留言</p>
+          <div class="message-info">
+            <p v-for="message in bookMessages" :key="message.id">
+              {{ message.adduser }} ：{{ message.info }}
+            </p>
+          </div>
         </div>
       </div>
 
-      <!-- 相关评论 -->
-      <div class="book-message">
-        <p class="message-title">读者留言</p>
-        <div v-if="bookMessages.length" class="message-info">
-          <p v-for="message in bookMessages" :key="message.id">
-            {{ message.adduser }} ：{{ message.info }}
-          </p>
-        </div>
-        <div v-else class="message-info">
-          <p>暂无留言</p>
-        </div>
+      <!-- 底部简介 -->
+      <div class="book-description">
+        &nbsp;&nbsp;&nbsp;&nbsp;{{ book.info }}
       </div>
 
       <!-- 操作按钮 -->
@@ -212,7 +209,6 @@ export default {
 
     async addFavorite() {
       const newFavorite = {
-        id: this.book.id,
         name: this.book.name,
         user: this.userInfo.username,
         author: this.book.author,
@@ -226,7 +222,7 @@ export default {
         adddate: this.book.adddate,
       };
       try {
-        await api.post(endpoints.addFavorite, newFavorite);
+        await api.post(endpoints.addFavorite(newFavorite));
         this.message = "收藏成功，请前往用户中心-我的收藏查看";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
@@ -344,14 +340,10 @@ export default {
   flex-direction: column;
   font-size: 16px;
   flex: 1;
-  height: 300px;
-  max-height: 400px;
+  border-right: #ddd solid 1px;
 }
 
 .book-message {
-  width: 100%;
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
   display: flex;
   flex-direction: column;
   font-size: 16px;
@@ -366,19 +358,19 @@ export default {
 }
 
 .book-info p {
-  margin: 5px 10px 0 0;
+  margin: 5px 0;
 }
 
 .message-title {
-  height: 40px;
   font-size: 18px;
   font-weight: bold;
   color: var(--first-color);
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .message-info {
-  max-height: 200px;
+  height: 200px;
   overflow-y: scroll;
   --ms-overflow-style: none;
   scrollbar-width: none;
@@ -388,20 +380,18 @@ export default {
   margin: 10px 0;
 }
 .book-description {
-  border-left: #ddd solid 1px;
   white-space: pre-wrap;
+  margin-top: 20px;
   font-size: 16px;
-  margin: 20px;
-  padding-left: 20px;
   color: var(--text-color);
-  width: 50%;
-  max-height: 300px;
+  width: 100%;
+  max-height: 200px;
   text-align: left;
+  padding: 20px;
+  border-top: 1px solid #ddd;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  --ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .book-actions {

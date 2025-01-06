@@ -5,6 +5,7 @@
       <div class="return-text">
         {{ returnMsg }}
       </div>
+      <span>{{ book.bookname }}</span>
       <div class="rating">
         <div v-for="n in 5" :key="n" class="star-container">
           <div
@@ -14,7 +15,17 @@
           ></div>
         </div>
       </div>
-      <div class="close-form" @click="submitRating">
+
+      <!-- 相关留言 -->
+      <div class="message">
+        <textarea
+          type="text"
+          v-model="newMessage.info"
+          placeholder="请输入您对此图书的留言"
+        ></textarea>
+      </div>
+
+      <div class="close-form" @click="handleSubmit">
         <div class="close-form-item">确定</div>
         <div class="close-form-loading"></div>
       </div>
@@ -25,6 +36,7 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { mapState } from "vuex";
 
 export default {
   name: "ReturnBox",
@@ -44,7 +56,20 @@ export default {
     return {
       score: this.book.score || null,
       selectedBook: {},
+      newMessage: {
+        title: "",
+        info: "",
+        adduser: "",
+        adddate: "",
+        book_id: null,
+        views: 0,
+        likes: 0,
+      },
     };
+  },
+
+  computed: {
+    ...mapState("UserInfo", ["userInfo"]),
   },
 
   mounted() {
@@ -97,7 +122,6 @@ export default {
         };
 
         await this.updateBook(updatedBook);
-        this.close();
       } catch (error) {
         console.error(
           "评分提交失败:",
@@ -116,6 +140,30 @@ export default {
           error.response?.data?.error || error.message
         );
       }
+    },
+
+    async addMessage() {
+      if (this.newMessage.info) {
+        this.newMessage.adduser = this.userInfo.username;
+        this.newMessage.adddate = new Date().toISOString().split("T")[0];
+        this.newMessage.views = 1;
+        this.newMessage.likes = 0;
+        this.newMessage.title = `借阅评分：${this.book.bookname}`;
+        // this.newMessage.book_id = this.book.id;
+        this.newMessage.book_id = this.selectedBook.id;
+        try {
+          await api.post(endpoints.addMessage, this.newMessage);
+        } catch (error) {
+          console.error(error.response?.data?.error || error.message);
+          this.alertMsg = "论坛留言添加失败";
+        }
+      }
+    },
+
+    handleSubmit() {
+      this.submitRating();
+      this.addMessage();
+      this.close();
     },
   },
 };
@@ -138,8 +186,8 @@ export default {
 }
 
 .return-content {
-  width: 30%;
-  height: 30%;
+  width: 35%;
+  height: 35%;
   background-color: #fff;
   border-radius: 3px;
   position: relative;
@@ -160,6 +208,22 @@ export default {
   align-items: center;
   margin: 20px 0;
   gap: 5px;
+}
+
+.message {
+  width: 75%;
+}
+
+textarea[type="text"] {
+  font-family: var(--body-font);
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: auto;
 }
 
 .star-container {
@@ -201,7 +265,7 @@ export default {
 
 .close-form {
   width: 100%;
-  height: 25%;
+  height: 15%;
   position: absolute;
   text-align: center;
   font-display: center;

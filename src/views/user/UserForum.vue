@@ -3,10 +3,10 @@
     <div class="forum-box">
       <!-- <div class="forum-title">欢迎来到用户留言板！</div> -->
       <div class="message-list">
-        <div v-if="messages.length > 0">
+        <div v-if="filteredMessages.length > 0">
           <div
             class="message-item"
-            v-for="message in messages"
+            v-for="message in filteredMessages"
             :key="message.id"
             :disabled="message.state === 0"
           >
@@ -71,6 +71,10 @@
           <input type="checkbox" v-model="isAnonymous" />
           <label>匿名发表</label>
         </div>
+        <div class="display-borrow">
+          <input type="checkbox" v-model="isBorrowMsg" />
+          <label>显示借阅评论</label>
+        </div>
       </div>
       <div v-else>
         <i class="ri-alert-line">&nbsp;请先登录再进行留言</i>
@@ -102,6 +106,7 @@ export default {
         info: "",
         adduser: "",
         adddate: "",
+        book_id: null,
         views: 0,
         likes: 0,
       },
@@ -109,6 +114,7 @@ export default {
       alertMsg: "",
       boxMsg: "正在加载论坛留言...",
       isAnonymous: false,
+      isBorrowMsg: true, // 是否显示借阅留言
       likedMessages: new Set(),
     };
   },
@@ -119,6 +125,15 @@ export default {
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
+
+    // 是否显示借阅留言
+    filteredMessages() {
+      if (!this.isBorrowMsg) {
+        return this.messages.filter((message) => !message.book_id);
+      } else {
+        return this.messages;
+      }
+    }
   },
 
   mounted() {
@@ -370,7 +385,17 @@ export default {
   bottom: 45px;
 }
 
-.input-anonymous input{
+.input-anonymous input {
+  margin-right: 5px;
+}
+
+.display-borrow {
+  position: absolute;
+  right: 140px;
+  bottom: 45px;
+}
+
+.display-borrow input {
   margin-right: 5px;
 }
 

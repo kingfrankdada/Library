@@ -27,6 +27,7 @@ export const endpoints = {
   addMessage: "/addMessage",
   selectMessage: "/selectMessage",
   selectMessageByUsername: (username) => `/selectMessage/${username}`,
+  selectMessageByBookId: (bookId) => `/selectMessageByBookId/${bookId}`,
   updateMessage: (id) => `/updateMessage/${id}`,
   delMessage: (id) => `/delMessage/${id}`,
   addFavorite: "/addFavorite",

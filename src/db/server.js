@@ -742,8 +742,8 @@ app.post('/api/delNotice/:id', (req, res) => {
 // 添加论坛留言api
 app.post('/api/addMessage', (req, res) => {
   const newMessage = req.body;
-  const query = 'INSERT INTO message (title, info, adduser, adddate, views, likes) VALUES (?, ?, ?, ?, ?, ?)';
-  const values = [newMessage.title, newMessage.info, newMessage.adduser, newMessage.adddate, newMessage.views, newMessage.likes];
+  const query = 'INSERT INTO message (title, info, adduser, adddate, book_id, views, likes) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  const values = [newMessage.title, newMessage.info, newMessage.adduser, newMessage.adddate, newMessage.book_id, newMessage.views, newMessage.likes];
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加论坛留言失败:', err.stack);
@@ -799,6 +799,24 @@ app.get('/api/selectMessage/:username', (req, res) => {
   });
 });
 
+// 按关联图书ID查询论坛留言api
+app.get('/api/selectMessageByBookId/:bookId', (req, res) => {
+  const bookId = req.params.bookId;
+  const query = 'SELECT * FROM message WHERE book_id = ?';
+  connection.query(query, [bookId], (err, results) => {
+    if (err) {
+      console.error('查询失败:', err.stack);
+      return res.status(500).json({
+        error: '服务器内部错误'
+      });
+    }
+    res.json({
+      message: '查询成功',
+      messages: results
+    });
+  });
+});
+
 // 更新论坛留言api
 app.post('/api/updateMessage/:id', (req, res) => {
   const messageId = req.params.id;
@@ -835,8 +853,8 @@ app.post('/api/delMessage/:id', (req, res) => {
 // 添加收藏api
 app.post('/api/addFavorite', (req, res) => {
   const newFavorite = req.body;
-  const query = 'INSERT INTO favorite (name, user, author, menu, price, press, num, img, info, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [newFavorite.name, newFavorite.user, newFavorite.author, newFavorite.menu, newFavorite.price, newFavorite.press, newFavorite.num, newFavorite.img, newFavorite.info, newFavorite.state, newFavorite.adddate];
+  const query = 'INSERT INTO favorite (id, name, user, author, menu, price, press, num, img, info, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [newFavorite.id, newFavorite.name, newFavorite.user, newFavorite.author, newFavorite.menu, newFavorite.price, newFavorite.press, newFavorite.num, newFavorite.img, newFavorite.info, newFavorite.state, newFavorite.adddate];
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加收藏失败:', err.stack);
