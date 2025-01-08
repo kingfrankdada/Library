@@ -47,8 +47,8 @@ export default {
   data() {
     return {
       // guideList: [
-      //   { id: 1, name: "collection", title: "我的收藏", path: "/home/user/collection" },
-      //   { id: 2, name: "borrow", title: "我的借阅", path: "/home/user/borrow" },
+      //   { id: 1, name: "collection", title: "我的收藏", path: "/user/collection" },
+      //   { id: 2, name: "borrow", title: "我的借阅", path: "/user/borrow" },
       // ],
     };
   },
@@ -64,8 +64,8 @@ export default {
 
     handleTitle() {
       this.$emit("handleTitle");
-      // if (this.$route.path !== "/home/user") {
-      //   this.$router.push("/home/user");
+      // if (this.$route.path !== "/user") {
+      //   this.$router.push("/user");
       // }
     },
 

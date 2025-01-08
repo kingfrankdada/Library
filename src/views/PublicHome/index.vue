@@ -1,8 +1,5 @@
 <template>
   <div class="app">
-    <div class="header">
-      <HeaderGuide></HeaderGuide>
-    </div>
     <div v-if="this.$route.path === '/home'" class="body">
       <swiper
         id="swiperBox"
@@ -24,11 +21,9 @@
           >
             <h1 class="title">{{ slide.title }}</h1>
             <h4 class="subtitle">{{ slide.subtitle }}</h4>
-            <button v-if="index === 0" @click="swiperNext">
-              Learn More<i class="ri-arrow-right-double-line"></i>
-            </button>
-            <button v-if="index === 1" @click="goBook">
-              开始使用<i class="ri-arrow-right-double-line"></i>
+            <button v-if="slide.btnText" @click="slide.btnMethod">
+              {{ slide.btnText }}
+              <i class="ri-arrow-right-double-line"></i>
             </button>
           </div>
         </swiper-slide>
@@ -41,13 +36,11 @@
 </template>
 
 <script>
-import HeaderGuide from "@/components/HeaderGuide.vue";
 import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 
 export default {
   name: "PublicHome",
   components: {
-    HeaderGuide,
     Swiper,
     SwiperSlide,
   },
@@ -73,20 +66,30 @@ export default {
           title: "Smart Organizational Library Assistant Resource",
           subtitle:
             "基于 Vue2 和 Node.js 开发的现代化图书管理平台，旨在为高校提供数字化一站式在线图书管理方案，推动高校图书管理迈向更高效、更现代的数字化时代。",
+          btnText: "了解更多",
+          btnMethod: this.swiperNext,
         },
+
         {
           title: "图书中心",
           subtitle:
-            "提供了丰富的在线书库，方便快速浏览和查找各类图书资源。即时借阅功能让图书获取变得轻松高效，全站搜索支持模糊匹配，帮助精准定位感兴趣的书籍，极大提升借阅体验。",
+            "丰富的在线书库，方便快速浏览和查找各类图书资源。即时借阅功能让图书获取变得轻松高效，全站搜索支持模糊匹配，帮助精准定位感兴趣的书籍，极大提升借阅体验。",
+          btnText: "即刻借阅",
+          btnMethod: this.goBook,
         },
         {
           title: "论坛中心",
           subtitle:
-            "提供了站内交流平台，致力于促进图书和学习资源的共享与讨论。参与各类话题讨论，发布和回复帖子，分享经验与见解，共同推动学术交流与思维碰撞。",
+            "即时通信站内交流平台，致力于促进图书和学习资源的共享与讨论。参与各类话题讨论，发布和回复帖子，分享经验与见解，共同推动学术交流与思维碰撞。",
+          btnText: "前往查看",
+          btnMethod: this.goForum,
         },
         {
           title: "用户中心",
-          subtitle: "用户管理：支持用户信息管理、权限控制...",
+          subtitle:
+            "汇聚个人安全设置、信誉分管理、借阅记录与收藏功能，提供全面的账户信息维护与优化。掌控账户隐私与安全，实时查看信誉评分，了解借阅历史与偏好，尽享智能化图书管理体验。",
+          btnText: "前往设置",
+          btnMethod: this.goSetting,
         },
         {
           title: "项目介绍与支持",
@@ -117,17 +120,29 @@ export default {
     },
   },
   methods: {
-    swiperNext() {
-      this.swiper.swiperInstance.slideNext();
-    },
-
     onSlideChange() {
       this.currentIndex = this.swiper.swiperInstance.realIndex;
     },
 
+    swiperNext() {
+      this.swiper.swiperInstance.slideNext();
+    },
+
     goBook() {
       this.$nextTick(() => {
-        this.$router.push("/home/book");
+        this.$router.push("/book");
+      });
+    },
+
+    goForum() {
+      this.$nextTick(() => {
+        this.$router.push("/forum");
+      });
+    },
+
+    goSetting() {
+      this.$nextTick(() => {
+        this.$router.push("/user");
       });
     },
   },

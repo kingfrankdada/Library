@@ -276,7 +276,7 @@ export default {
           break;
         case "在图书中心查看":
           this.$router.push({
-            path: "/home/book",
+            path: "/book",
             query: { search: this.book.name.trim() },
           });
           break;

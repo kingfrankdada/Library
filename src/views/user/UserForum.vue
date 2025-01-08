@@ -255,11 +255,6 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 20px;
-  background: url("../../../public/assets/images/forum.png") no-repeat center
-    center;
-  background-attachment: fixed;
-  background-size: cover;
 }
 
 .forum-box {

@@ -350,6 +350,7 @@ export default {
   text-align: center;
   position: relative;
   transition: transform 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .book-card:hover {

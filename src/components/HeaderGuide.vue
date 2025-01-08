@@ -8,7 +8,8 @@
 
       <!-- 登陆后显示用户信息 -->
       <div class="nav-userinfo" v-if="userInfo.usertoken">
-        Welcome : {{ userInfo.username }}
+        <i class="ri-user-line login-button" style="padding-right: 5px"></i>
+        {{ userInfo.username }}
       </div>
 
       <!-- 导航列表 -->
@@ -27,7 +28,7 @@
           <!-- 登陆后显示用户设置 -->
           <li v-if="userInfo.usertoken" title="用户设置" class="nav-item">
             <i class="ri-user-line login-button"></i>
-            <router-link to="/home/user">Account</router-link>
+            <router-link to="/user">Account</router-link>
           </li>
 
           <!-- 管理员设置 -->
@@ -117,21 +118,21 @@ export default {
           id: 2,
           name: "Book",
           title: "图书中心",
-          path: "/home/book",
+          path: "/book",
           icon: "ri-book-3-line",
         },
         {
           id: 3,
           name: "Forum",
           title: "在线论坛",
-          path: "/home/forum",
+          path: "/forum",
           icon: "ri-chat-new-line",
         },
         // {
         //   id: 4,
         //   name: "Notice",
         //   title: "用户帮助",
-        //   path: "/home/notice",
+        //   path: "/notice",
         //   icon: "ri-question-line",
         // },
       ],

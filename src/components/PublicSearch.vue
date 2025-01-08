@@ -76,7 +76,7 @@ export default {
     clickSearch() {
       if (this.inputText.trim()) {
         this.$router.push({
-          path: "/home/book",
+          path: "/book",
           query: { search: this.inputText.trim() },
         });
         this.setSearchModalVisible(false);

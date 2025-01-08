@@ -1,6 +1,6 @@
 <template>
   <div class="user">
-    <div v-show="this.$route.path === '/home/user'" class="user-body">
+    <div v-show="this.$route.path === '/user'" class="user-body">
       <!-- <div class="user-title">
         <p>用户中心</p>
       </div> -->
@@ -146,28 +146,28 @@ export default {
           id: 1,
           name: "collection",
           title: "我的收藏",
-          path: "/home/user/collection",
+          path: "/user/collection",
           icon: "ri-heart-line",
         },
         {
           id: 2,
           name: "borrow",
           title: "我的借阅",
-          path: "/home/user/borrow",
+          path: "/user/borrow",
           icon: "ri-book-open-line",
         },
         {
           id: 3,
           name: "comment",
           title: "我的留言",
-          path: "/home/user/comment",
+          path: "/user/comment",
           icon: "ri-message-3-line",
         },
         {
           id: 4,
           name: "credit",
           title: "我的信誉分",
-          path: "/home/user/credit",
+          path: "/user/credit",
           icon: "ri-bank-card-line",
         },
       ],
@@ -274,7 +274,7 @@ export default {
     },
 
     goCredit() {
-      this.$router.push({ path: "/home/user/credit" });
+      this.$router.push({ path: "/user/credit" });
     },
 
     // 日期格式化
@@ -323,8 +323,8 @@ export default {
     },
 
     handleTitle() {
-      if (this.$route.path !== "/home/user") {
-        this.$router.push({ path: "/home/user" });
+      if (this.$route.path !== "/user") {
+        this.$router.push({ path: "/user" });
       }
     },
 

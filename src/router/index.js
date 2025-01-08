@@ -40,40 +40,38 @@ const router = new VueRouter({
       path: '/home',
       name: 'home',
       component: PublicHome,
+    }, {
+      path: '/book',
+      name: 'userBook',
+      component: UserBook
+    },
+    {
+      path: '/forum',
+      name: 'userForum',
+      component: UserForum
+    },
+    {
+      path: '/user',
+      name: 'userSetting',
+      component: UserSetting,
       children: [{
-          path: 'book',
-          name: 'userBook',
-          component: UserBook
+          path: 'collection',
+          name: 'userSettingCollection',
+          component: UserCollection
+        }, {
+          path: 'borrow',
+          name: 'userSettingBorrow',
+          component: UserBorrow
         },
         {
-          path: 'forum',
-          name: 'userForum',
-          component: UserForum
+          path: 'comment',
+          name: 'userSettingComment',
+          component: UserComment
         },
         {
-          path: '/home/user',
-          name: 'userSetting',
-          component: UserSetting,
-          children: [{
-              path: 'collection',
-              name: 'userSettingCollection',
-              component: UserCollection
-            }, {
-              path: 'borrow',
-              name: 'userSettingBorrow',
-              component: UserBorrow
-            },
-            {
-              path: 'comment',
-              name: 'userSettingComment',
-              component: UserComment
-            },
-            {
-              path: 'credit',
-              name: 'userSettingCredit',
-              component: UserCredit
-            }
-          ]
+          path: 'credit',
+          name: 'userSettingCredit',
+          component: UserCredit
         }
       ]
     },

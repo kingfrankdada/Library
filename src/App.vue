@@ -19,6 +19,9 @@
     />
 
     <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" />
+    <div class="header">
+      <HeaderGuide></HeaderGuide>
+    </div>
     <router-view class="app__content"></router-view>
   </div>
 </template>
@@ -26,6 +29,7 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import HeaderGuide from "@/components/HeaderGuide.vue";
 import { mapMutations, mapState } from "vuex";
 export default {
   name: "app",
@@ -34,6 +38,10 @@ export default {
     return {
       onlineUsers: 0,
     };
+  },
+
+  components: {
+    HeaderGuide,
   },
 
   computed: {
@@ -93,6 +101,10 @@ export default {
 
 <style>
 @import "./assets/css/google-fonts.css";
+
+.header {
+  flex-shrink: 0;
+}
 /*=============== VARIABLES CSS ===============*/
 :root {
   --header-height: 8vh;
