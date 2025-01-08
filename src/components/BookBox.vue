@@ -394,7 +394,7 @@ export default {
   margin: 20px;
   padding-left: 20px;
   color: var(--text-color);
-  width: 50%;
+  width: 45%;
   max-height: 300px;
   text-align: left;
   display: -webkit-box;

@@ -4,7 +4,11 @@ import router from './router/index'
 import store from '@/store/index'
 import VueLazyload from 'vue-lazyload';
 import 'remixicon/fonts/remixicon.css'
-// import 'swiper/swiper-bundle.min.css';
+import 'swiper/css/swiper.min.css';
+import 'swiper/css/swiper.css';
+import VueAwesomeSwiper from 'vue-awesome-swiper';
+
+Vue.use(VueAwesomeSwiper);
 
 Vue.config.productionTip = false
 
@@ -17,7 +21,7 @@ Vue.use(VueLazyload, {
 
 Vue.filter('formatDate', function (value) {
   if (!value) return '';
-  return value.split('T')[0]; 
+  return value.split('T')[0];
 });
 
 Vue.directive('focus', {

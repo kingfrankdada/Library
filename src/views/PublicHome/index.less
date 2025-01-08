@@ -1,0 +1,94 @@
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    flex-shrink: 0;
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .swiper-slide {
+    .page {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+      margin-left: 2.5%;
+      padding-bottom: 10%;
+      height: 100%;
+      width: 50%;
+      opacity: 0;
+      transition: opacity 0.7s ease-in-out;
+    }
+
+    .title {
+      width: 50%;
+      font-size: 40px;
+      font-weight: bold;
+      font-family: "Montserrat", sans-serif;
+      color: var(--first-color);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      font-family: "Montserrat", sans-serif;
+      color: var(--text-color);
+      line-height: 1.75;
+    }
+
+    button {
+      font-family: "Montserrat", sans-serif;
+      color: var(--text-color);
+      margin-top: 20px;
+      font-size: 15px;
+      background: var(--white-color);
+      color: var(--first-color);
+      height: 40px;
+      width: 150px;
+      border-radius: 25px;
+
+      &:hover {
+        cursor: pointer;
+        background: var(--first-color);
+        color: var(--white-color);
+        transition: 0.4s;
+      }
+
+      i {
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .slide-1 {
+    background: url(../../assets/img/grid-3227459_1920.png) no-repeat center;
+    background-size: cover;
+  }
+
+  .slide-2 {
+    background: url(../../assets/img/grid-3227459_1920.png) no-repeat center;
+    background-size: cover;
+  }
+
+  .slide-3 {
+    background: url(../../assets/img/background3.png) no-repeat center;
+    background-size: cover;
+  }
+
+  .fade-in {
+    opacity: 1 !important;
+  }
+
+  .fade-out {
+    opacity: 0 !important;
+  }
+}
