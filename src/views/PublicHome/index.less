@@ -50,32 +50,47 @@
       color: var(--text-color);
       margin-top: 20px;
       font-size: 15px;
-      background: var(--white-color);
-      color: var(--first-color);
+      background: var(--first-color);
+      color: var(--white-color);
       height: 40px;
-      width: 150px;
+      padding: 20px 30px 20px 30px;
       border-radius: 25px;
+      transition: padding 0.3s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
 
       &:hover {
         cursor: pointer;
-        background: var(--first-color);
-        color: var(--white-color);
-        transition: 0.4s;
+        padding: 20px 50px 20px 40px;
+
+        i {
+          opacity: 1;
+          visibility: visible;
+          transition: opacity 0.3s ease-in-out, visibility 0s 0.1s;
+        }
       }
 
       i {
-        margin-left: 5px;
+        right: 20px;
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        transition: opacity 0.3s ease-in-out, visibility 0s 0.1s;
       }
     }
+
+
   }
 
   .slide-1 {
-    background: url(../../assets/img/grid-3227459_1920.png) no-repeat center;
+    background: url(../../assets/img/background1.png) no-repeat center;
     background-size: cover;
   }
 
   .slide-2 {
-    background: url(../../assets/img/grid-3227459_1920.png) no-repeat center;
+    background: url(../../assets/img/background2.png) no-repeat center;
     background-size: cover;
   }
 
