@@ -15,13 +15,17 @@
           <div
             class="page"
             :class="{
-              'fade-in': currentIndex === index,
-              'fade-out': currentIndex !== index,
+              'fade-in': currentIndex == index,
+              'fade-out': currentIndex != index,
             }"
           >
             <h1 class="title">{{ slide.title }}</h1>
             <h4 class="subtitle">{{ slide.subtitle }}</h4>
-            <button v-if="slide.btnText" @click="slide.btnMethod">
+            <button
+              :style="slide.btnStyle"
+              v-if="slide.btnText"
+              @click="slide.btnMethod"
+            >
               {{ slide.btnText }}
               <i class="ri-arrow-right-double-line"></i>
             </button>
@@ -49,9 +53,9 @@ export default {
     return {
       currentIndex: 0,
       swiperOption: {
-        notNextTick: false,
+        notNextTick: true,
         direction: "vertical",
-        grabCursor: false,
+        grabCursor: true,
         setWrapperSize: true,
         autoHeight: false,
         slidesPerView: 1,
@@ -93,7 +97,15 @@ export default {
         },
         {
           title: "项目介绍与支持",
-          subtitle: "本项目采用 Vue.js + Vuex + Vue Router + Remix Icon...",
+          subtitle:
+            "我们为此项目提供持续的技术支持和维护，确保平台在使用过程中能得到及时更新与优化，以应对不断变化的需求。本项目采用MIT开源协议，您可以在GitHub中提供反馈或者寻求帮助与解答。",
+          btnText: "View On GitHub",
+          btnMethod: () => {
+            window.open("https://github.com/kingfrankdada/Library");
+          },
+          btnStyle: {
+            background: "#383838",
+          },
         },
       ],
     };
@@ -106,9 +118,11 @@ export default {
   },
 
   mounted() {
-    this.$nextTick(() => {
-      this.swiper.swiperInstance.slideTo(0, false);
-    });
+    // 读取siwper的当前索引，载入时候从上次缓存中读取
+    // const swiperIndex = localStorage.getItem("swiperIndex") || 0;
+    // this.$nextTick(() => {
+    //   this.swiper.swiperInstance.slideTo(swiperIndex, false);
+    // });
   },
 
   watch: {
@@ -146,6 +160,12 @@ export default {
       });
     },
   },
+
+  // 离开时候缓存当前索引
+  // beforeRouteLeave(to, from, next) {
+  //   localStorage.setItem("swiperIndex", this.currentIndex);
+  //   next();
+  // },
 };
 </script>
 

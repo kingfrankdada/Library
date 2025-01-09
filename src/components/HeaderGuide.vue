@@ -36,7 +36,7 @@
             v-if="
               userInfo.role ? userInfo.role == 1 || userInfo.role == 0 : false
             "
-            title="系统设置"
+            title="管理员设置"
             class="nav-item"
           >
             <i class="ri-settings-line"></i>
@@ -57,6 +57,16 @@
           <PublicNotice ref="notice"></PublicNotice>
         </div>
 
+        <!-- 系统设置 -->
+        <div class="nav-setting" title="系统设置">
+          <i
+            class="ri-settings-5-line"
+            id="setting-button"
+            @click="openSetting"
+          ></i>
+          <!-- <PublicNotice ref="notice"></PublicNotice> -->
+        </div>
+        
         <!-- 检测到token为非空条件时，判断用户已登陆隐藏登陆按钮-->
         <!-- 登录模态框，包含NormalModal与PublicLogin组件 -->
         <div v-if="!userInfo.usertoken" title="登陆">
@@ -168,6 +178,10 @@ export default {
       this.setNoticeModalVisible(true);
       this.$refs.notice.selectNotice();
     },
+
+    openSetting() {
+      console.log("openSetting");
+    },
   },
 
   mounted() {
@@ -209,7 +223,7 @@ export default {
   height: var(--header-height);
   display: flex;
   align-items: center;
-  right: 130px;
+  right: 170px;
   animation: fadeInFromRight 0.5s ease;
 }
 
