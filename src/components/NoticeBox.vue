@@ -72,7 +72,7 @@ export default {
 .notice-content {
   width: 60%;
   height: 60%;
-  background-color: var(--white-color);
+  background-color: var(--background-color);
   border-radius: 3px;
   position: relative;
   display: flex;

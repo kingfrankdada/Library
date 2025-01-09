@@ -37,6 +37,7 @@ export default {
   data() {
     return {
       onlineUsers: 0,
+      isNightMode: JSON.parse(localStorage.getItem("isNightMode")) || false, // 默认为白天模式
     };
   },
 
@@ -50,6 +51,7 @@ export default {
   },
 
   mounted() {
+    this.applyTheme();
     this.connectWebSocket();
     this.syncLogState();
   },
@@ -93,6 +95,15 @@ export default {
         console.log(response.data.message);
       } catch (error) {
         console.error("同步日志状态失败:", error.message);
+      }
+    },
+
+    // 应用主题模式
+    applyTheme() {
+      if (this.isNightMode) {
+        document.body.classList.add("dark-theme");
+      } else {
+        document.body.classList.remove("dark-theme");
       }
     },
   },
@@ -160,19 +171,6 @@ export default {
   --z-fixed: 100;
 }
 
-/*========== Responsive typography ==========*/
-/* @media screen and (min-width: 1150px) {
-  :root {
-    --biggest-font-size: 3.5rem;
-    --h1-font-size: 2.25rem;
-    --h2-font-size: 1.5rem;
-    --h3-font-size: 1.25rem;
-    --normal-font-size: 1rem;
-    --small-font-size: 0.875rem;
-    --smaller-font-size: 0.813rem;
-  }
-} */
-
 /*=============== BASE ===============*/
 * {
   box-sizing: border-box;
@@ -233,9 +231,10 @@ img {
 
 /*=============== THEME ===============*/
 /*========== Variables Dark theme ==========*/
-body.dark-theme {
-  --title-color: hsl(230, 48%, 85%);
-  --text-color: hsl(230, 16%, 70%);
+.dark-theme {
+  --first-color: hsl(230, 62%, 56%);
+  --title-color: hsl(230, 70%, 16%);
+  --text-color: hsl(230, 16%, 45%);
   --border-color: hsl(230, 12%, 18%);
   --body-color: hsl(230, 12%, 8%);
   --container-color: hsl(230, 12%, 12%);
@@ -273,6 +272,7 @@ body.dark-theme {
 .dark-theme::-webkit-scrollbar-thumb:hover {
   background-color: hsl(230, 16%, 35%);
 }
+
 /*=============== REUSABLE CSS CLASSES ===============*/
 .container {
   max-width: 100%;

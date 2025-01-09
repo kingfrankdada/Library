@@ -64,9 +64,8 @@
             id="setting-button"
             @click="openSetting"
           ></i>
-          <!-- <PublicNotice ref="notice"></PublicNotice> -->
         </div>
-        
+
         <!-- 检测到token为非空条件时，判断用户已登陆隐藏登陆按钮-->
         <!-- 登录模态框，包含NormalModal与PublicLogin组件 -->
         <div v-if="!userInfo.usertoken" title="登陆">
@@ -88,6 +87,12 @@
         </div> -->
       </div>
     </div>
+
+    <SettingBox
+      v-if="settingMsg"
+      :settingMsg="settingMsg"
+      @close="settingMsg = null"
+    ></SettingBox>
   </header>
 </template>
 
@@ -99,6 +104,7 @@ import PublicLogout from "./PublicLogout.vue";
 import PublicReg from "./PublicReg.vue";
 import PublicSearch from "./PublicSearch.vue";
 import PublicNotice from "./PublicNotice.vue";
+import SettingBox from "./SettingBox.vue";
 
 export default {
   name: "HeaderGuide",
@@ -110,10 +116,12 @@ export default {
     PublicReg,
     PublicSearch,
     PublicNotice,
+    SettingBox,
   },
 
   data() {
     return {
+      settingMsg: null,
       modalSize: "normal",
       modalSizeSmall: "small",
       menuList: [
@@ -180,7 +188,7 @@ export default {
     },
 
     openSetting() {
-      console.log("openSetting");
+      this.settingMsg = "设置";
     },
   },
 
