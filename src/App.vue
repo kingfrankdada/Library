@@ -7,7 +7,7 @@
       href="assets/img/favicon.png"
       type="image/x-icon"
     />
-
+    
     <!-- 局域网dev环境启用 -->
     <link
       rel="stylesheet"
@@ -17,8 +17,8 @@
       href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
       rel="stylesheet"
     />
-
     <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" />
+    
     <div class="header">
       <HeaderGuide></HeaderGuide>
     </div>
@@ -30,7 +30,9 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import HeaderGuide from "@/components/HeaderGuide.vue";
+import { eventBus } from "@/utils/eventBus"; // 导入 eventBus
 import { mapMutations, mapState } from "vuex";
+
 export default {
   name: "app",
 
@@ -46,7 +48,6 @@ export default {
   },
 
   computed: {
-    // ...mapState("WebSocket", ["onlineUserCount"]),
     ...mapState("SysInfo", ["isLogActive"]),
   },
 
@@ -54,6 +55,11 @@ export default {
     this.applyTheme();
     this.connectWebSocket();
     this.syncLogState();
+    eventBus.$on("night-mode-changed", this.handleNightModeChange);
+  },
+
+  beforeDestroy() {
+    eventBus.$off("night-mode-changed", this.handleNightModeChange);
   },
 
   methods: {
@@ -106,6 +112,12 @@ export default {
         document.body.classList.remove("dark-theme");
       }
     },
+
+    handleNightModeChange(isNightMode) {
+      this.isNightMode = isNightMode;
+      localStorage.setItem("isNightMode", JSON.stringify(isNightMode));
+      this.applyTheme(); 
+    },
   },
 };
 </script>
@@ -116,12 +128,13 @@ export default {
 .header {
   flex-shrink: 0;
 }
+
 /*=============== VARIABLES CSS ===============*/
 :root {
   --header-height: 8vh;
   --body-height: 92vh;
 
-  /*========== 弹窗组件尺寸 ==========*/
+  /* 弹窗组件尺寸 */
   --search-modal-content-weight: 40%;
   --search-modal-content-height: 30%;
   --small-modal-content-weight: 25%;
@@ -135,22 +148,19 @@ export default {
   --large-modal-content-weight: 70%;
   --large-modal-content-height: 70%;
 
-  /*========== Colors ==========*/
-  /*Color mode HSL(hue, saturation, lightness)*/
+  /* Colors */
   --first-color: hsl(230, 62%, 56%);
   --title-color: hsl(230, 70%, 16%);
   --text-color: hsl(230, 16%, 45%);
   --border-color: hsl(230, 50%, 90%);
   --white-color: hsl(0, 0%, 100%);
   --background-color: #f3f3f3;
-  /* --body-color: hsl(230, 100%, 96%); */
   --body-color: hsl(0, 0%, 100%);
   --grey-color: hsl(0, 0%, 95%);
   --admin-color: hsl(229, 37%, 26%);
   --container-color: hsl(230, 100%, 97%);
 
-  /*========== Font and typography ==========*/
-  /*.5rem = 8px | 1rem = 16px ...*/
+  /* Font and typography */
   --body-font: "Montserrat", sans-serif;
   --second-font: "Montagu Slab", serif;
   --biggest-font-size: 2rem;
@@ -161,12 +171,12 @@ export default {
   --small-font-size: 0.813rem;
   --smaller-font-size: 0.75rem;
 
-  /*========== Font weight ==========*/
+  /* Font weight */
   --font-regular: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
 
-  /*========== z index ==========*/
+  /* z index */
   --z-tooltip: 10;
   --z-fixed: 100;
 }
@@ -230,7 +240,7 @@ img {
 }
 
 /*=============== THEME ===============*/
-/*========== Variables Dark theme ==========*/
+/* Dark theme */
 .dark-theme {
   --first-color: hsl(230, 62%, 56%);
   --title-color: hsl(230, 70%, 16%);
@@ -240,10 +250,7 @@ img {
   --container-color: hsl(230, 12%, 12%);
 }
 
-/*========== 
-	Color changes in some parts of 
-	the website, in dark theme
-==========*/
+/* Other dark theme related styles */
 .dark-theme .shadow-header {
   box-shadow: 0 2px 16px hsla(0, 0%, 0%, 0.4);
 }

@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import { eventBus } from "@/utils/eventBus";
+
 export default {
   name: "SettingBox",
 
@@ -56,6 +58,7 @@ export default {
 
     toggleNightMode() {
       localStorage.setItem("isNightMode", JSON.stringify(this.isNightMode)); // 存储布尔值
+      eventBus.$emit("night-mode-changed", this.isNightMode);
       // if (this.isNightMode) {
       //   // 设置夜间模式
       //   document.body.classList.add("night-mode");

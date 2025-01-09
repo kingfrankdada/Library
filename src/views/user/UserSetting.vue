@@ -220,6 +220,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener("resize", this.resizeCharts);
+    eventBus.$off("borrow-returned", this.handleBorrowReturned);
     if (this.creditChart) {
       this.creditChart.dispose();
     }
