@@ -4,7 +4,10 @@
       <span class="close-button" @click="close">&times;</span>
       <div class="setting-title">{{ settingMsg }}</div>
       <div class="setting-items">
-        <span><i class="ri-moon-foggy-line" style="padding-right: 5px"></i>夜间模式</span>
+        <span
+          ><i class="ri-moon-foggy-line" style="padding-right: 5px"></i
+          >夜间模式</span
+        >
         <label class="switch">
           <input
             type="checkbox"
@@ -13,6 +16,17 @@
           />
           <span class="slider"></span>
         </label>
+      </div>
+      <div class="setting-items">
+        <span
+          ><i class="ri-earth-line" style="padding-right: 5px"></i
+          >系统语言</span
+        >
+        <select v-model="language" @change="handleLanguageChange">
+          <option value="en">English</option>
+          <option value="zh-CN">简体中文</option>
+          <option value="zh-TW">繁體中文</option>
+        </select>
       </div>
     </div>
   </div>
@@ -37,7 +51,8 @@ export default {
 
   data() {
     return {
-      isNightMode: JSON.parse(localStorage.getItem("isNightMode")) || false, // 默认为白天模式
+      isNightMode: JSON.parse(localStorage.getItem("isNightMode")) || false, // 默认白天
+      language: JSON.parse(localStorage.getItem("language")) || "zh-CN", // 默认简中
     };
   },
 
@@ -57,14 +72,12 @@ export default {
     },
 
     toggleNightMode() {
-      localStorage.setItem("isNightMode", JSON.stringify(this.isNightMode)); // 存储布尔值
+      localStorage.setItem("isNightMode", JSON.stringify(this.isNightMode));
       eventBus.$emit("night-mode-changed", this.isNightMode);
-      // if (this.isNightMode) {
-      //   // 设置夜间模式
-      //   document.body.classList.add("night-mode");
-      // } else {
-      //   document.body.classList.remove("night-mode");
-      // }
+    },
+
+    handleLanguageChange() {
+      localStorage.setItem("language", JSON.stringify(this.language));
     },
   },
 };
@@ -99,8 +112,8 @@ export default {
 }
 
 .setting-content.night-mode-content {
-  background-color: #333; 
-  color: #fff; 
+  background-color: #333;
+  color: #fff;
 }
 
 .setting-title {
@@ -122,6 +135,14 @@ export default {
 
 .setting-items span {
   font-size: 16px;
+}
+
+select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: var(--card-color);
+  color: var(--text-color);
 }
 
 .switch {
