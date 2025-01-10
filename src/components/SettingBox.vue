@@ -4,7 +4,7 @@
       <span class="close-button" @click="close">&times;</span>
       <div class="setting-title">{{ settingMsg }}</div>
       <div class="setting-items">
-        <span>夜间模式</span>
+        <span><i class="ri-moon-foggy-line" style="padding-right: 5px"></i>夜间模式</span>
         <label class="switch">
           <input
             type="checkbox"
