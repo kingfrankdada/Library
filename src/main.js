@@ -7,6 +7,7 @@ import 'remixicon/fonts/remixicon.css'
 import 'swiper/css/swiper.min.css';
 import 'swiper/css/swiper.css';
 import VueAwesomeSwiper from 'vue-awesome-swiper';
+import i18n from "./i18n";
 
 Vue.use(VueAwesomeSwiper);
 
@@ -33,5 +34,6 @@ Vue.directive('focus', {
 new Vue({
   render: h => h(App),
   router,
+  i18n,
   store
 }).$mount('#app')

@@ -2,12 +2,12 @@
   <div class="setting" @click="handleClickOutside">
     <div class="setting-content" :class="{ 'night-mode-content': isNightMode }">
       <span class="close-button" @click="close">&times;</span>
-      <div class="setting-title">{{ settingMsg }}</div>
+      <div class="setting-title">{{ $t("setting.title") }}</div>
       <div class="setting-items">
-        <span
-          ><i class="ri-moon-foggy-line" style="padding-right: 5px"></i
-          >夜间模式</span
-        >
+        <span>
+          <i class="ri-moon-foggy-line" style="padding-right: 5px"></i>
+          {{ $t("setting.nightMode") }}
+        </span>
         <label class="switch">
           <input
             type="checkbox"
@@ -18,14 +18,14 @@
         </label>
       </div>
       <div class="setting-items">
-        <span
-          ><i class="ri-earth-line" style="padding-right: 5px"></i
-          >系统语言</span
-        >
+        <span>
+          <i class="ri-earth-line" style="padding-right: 5px"></i>
+          {{ $t("setting.language") }}
+        </span>
         <select v-model="language" @change="handleLanguageChange">
           <option value="en">English</option>
           <option value="zh-CN">简体中文</option>
-          <option value="zh-TW">繁體中文</option>
+          <!-- <option value="zh-TW">繁體中文</option> -->
         </select>
       </div>
     </div>
@@ -56,10 +56,6 @@ export default {
     };
   },
 
-  mounted() {
-    // console.log(localStorage.getItem("isNightMode"));
-  },
-
   methods: {
     close() {
       this.$emit("close");
@@ -78,6 +74,8 @@ export default {
 
     handleLanguageChange() {
       localStorage.setItem("language", JSON.stringify(this.language));
+      this.$i18n.locale = this.language;
+      eventBus.$emit("language-changed", this.language);
     },
   },
 };

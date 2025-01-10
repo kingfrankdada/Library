@@ -40,6 +40,7 @@ export default {
     return {
       onlineUsers: 0,
       isNightMode: JSON.parse(localStorage.getItem("isNightMode")) || false, // 默认为白天模式
+      language: JSON.parse(localStorage.getItem("language")) || "zh-CN", // 默认简中
     };
   },
 
@@ -55,7 +56,9 @@ export default {
     this.applyTheme();
     this.connectWebSocket();
     this.syncLogState();
+    this.applyLanguage(); // 应用语言配置
     eventBus.$on("night-mode-changed", this.handleNightModeChange);
+    eventBus.$on("language-changed", this.handleLanguageChange);
   },
 
   beforeDestroy() {
@@ -113,10 +116,20 @@ export default {
       }
     },
 
+    // 应用语言配置
+    applyLanguage() {
+      this.$i18n.locale = this.language;
+    },
+
     handleNightModeChange(isNightMode) {
       this.isNightMode = isNightMode;
-      localStorage.setItem("isNightMode", JSON.stringify(isNightMode));
       this.applyTheme();
+    },
+
+    handleLanguageChange(language) {
+      this.language = language;
+      localStorage.setItem("language", JSON.stringify(language)); // 更新 localStorage
+      this.applyLanguage();
     },
   },
 };
