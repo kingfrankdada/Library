@@ -62,7 +62,7 @@ export default {
 .alert-content {
   width: 30%;
   height: 20%;
-  background-color: #fff;
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;
@@ -101,7 +101,7 @@ export default {
 }
 
 .close-form:hover {
-  background: var(--border-color);
+  background: var(--background-color);
   border-radius: 0 0 2px 2px;
 }
 

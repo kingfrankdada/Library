@@ -136,6 +136,8 @@ export default {
   padding: 20px;
   width: 100%;
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .notice-list {
@@ -151,7 +153,7 @@ export default {
 }
 
 .notice-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--background-color);
 }
 
 .top-notice {

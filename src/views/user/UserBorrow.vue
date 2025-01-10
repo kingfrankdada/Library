@@ -434,7 +434,7 @@ export default {
   border: 1px solid #ddd;
   color: var(--text-color);
   border-radius: 6px;
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
   font-size: 16px;
 }
 
@@ -457,7 +457,6 @@ table {
   border-collapse: collapse;
   margin-top: 5px;
   margin-bottom: 50px;
-  background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -483,16 +482,16 @@ th {
 
 td {
   font-size: 14px;
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
 }
 
 td:hover {
-  background-color: #f1f1f1;
+  background-color: var(--background-color);
   transition: background-color 0.3s;
 }
 
 td:last-child:hover {
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
 }
 
 button {
@@ -501,14 +500,14 @@ button {
   height: 30px;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
 }
 
 button:hover {
   background-color: var(--first-color);
-  color: var(--white-color);
+  color: var(--card-color);
   transition: 0.4s;
 }
 
@@ -524,7 +523,7 @@ button:hover {
   width: 50%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
   text-align: center;
@@ -532,7 +531,7 @@ button:hover {
 
 .action-buttons button:hover {
   background-color: var(--first-color);
-  color: var(--white-color);
+  color: var(--card-color);
   transition: 0.4s;
 }
 
@@ -575,6 +574,8 @@ button:hover {
   width: 100px;
   padding: 5px;
   border-radius: 4px;
+  background-color: var(--card-color);
+  color: var(--text-color);
 }
 
 .pagination button:disabled {

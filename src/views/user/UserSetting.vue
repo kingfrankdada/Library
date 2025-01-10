@@ -442,7 +442,7 @@ export default {
 
 .user-container {
   display: flex;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   width: calc(100% - 40px);
   height: calc(100% - 40px - var(--header-height));
   margin: 20px;
@@ -455,7 +455,7 @@ export default {
 .user-info,
 .user-credit {
   flex: 1;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   padding: 20px;
   border-radius: 8px;
 }
@@ -488,7 +488,7 @@ export default {
   padding: 5px 10px;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
 }

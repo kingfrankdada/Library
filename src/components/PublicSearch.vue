@@ -136,7 +136,6 @@ export default {
   height: 7.5%;
   overflow: hidden;
   transition: 0.3s;
-  overflow: hidden;
 }
 
 .g-container > * {
@@ -181,6 +180,6 @@ export default {
 .g-container:focus-within {
   transform: translateY(-4px);
   border-color: #bbb;
-  box-shadow: 4px 4px 10px 2px #ddd;
+  box-shadow: 4px 4px 10px 2px var(--background-color);
 }
 </style>

@@ -302,7 +302,7 @@ export default {
 .book-card {
   cursor: pointer;
   height: 100%;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   border-radius: 8px;
   padding: 15px;
   display: flex;
@@ -360,8 +360,7 @@ export default {
 
 .pagination {
   position: absolute;
-  left: 7.5%;
-  bottom: 20px;
+  bottom: 10%;
   width: 100%;
   height: 50px;
   display: flex;
@@ -374,7 +373,7 @@ export default {
   padding: 5px 10px;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
   cursor: pointer;

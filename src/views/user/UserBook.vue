@@ -312,14 +312,15 @@ export default {
   height: 100%;
   width: 100%;
   z-index: 0;
-  background: var(--background-color);
   display: flex;
   flex-direction: column;
 }
 
 .book-body {
   position: absolute;
-  width: calc(85% - 20px);
+  background: var(--background-color);
+  width: 85%;
+  padding-right: 20px;
   height: 100%;
   left: 15%;
   flex: 1;
@@ -328,7 +329,6 @@ export default {
   padding-top: 20px;
   padding-left: 20px;
   gap: 20px;
-  overflow-y: auto;
 }
 
 .book-grid {
@@ -341,7 +341,7 @@ export default {
 .book-card {
   cursor: pointer;
   height: 100%;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   border-radius: 8px;
   padding: 15px;
   display: flex;
@@ -414,7 +414,7 @@ export default {
   padding: 5px 10px;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
   cursor: pointer;

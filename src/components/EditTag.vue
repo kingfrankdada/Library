@@ -77,7 +77,7 @@ export default {
 .edit-content {
   width: 50%;
   height: 60%;
-  background-color: #fff;
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;
@@ -106,6 +106,7 @@ export default {
   outline: none;
   box-sizing: border-box;
   overflow: auto;
+  background-color: var(--card-color);
 }
 
 .close-button {
@@ -131,7 +132,7 @@ export default {
   align-self: center;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: bold;
   cursor: pointer;

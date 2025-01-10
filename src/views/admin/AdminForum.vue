@@ -712,7 +712,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 6px;
   color: var(--text-color);
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
   font-size: 16px;
 }
 
@@ -740,7 +740,6 @@ table {
   border-collapse: collapse;
   margin-top: 5px;
   margin-bottom: 50px;
-  background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -766,16 +765,16 @@ th {
 
 td {
   font-size: 14px;
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
 }
 
 td:hover {
-  background-color: #f1f1f1;
+  background-color: var(--background-color);
   transition: background-color 0.3s;
 }
 
 td:last-child:hover {
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
 }
 
 .message-type-icon {
@@ -788,7 +787,7 @@ button {
   height: 30px;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
 }
@@ -804,8 +803,8 @@ select {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #fff;
-  color: #333;
+  background-color: var(--card-color);
+  color: var(--text-color);
 }
 
 .select-modal {

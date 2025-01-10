@@ -433,6 +433,7 @@ export default {
           title: {
             show: true,
             fontSize: 15,
+            color: "hsl(230, 62%, 56%)",
           },
           detail: {
             show: true,
@@ -495,7 +496,7 @@ export default {
               width: 40,
               height: 14,
               fontSize: 20,
-              color: "#464646",
+              color: "hsl(230, 62%, 56%)",
               formatter: "{value}%",
               offsetCenter: ["0%", "0%"],
             },
@@ -518,6 +519,7 @@ export default {
                 title: {
                   show: true,
                   fontSize: 15,
+                  color: "hsl(230, 62%, 56%)",
                 },
                 detail: {
                   show: true,
@@ -541,6 +543,7 @@ export default {
           title: {
             show: true,
             fontSize: 15,
+            color: "hsl(230, 62%, 56%)",
           },
           detail: {
             show: true,
@@ -603,7 +606,7 @@ export default {
               width: 40,
               height: 14,
               fontSize: 20,
-              color: "#464646",
+              color: "hsl(230, 62%, 56%)",
               formatter: "{value}%",
               offsetCenter: ["0%", "0%"],
             },
@@ -625,6 +628,7 @@ export default {
                 title: {
                   show: true,
                   fontSize: 15,
+                  color: "hsl(230, 62%, 56%)",
                 },
                 detail: {
                   show: true,
@@ -711,6 +715,10 @@ export default {
   font-size: 20px;
   color: var(--text-color);
   padding: 0 5px 5px 0;
+}
+
+h4 {
+  color: var(--text-color);
 }
 
 .card-form-text {

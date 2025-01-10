@@ -257,7 +257,7 @@ export default {
 .renew-content {
   width: 60%;
   max-height: 80%;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;
@@ -331,15 +331,17 @@ export default {
 }
 
 .renew-inputs label {
+  margin-right: 10px;
   font-size: 14px;
-  color: #333;
+  color: var(--text-color);
   font-weight: bold;
 }
 
 .renew-inputs input {
-  padding: 10px;
+  padding: 5px;
   height: 40px;
   border: 1px solid #ddd;
+  background-color: var(--card-color);
   border-radius: 5px;
   font-size: 14px;
 }
@@ -363,7 +365,7 @@ export default {
 .renew-button {
   color: var(--first-color);
   border: 1px solid var(--first-color);
-  background-color: var(--white-color);
+  background-color: var(--card-color);
 }
 
 .renew-button:hover {
@@ -375,7 +377,7 @@ export default {
 .cancel-button {
   color: red;
   border: 1px solid red;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
 }
 
 .cancel-button:hover {

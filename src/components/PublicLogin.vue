@@ -231,6 +231,8 @@ export default {
   margin: 2%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
+  background-color: var(--card-color);
+  color: var(--text-color);
 }
 
 .login-form button {
@@ -240,7 +242,7 @@ export default {
   height: 75%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
 }

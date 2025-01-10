@@ -188,7 +188,7 @@ export default {
 .return-content {
   width: 35%;
   height: 35%;
-  background-color: #fff;
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;
@@ -208,6 +208,11 @@ export default {
   align-items: center;
   margin: 20px 0;
   gap: 5px;
+}
+
+textarea{
+  color: var(--text-color);
+  background-color: var(--card-color);
 }
 
 .message {
@@ -301,7 +306,7 @@ textarea[type="text"] {
   position: absolute;
   top: 10px;
   right: 20px;
-  color: #aaa;
+  color: var(--backgroun-color);
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;

@@ -72,7 +72,7 @@ export default {
 .notice-content {
   width: 60%;
   height: 60%;
-  background-color: var(--background-color);
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;

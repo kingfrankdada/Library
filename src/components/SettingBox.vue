@@ -42,7 +42,7 @@ export default {
   },
 
   mounted() {
-    console.log(localStorage.getItem("isNightMode"));
+    // console.log(localStorage.getItem("isNightMode"));
   },
 
   methods: {
@@ -88,7 +88,7 @@ export default {
 
 .setting-content {
   width: 25%;
-  height: 35%;
+  height: 30%;
   background-color: #fff;
   border-radius: 3px;
   position: relative;

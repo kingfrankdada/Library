@@ -133,7 +133,7 @@ export default {
       } else {
         return this.messages;
       }
-    }
+    },
   },
 
   mounted() {
@@ -258,13 +258,12 @@ export default {
 }
 
 .forum-box {
-  background: #fff;
+  position: absolute;
+  width: 100%;
+  height: calc(100% - var(--header-height));
+  background: var(--background-color);
   padding: 15px;
-  border-radius: 3px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .forum-title {
@@ -292,7 +291,7 @@ export default {
   border-radius: 5px;
   padding: 10px;
   margin: 5px 0;
-  background-color: #f9f9f9;
+  background-color: var(--card-color);
 }
 
 .message-item[disabled] {
@@ -367,6 +366,8 @@ export default {
   padding: 10px;
   margin: 5px 0;
   border: 1px solid #ccc;
+  background-color: var(--background-color);
+  color: var(--text-color);
   border-radius: 5px;
   resize: none;
   outline: none;

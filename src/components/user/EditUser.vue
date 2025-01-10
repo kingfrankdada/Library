@@ -183,7 +183,7 @@ td {
 }
 
 th {
-  background-color: #f2f2f2;
+  background-color: var(--background-color);
 }
 
 p {
@@ -201,7 +201,7 @@ button {
   height: 12.5%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
 }
@@ -219,6 +219,8 @@ select {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: var(--card-color);
+  color: var(--text-color);
 }
 
 .close-button {

@@ -148,8 +148,13 @@ td {
   padding: 8px;
 }
 
+input {
+  color: var(--text-color);
+  background-color: var(--card-color);
+}
+
 th {
-  background-color: #f2f2f2;
+  background-color: var(--background-color);
 }
 
 .warning {
@@ -173,7 +178,7 @@ button {
   height: 12.5%;
   border: 1px solid red;
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: red;
   font-weight: var(--font-medium);
 }

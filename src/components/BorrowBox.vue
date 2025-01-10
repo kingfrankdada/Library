@@ -260,7 +260,7 @@ export default {
 .borrow-content {
   width: 60%;
   max-height: 80%;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;
@@ -334,13 +334,16 @@ export default {
 }
 
 .borrow-inputs label {
+  margin-right: 10px;
   font-size: 14px;
-  color: #333;
+  color: var(--first-color);
   font-weight: bold;
 }
 
 .borrow-inputs input {
-  padding: 10px;
+  padding: 5px;
+  background-color: var(--card-color);
+  color: var(--text-color);
   height: 40px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -365,8 +368,8 @@ export default {
 
 .borrow-button {
   color: var(--first-color);
-  border: 1px solid var(--first-color);
-  background-color: var(--white-color);
+  border: 1px solid var(--btn-color);
+  background-color: var(--card-color);
 }
 
 .borrow-button:hover {
@@ -378,7 +381,7 @@ export default {
 .cancel-button {
   color: red;
   border: 1px solid red;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
 }
 
 .cancel-button:hover {

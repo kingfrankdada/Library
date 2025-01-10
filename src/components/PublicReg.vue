@@ -9,37 +9,35 @@
       <span>高校图书管理系统</span>
     </div>
     <div class="reg-form" @keyup.enter="handleReg">
-      <form>
-        <input
-          v-focus
-          v-model="username"
-          class="username"
-          type="text"
-          placeholder="Enter your username"
-          autocomplete="username"
-        />
-        <input
-          v-model="password"
-          class="password"
-          type="password"
-          placeholder="Enter your password"
-          autocomplete="new-password"
-        />
-        <input
-          v-model="confirmPassword"
-          class="confirmPassword"
-          type="password"
-          placeholder="Enter your password again"
-          autocomplete="new-password"
-        />
-        <input
-          v-model="email"
-          class="email"
-          type="email"
-          placeholder="Enter your email"
-        />
-        <button @click="handleReg" class="reg-btn">SUBMIT</button>
-      </form>
+      <input
+        v-focus
+        v-model="username"
+        class="username"
+        type="text"
+        placeholder="Enter your username"
+        autocomplete="username"
+      />
+      <input
+        v-model="password"
+        class="password"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="new-password"
+      />
+      <input
+        v-model="confirmPassword"
+        class="confirmPassword"
+        type="password"
+        placeholder="Enter your password again"
+        autocomplete="new-password"
+      />
+      <input
+        v-model="email"
+        class="email"
+        type="email"
+        placeholder="Enter your email"
+      />
+      <button @click="handleReg" class="reg-btn">SUBMIT</button>
     </div>
     <div class="login-change-btn">
       <div class="login-change-btn-item" @click="changeLoginModal">
@@ -236,6 +234,8 @@ export default {
   margin: 1%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
+  background-color: var(--card-color);
+  color: var(--text-color);
 }
 
 .reg-form button {
@@ -245,7 +245,7 @@ export default {
   height: 35%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
 }

@@ -134,15 +134,15 @@ export default {
   width: 85%;
   flex-wrap: wrap;
   justify-content: space-between;
-  overflow-y: scroll;
-  background: var(--white-color);
+  overflow-y: auto;
+  background: var(--background-color);
   padding: 0 20px 20px 20px;
 }
 
 .search-box {
   position: sticky;
   top: 0;
-  background-color: var(--white-color);
+  background-color: var(--background-color);
   display: flex;
   justify-content: center;
   border-bottom: 1px solid #ddd;
@@ -152,6 +152,8 @@ export default {
 
 .search-box input {
   width: 60%;
+  background-color: var(--card-color);
+  color: var(--text-color);
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;

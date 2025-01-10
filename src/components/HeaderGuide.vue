@@ -212,7 +212,6 @@ export default {
   border-bottom: 1px solid var(--border-color);
   background-color: var(--body-color);
   z-index: var(--z-fixed);
-  transition: box-shadow 0.4s, background-color 0.4s;
 }
 
 .router-link-exact-active {
@@ -236,6 +235,7 @@ export default {
 }
 
 .nav-item {
+  color: var(--text-color);
   display: flex;
   padding: 0 10px 0 10px;
 }

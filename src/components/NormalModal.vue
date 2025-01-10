@@ -112,7 +112,7 @@ export default {
 .modal-content {
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;

@@ -120,12 +120,12 @@ export default {
 }
 
 .logout-btn:hover {
-  background-color: var(--border-color);
+  background-color: var(--background-color);
   border-radius: 0 0 0 2px;
 }
 
 .cancel-btn:hover {
-  background-color: var(--border-color);
+  background-color: var(--background-color);
   border-radius: 0 0 2px 0;
 }
 </style>

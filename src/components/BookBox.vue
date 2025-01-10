@@ -239,9 +239,9 @@ export default {
         await api.post(
           endpoints.delFavorite(this.userInfo.username, this.book.name)
         );
-        // this.alertMsg = "取消收藏成功，请前往用户中心-我的收藏查看";
+        this.message = "取消收藏成功";
         this.$emit("reSelect");
-        this.$emit("close");
+        // this.$emit("close");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = "取消收藏失败";
@@ -312,7 +312,7 @@ export default {
 .book-content {
   width: 65%;
   max-height: 80%;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   border-radius: 3px;
   position: relative;
   display: flex;
@@ -423,8 +423,8 @@ export default {
 
 .borrow-button {
   color: var(--first-color);
-  border: 1px solid var(--first-color);
-  background-color: var(--white-color);
+  border: 1px solid var(--btn-color);
+  background-color: var(--card-color);
 }
 
 .borrow-button:hover {
@@ -435,8 +435,8 @@ export default {
 
 .message-button {
   color: var(--first-color);
-  border: 1px solid var(--first-color);
-  background-color: var(--white-color);
+  border: 1px solid var(--btn-color);
+  background-color: var(--card-color);
 }
 
 .message-button:hover {
@@ -448,17 +448,16 @@ export default {
 .favorite-button {
   color: gold;
   border: 1px solid gold;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
 }
 
 .favorite-button.favorited {
   color: gray;
-  border-color: gray;
-  border: 1px solid gray;
+  border: 1px solid gold;
 }
 
 .favorite-button.favorited:hover {
-  background-color: gray;
+  background-color: gold;
   color: var(--white-color);
   transition: 0.4s;
 }

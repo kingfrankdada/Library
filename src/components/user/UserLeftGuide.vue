@@ -86,7 +86,6 @@ export default {
   height: var(--body-height);
   width: 15%;
   background-color: var(--body-color);
-  animation: fade-in 0.5s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   overflow: auto;
 }
@@ -144,7 +143,7 @@ export default {
   color: var(--text-color);
 }
 
-.router-link-active {
+.router-link-exact-active {
   color: var(--first-color);
 }
 

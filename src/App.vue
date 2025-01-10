@@ -7,7 +7,7 @@
       href="assets/img/favicon.png"
       type="image/x-icon"
     />
-    
+
     <!-- 局域网dev环境启用 -->
     <link
       rel="stylesheet"
@@ -18,7 +18,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" />
-    
+
     <div class="header">
       <HeaderGuide></HeaderGuide>
     </div>
@@ -116,7 +116,7 @@ export default {
     handleNightModeChange(isNightMode) {
       this.isNightMode = isNightMode;
       localStorage.setItem("isNightMode", JSON.stringify(isNightMode));
-      this.applyTheme(); 
+      this.applyTheme();
     },
   },
 };
@@ -159,6 +159,8 @@ export default {
   --grey-color: hsl(0, 0%, 95%);
   --admin-color: hsl(229, 37%, 26%);
   --container-color: hsl(230, 100%, 97%);
+  --card-color: hsl(0, 0%, 100%);
+  --btn-color: hsl(230, 62%, 56%);
 
   /* Font and typography */
   --body-font: "Montserrat", sans-serif;
@@ -180,6 +182,50 @@ export default {
   --z-tooltip: 10;
   --z-fixed: 100;
 }
+
+/*=============== THEME ===============*/
+/* Dark theme */
+.dark-theme {
+  --first-color: hsl(230, 62%, 56%);
+  --title-color: hsl(229, 80%, 33%);
+  --text-color: hsl(0, 0%, 70%);
+  --border-color: hsl(230, 12%, 18%);
+  --body-color: hsl(230, 12%, 8%);
+  --container-color: hsl(230, 60%, 2%);
+  --background-color: hsl(0, 0%, 10%);
+  --card-color: #2c2c2c;
+  --btn-color: hsl(230, 62%, 56%);
+}
+
+/* Other dark theme related styles */
+/* .dark-theme .shadow-header {
+  box-shadow: 0 2px 16px hsla(0, 0%, 0%, 0.4);
+}
+
+.dark-theme .nav__menu {
+  box-shadow: 0 -8px 32px hsla(0, 0%, 0%, 0.4);
+}
+
+.dark-theme .scrollup {
+  box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.4);
+}
+
+.dark-theme .search,
+.dark-theme .login {
+  background-color: hsla(262, 12%, 8%, 0.6);
+}
+
+.dark-theme::-webkit-scrollbar {
+  background-color: hsl(230, 16%, 15%);
+}
+
+.dark-theme::-webkit-scrollbar-thumb {
+  background-color: hsl(230, 16%, 25%);
+}
+
+.dark-theme::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(230, 16%, 35%);
+} */
 
 /*=============== BASE ===============*/
 * {
@@ -237,47 +283,6 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
-}
-
-/*=============== THEME ===============*/
-/* Dark theme */
-.dark-theme {
-  --first-color: hsl(230, 62%, 56%);
-  --title-color: hsl(230, 70%, 16%);
-  --text-color: hsl(230, 16%, 45%);
-  --border-color: hsl(230, 12%, 18%);
-  --body-color: hsl(230, 12%, 8%);
-  --container-color: hsl(230, 12%, 12%);
-}
-
-/* Other dark theme related styles */
-.dark-theme .shadow-header {
-  box-shadow: 0 2px 16px hsla(0, 0%, 0%, 0.4);
-}
-
-.dark-theme .nav__menu {
-  box-shadow: 0 -8px 32px hsla(0, 0%, 0%, 0.4);
-}
-
-.dark-theme .scrollup {
-  box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.4);
-}
-
-.dark-theme .search,
-.dark-theme .login {
-  background-color: hsla(262, 12%, 8%, 0.6);
-}
-
-.dark-theme::-webkit-scrollbar {
-  background-color: hsl(230, 16%, 15%);
-}
-
-.dark-theme::-webkit-scrollbar-thumb {
-  background-color: hsl(230, 16%, 25%);
-}
-
-.dark-theme::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(230, 16%, 35%);
 }
 
 /*=============== REUSABLE CSS CLASSES ===============*/

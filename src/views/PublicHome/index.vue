@@ -55,7 +55,7 @@ export default {
       swiperOption: {
         notNextTick: true,
         direction: "vertical",
-        grabCursor: true,
+        grabCursor: false,
         setWrapperSize: true,
         autoHeight: false,
         slidesPerView: 1,
@@ -105,6 +105,7 @@ export default {
           },
           btnStyle: {
             background: "#383838",
+            color: "#fff",
           },
         },
       ],
