@@ -56,7 +56,7 @@ export default {
     this.applyTheme();
     this.connectWebSocket();
     this.syncLogState();
-    this.applyLanguage(); // 应用语言配置
+    this.applyLanguage();
     eventBus.$on("night-mode-changed", this.handleNightModeChange);
     eventBus.$on("language-changed", this.handleLanguageChange);
   },
@@ -128,7 +128,6 @@ export default {
 
     handleLanguageChange(language) {
       this.language = language;
-      localStorage.setItem("language", JSON.stringify(language)); // 更新 localStorage
       this.applyLanguage();
     },
   },
