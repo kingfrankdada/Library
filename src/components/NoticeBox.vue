@@ -8,15 +8,15 @@
         </p>
 
         <p class="notice-info notice-form-item">
-         {{ notice.info }}
+          {{ notice.info }}
         </p>
       </div>
       <div class="notice-bottom">
         <p class="notice-bottom-item">
-          <strong>发布者：</strong>{{ notice.adduser }}
+          <strong>{{ $t("noticeBox.adduser") }}：</strong>{{ notice.adduser }}
         </p>
         <p class="notice-bottom-item">
-          <strong>发布日期：</strong>{{ notice.adddate }}
+          <strong>{{ $t("noticeBox.adddate") }}</strong>{{ notice.adddate }}
         </p>
       </div>
       <div class="close-form" @click="close"></div>
@@ -31,12 +31,7 @@ export default {
   props: {
     notice: {
       type: Object,
-      default: () => ({
-        title: "系统错误！",
-        adduser: "未知",
-        adddate: "未知",
-        info: "内容加载失败！",
-      }),
+      default: () => this.$t("noticeBox.defaultMsg"),
     },
   },
 
@@ -106,7 +101,7 @@ export default {
   color: var(--text-color);
 }
 
-.notice-title{
+.notice-title {
   font-size: 20px;
   font-weight: var(--font-medium);
   color: var(--first-color);

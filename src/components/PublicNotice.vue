@@ -11,7 +11,7 @@
     <div class="notice-content">
       <NormalModal size="large" v-if="isNoticeModalVisible">
         <!-- 公告标题 -->
-        <div class="notice-form">站内公告</div>
+        <div class="notice-form">{{ $t("publicNotice.title") }}</div>
 
         <!-- 公告列表 -->
         <div class="g-container">
@@ -23,7 +23,7 @@
               class="notice-item"
               @click="openNotice(notice)"
             >
-              <span class="top-notice">[置顶]</span>
+              <span class="top-notice">{{ $t("publicNotice.top") }}</span>
               {{ notice.title }} - {{ notice.adddate }}
             </li>
           </ul>
@@ -107,11 +107,11 @@ export default {
         this.notices = response.data.notice || [];
         this.notices.sort((a, b) => new Date(b.adddate) - new Date(a.adddate));
         if (this.notices.length === 0) {
-          this.selectedNotice = { info: "未找到任何公告记录" };
+          this.selectedNotice = { info: this.$t("publicNotice.empty") };
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.selectedNotice = { info: "获取公告数据失败" };
+        this.selectedNotice = { info: this.$t("publicNotice.error") };
       }
     },
   },

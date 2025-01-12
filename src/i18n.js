@@ -12,7 +12,7 @@ const messages = {
 };
 
 const i18n = new VueI18n({
-  locale: localStorage.getItem("language") || "zh-CN", // 默认语言
+  locale: localStorage.getItem("language") || "zh-CN",
   fallbackLocale: "zh-CN",
   messages,
 });

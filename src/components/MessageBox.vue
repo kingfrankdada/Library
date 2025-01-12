@@ -11,7 +11,7 @@
         ></i>
       </div>
       <div class="close-form" @click="close">
-        <div class="close-form-item">确定</div>
+        <div class="close-form-item">{{ $t("messageBox.btnMsg") }}</div>
         <div class="close-form-loading"></div>
       </div>
     </div>
@@ -25,7 +25,7 @@ export default {
   props: {
     message: {
       type: String,
-      default: "系统错误！",
+      default: "Error",
     },
     showCopyButton: {
       type: Boolean,
@@ -44,20 +44,22 @@ export default {
     },
     copyText() {
       // 提取复制信息
-      const textMatch = this.message.match(/(?:初始密码为|查看详情)：(.*)$/);
+      const textMatch = this.message.match(
+        /(?:初始密码为|查看详情|Password|Info)：(.*)$/
+      );
       const text = textMatch ? textMatch[1].trim() : "";
       if (!text) {
-        alert("未找到可复制的文本");
+        alert(this.$t("messageBox.emptyCopyError"));
         return;
       }
 
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          alert("复制成功");
+          alert(this.$t("messageBox.copySuccess"));
         })
         .catch(() => {
-          alert("复制失败，请手动复制");
+          alert(this.$t("messageBox.copyFail"));
         });
     },
   },

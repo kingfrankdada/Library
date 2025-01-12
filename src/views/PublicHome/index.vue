@@ -41,6 +41,7 @@
 
 <script>
 import { Swiper, SwiperSlide } from "vue-awesome-swiper";
+import { eventBus } from "@/utils/eventBus";
 
 export default {
   name: "PublicHome",
@@ -65,50 +66,7 @@ export default {
         resistanceRatio: 10,
         observeParents: true,
       },
-      slides: [
-        {
-          title: "Smart Organizational Library Assistant Resource",
-          subtitle:
-            "基于 Vue2 和 Node.js 开发的现代化图书管理平台，旨在为高校提供数字化一站式在线图书管理方案，推动高校图书管理迈向更高效、更现代的数字化时代。",
-          btnText: "了解更多",
-          btnMethod: this.swiperNext,
-        },
-
-        {
-          title: "图书中心",
-          subtitle:
-            "丰富的在线书库，方便快速浏览和查找各类图书资源。即时借阅功能让图书获取变得轻松高效，全站搜索支持模糊匹配，帮助精准定位感兴趣的书籍，极大提升借阅体验。",
-          btnText: "即刻借阅",
-          btnMethod: this.goBook,
-        },
-        {
-          title: "论坛中心",
-          subtitle:
-            "即时通信站内交流平台，致力于促进图书和学习资源的共享与讨论。参与各类话题讨论，发布和回复帖子，分享经验与见解，共同推动学术交流与思维碰撞。",
-          btnText: "前往查看",
-          btnMethod: this.goForum,
-        },
-        {
-          title: "用户中心",
-          subtitle:
-            "汇聚个人安全设置、信誉分管理、借阅记录与收藏功能，提供全面的账户信息维护与优化。掌控账户隐私与安全，实时查看信誉评分，了解借阅历史与偏好，尽享智能化图书管理体验。",
-          btnText: "前往设置",
-          btnMethod: this.goSetting,
-        },
-        {
-          title: "项目介绍与支持",
-          subtitle:
-            "我们为此项目提供持续的技术支持和维护，确保平台在使用过程中能得到及时更新与优化，以应对不断变化的需求。本项目采用MIT开源协议，您可以在GitHub中提供反馈或者寻求帮助与解答。",
-          btnText: "View On GitHub",
-          btnMethod: () => {
-            window.open("https://github.com/kingfrankdada/Library");
-          },
-          btnStyle: {
-            background: "#383838",
-            color: "#fff",
-          },
-        },
-      ],
+      slides: [],
     };
   },
 
@@ -119,21 +77,14 @@ export default {
   },
 
   mounted() {
-    // 读取siwper的当前索引，载入时候从上次缓存中读取
-    // const swiperIndex = localStorage.getItem("swiperIndex") || 0;
-    // this.$nextTick(() => {
-    //   this.swiper.swiperInstance.slideTo(swiperIndex, false);
-    // });
+    eventBus.$on("language-changed", this.handleLanguageChange);
+    this.setDocuments();
   },
 
-  watch: {
-    // 如果currentIndex为undefined，刷新窗口
-    currentIndex() {
-      if (this.currentIndex === undefined) {
-        window.location.reload();
-      }
-    },
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.handleLanguageChange);
   },
+
   methods: {
     onSlideChange() {
       this.currentIndex = this.swiper.swiperInstance.realIndex;
@@ -160,13 +111,54 @@ export default {
         this.$router.push("/user");
       });
     },
-  },
 
-  // 离开时候缓存当前索引
-  // beforeRouteLeave(to, from, next) {
-  //   localStorage.setItem("swiperIndex", this.currentIndex);
-  //   next();
-  // },
+    handleLanguageChange() {
+      this.setDocuments();
+    },
+
+    setDocuments() {
+      this.$nextTick(() => {
+        this.slides = [
+          {
+            title: this.$t("publicHome.title_1"),
+            subtitle: this.$t("publicHome.subtitle_1"),
+            btnText: this.$t("publicHome.btnText_1"),
+            btnMethod: this.swiperNext,
+          },
+          {
+            title: this.$t("publicHome.title_2"),
+            subtitle: this.$t("publicHome.subtitle_2"),
+            btnText: this.$t("publicHome.btnText_2"),
+            btnMethod: this.goBook,
+          },
+          {
+            title: this.$t("publicHome.title_3"),
+            subtitle: this.$t("publicHome.subtitle_3"),
+            btnText: this.$t("publicHome.btnText_3"),
+            btnMethod: this.goForum,
+          },
+          {
+            title: this.$t("publicHome.title_4"),
+            subtitle: this.$t("publicHome.subtitle_4"),
+            btnText: this.$t("publicHome.btnText_4"),
+            btnMethod: this.goSetting,
+          },
+          {
+            title: this.$t("publicHome.title_5"),
+            subtitle: this.$t("publicHome.subtitle_5"),
+            btnText: this.$t("publicHome.btnText_5"),
+            btnMethod: () => {
+              window.open("https://github.com/kingfrankdada/Library");
+            },
+            btnStyle: {
+              background: "#383838",
+              color: "#fff",
+            },
+          },
+        ];
+      });
+    },
+  },
 };
 </script>
 

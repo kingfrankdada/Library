@@ -11,7 +11,7 @@
                 ? `/assets/img/${book.img}`
                 : '/assets/img/image-add-fill.png'
             "
-            alt="封面"
+            :alt="$t('bookBox.imgAlt')"
             :class="{ 'default-cover': !book.img, 'book-cover': book.img }"
           />
         </div>
@@ -25,16 +25,34 @@
               book.score !== null && book.score !== undefined && book.score != 0
             "
           >
-            <strong>评分:</strong> {{ (+book.score).toFixed(1) + " / 5" }} 共
-            {{ book.num_score || 0 }} 人参与
+            <strong>{{ $t("bookBox.scoreTitle") }}</strong>
+            {{
+              $t("bookBox.scoreInfo", {
+                score: book.score.toFixed(1),
+                numScore: book.num_score || 0,
+              })
+            }}
           </p>
-          <p v-else><strong>评分:</strong> 暂无</p>
-          <p><strong>作者:</strong> {{ book.author }}</p>
-          <p><strong>分类:</strong> {{ book.menu }}</p>
+          <p v-else>
+            <strong>{{ $t("bookBox.scoreTitle") }}</strong>
+            {{ $t("bookBox.scoreNone") }}
+          </p>
+          <p>
+            <strong>{{ $t("bookBox.author") }}</strong> {{ book.author }}
+          </p>
+          <p>
+            <strong>{{ $t("bookBox.menu") }}</strong> {{ book.menu }}
+          </p>
           <!-- <p><strong>价格:</strong> {{ book.price }}元</p> -->
-          <p><strong>出版社:</strong> {{ book.press }}</p>
-          <p><strong>库存数量:</strong> {{ book.num }}本</p>
-          <p><strong>入库日期:</strong> {{ book.adddate }}</p>
+          <p>
+            <strong>{{ $t("bookBox.press") }}</strong> {{ book.press }}
+          </p>
+          <p>
+            <strong>{{ $t("bookBox.num") }}</strong> {{ book.num }}本
+          </p>
+          <p>
+            <strong>{{ $t("bookBox.adddate") }}</strong> {{ book.adddate }}
+          </p>
         </div>
 
         <!-- 底部简介 -->
@@ -45,21 +63,21 @@
 
       <!-- 相关评论 -->
       <div class="book-message">
-        <p class="message-title">读者留言</p>
+        <p class="message-title">{{ $t("bookBox.messageTitle") }}</p>
         <div v-if="bookMessages.length" class="message-info">
           <p v-for="message in bookMessages" :key="message.id">
             {{ message.adduser }} ：{{ message.info }}
           </p>
         </div>
         <div v-else class="message-info">
-          <p>暂无留言</p>
+          <p>{{ $t("bookBox.messageNone") }}</p>
         </div>
       </div>
 
       <!-- 操作按钮 -->
       <div class="book-actions">
         <button class="action-button borrow-button" @click="actionButton">
-          {{ btnMsg }}
+          {{ translatedBtnMsg }}
         </button>
         <!-- <button class="action-button message-button" @click="messageBook">
           留言
@@ -69,7 +87,9 @@
           @click="toggleFavorite"
           :class="{ favorited: isFavorited }"
         >
-          {{ isFavorited ? "取消收藏" : "收藏" }}
+          {{
+            isFavorited ? $t("bookBox.cancelFavorite") : $t("bookBox.favorite")
+          }}
         </button>
       </div>
     </div>
@@ -100,24 +120,24 @@ export default {
     book: {
       type: Object,
       default: () => ({
-        name: "未知书籍",
-        author: "未知作者",
-        menu: "未知分类",
-        price: "未知价格",
-        press: "未知出版社",
+        name: "Unknown",
+        author: "Unknown",
+        menu: "Unknown",
+        price: "Unknown",
+        press: "Unknown",
         num: 0,
         score: 0,
         num_score: 0,
         img: "image-add-fill.png",
-        info: "暂无更多信息",
+        info: "Unknown",
         state: 1,
-        adddate: "未知日期",
+        adddate: "Unknown",
       }),
     },
     // 是否为借阅按钮
     btnMsg: {
       type: String,
-      default: "借阅",
+      default: "",
     },
   },
 
@@ -143,6 +163,9 @@ export default {
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
+    translatedBtnMsg() {
+      return this.$t("bookBox.btnMsg");
+    },
   },
 
   components: {
@@ -178,11 +201,11 @@ export default {
             ...user,
           })) || {};
         if (this.users.length === 0) {
-          this.alertMsg = "未找到任何用户记录";
+          this.alertMsg = this.$t("bookBox.userInfoNone");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取用户数据失败";
+        this.alertMsg = this.$t("bookBox.userInfoError");
       }
     },
 
@@ -207,7 +230,7 @@ export default {
           await this.addFavorite();
         }
         this.isFavorited = !this.isFavorited;
-      } else this.alertMsg = "请先登录";
+      } else this.alertMsg = this.$t("bookBox.login");
     },
 
     async addFavorite() {
@@ -227,10 +250,10 @@ export default {
       };
       try {
         await api.post(endpoints.addFavorite, newFavorite);
-        this.message = "收藏成功，请前往用户中心-我的收藏查看";
+        this.message = this.$t("bookBox.addFavoriteSuccess");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "收藏添加失败";
+        this.alertMsg = this.$t("bookBox.addFavoriteFail");
       }
     },
 
@@ -239,12 +262,12 @@ export default {
         await api.post(
           endpoints.delFavorite(this.userInfo.username, this.book.name)
         );
-        this.message = "取消收藏成功";
+        this.message = this.$t("bookBox.cancelFavoriteSuccess");
         this.$emit("reSelect");
         // this.$emit("close");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "取消收藏失败";
+        this.alertMsg = this.$t("bookBox.cancelFavoriteFail");
       }
     },
 
@@ -257,7 +280,7 @@ export default {
         this.bookMessages = response.data.messages || [];
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取图书留言失败";
+        this.alertMsg = this.$t("bookBox.messageError");
       }
     },
 
@@ -268,25 +291,25 @@ export default {
 
     // 操作按钮
     actionButton() {
-      switch (this.btnMsg) {
-        case "借阅":
+      switch (this.translatedBtnMsg) {
+        case this.$t("bookBox.borrow"):
           if (this.userInfo.usertoken) {
             if (this.users[0].credit_count >= 25) {
               // 借阅逻辑
               this.$emit("borrowBook", this.book);
               this.$emit("close");
-            } else this.alertMsg = "用户信誉分不足，操作失败";
-          } else this.alertMsg = "请先登录";
+            } else this.alertMsg = this.$t("bookBox.noneCredit");
+          } else this.alertMsg = this.$t("bookBox.login");
           break;
-        case "在图书中心查看":
+        case this.$t("bookBox.view"):
           this.$router.push({
             path: "/book",
             query: { search: this.book.name.trim() },
           });
           break;
-        case "归还":
-          this.$emit("close");
-          break;
+        // case "归还":
+        //   this.$emit("close");
+        //   break;
       }
     },
   },

@@ -4,7 +4,7 @@
       <span class="close-button" @click="close">&times;</span>
       {{ message }}
       <div class="close-form" @click="close">
-        <div class="close-form-item">确定</div>
+        <div class="close-form-item">{{ $t("alertBox.btnMsg") }}</div>
         <div class="close-form-loading"></div>
       </div>
     </div>
@@ -24,7 +24,7 @@ export default {
   props: {
     message: {
       type: String,
-      default: "系统错误！",
+      default: "Error",
     },
   },
 

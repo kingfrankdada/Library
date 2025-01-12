@@ -3,7 +3,7 @@
     <div class="nav container">
       <router-link to="/home" class="nav-logo">
         <i class="ri-book-3-line"></i>
-        <span>高校图书管理系统</span>
+        <span>{{ $t("headerGuide.title") }}</span>
       </router-link>
 
       <!-- 登陆后显示用户信息 -->
@@ -26,7 +26,11 @@
           </li>
 
           <!-- 登陆后显示用户设置 -->
-          <li v-if="userInfo.usertoken" title="用户设置" class="nav-item">
+          <li
+            v-if="userInfo.usertoken"
+            :title="$t('headerGuide.setting')"
+            class="nav-item"
+          >
             <i class="ri-user-line login-button"></i>
             <router-link to="/user">Account</router-link>
           </li>
@@ -36,7 +40,7 @@
             v-if="
               userInfo.role ? userInfo.role == 1 || userInfo.role == 0 : false
             "
-            title="管理员设置"
+            :title="$t('headerGuide.admin')"
             class="nav-item"
           >
             <i class="ri-settings-line"></i>
@@ -47,18 +51,18 @@
 
       <div class="nav-actions">
         <!-- 搜索 -->
-        <div class="nav-search" title="搜索">
+        <div class="nav-search" :title="$t('headerGuide.search')">
           <PublicSearch></PublicSearch>
         </div>
 
         <!-- 站内通知 -->
-        <div class="nav-notice" title="站内通知">
+        <div class="nav-notice" :title="$t('headerGuide.notice')">
           <i class="ri-mail-line" id="notice-button" @click="openNotice"></i>
           <PublicNotice ref="notice"></PublicNotice>
         </div>
 
-        <!-- 系统设置 -->
-        <div class="nav-setting" title="系统设置">
+        <!-- 设置 -->
+        <div class="nav-setting" :title="$t('headerGuide.setting')">
           <i
             class="ri-settings-5-line"
             id="setting-button"
@@ -68,7 +72,7 @@
 
         <!-- 检测到token为非空条件时，判断用户已登陆隐藏登陆按钮-->
         <!-- 登录模态框，包含NormalModal与PublicLogin组件 -->
-        <div v-if="!userInfo.usertoken" title="登陆">
+        <div v-if="!userInfo.usertoken" :title="$t('headerGuide.login')">
           <PublicLogin></PublicLogin>
         </div>
 
@@ -78,7 +82,7 @@
         </NormalModal>
 
         <!-- 登出模态框 -->
-        <div v-if="userInfo.usertoken" title="登出">
+        <div v-if="userInfo.usertoken" :title="$t('headerGuide.logout')">
           <PublicLogout></PublicLogout>
         </div>
 
@@ -124,36 +128,7 @@ export default {
       settingMsg: null,
       modalSize: "normal",
       modalSizeSmall: "small",
-      menuList: [
-        {
-          id: 1,
-          name: "Home",
-          title: "网站主页",
-          path: "/home",
-          icon: "ri-home-line",
-        },
-        {
-          id: 2,
-          name: "Book",
-          title: "图书中心",
-          path: "/book",
-          icon: "ri-book-3-line",
-        },
-        {
-          id: 3,
-          name: "Forum",
-          title: "在线论坛",
-          path: "/forum",
-          icon: "ri-chat-new-line",
-        },
-        // {
-        //   id: 4,
-        //   name: "Notice",
-        //   title: "用户帮助",
-        //   path: "/notice",
-        //   icon: "ri-question-line",
-        // },
-      ],
+      menuList: [],
     };
   },
 
@@ -195,6 +170,32 @@ export default {
   mounted() {
     this.checkWindowSize();
     window.addEventListener("resize", this.checkWindowSize);
+
+    this.$nextTick(() => {
+      this.menuList = [
+        {
+          id: 1,
+          name: "Home",
+          title: this.$t("headerGuide.home"),
+          path: "/home",
+          icon: "ri-home-line",
+        },
+        {
+          id: 2,
+          name: "Book",
+          title: this.$t("headerGuide.book"),
+          path: "/book",
+          icon: "ri-book-3-line",
+        },
+        {
+          id: 3,
+          name: "Forum",
+          title: this.$t("headerGuide.forum"),
+          path: "/forum",
+          icon: "ri-chat-new-line",
+        },
+      ];
+    });
   },
 
   beforeDestroy() {

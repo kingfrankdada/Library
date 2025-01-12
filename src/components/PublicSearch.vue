@@ -14,7 +14,7 @@
             v-model="inputText"
             ref="inputRef"
             type="text"
-            placeholder="输入你想查询的书籍"
+            :placeholder="$t('publicSearch.placeholder')"
             class="g-input-search"
             @keyup.enter="clickSearch"
           />
@@ -81,7 +81,7 @@ export default {
         });
         this.setSearchModalVisible(false);
       } else {
-        this.alertMsg = "搜索内容不能为空";
+        this.alertMsg = this.$t("publicSearch.alertMsg");
       }
     },
   },

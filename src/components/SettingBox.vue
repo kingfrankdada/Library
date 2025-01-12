@@ -23,8 +23,8 @@
           {{ $t("setting.language") }}
         </span>
         <select v-model="language" @change="handleLanguageChange">
-          <option value="en">English</option>
           <option value="zh-CN">简体中文</option>
+          <option value="en">English</option>
           <!-- <option value="zh-TW">繁體中文</option> -->
         </select>
       </div>
@@ -76,6 +76,7 @@ export default {
       localStorage.setItem("language", JSON.stringify(this.language));
       this.$i18n.locale = this.language;
       eventBus.$emit("language-changed", this.language);
+      // window.location.reload();
     },
   },
 };

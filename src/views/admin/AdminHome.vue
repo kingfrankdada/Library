@@ -830,7 +830,7 @@ h4 {
 }
 
 .log-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--background-color);
 }
 
 @keyframes fade-in {

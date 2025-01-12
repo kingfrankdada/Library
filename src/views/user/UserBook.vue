@@ -6,7 +6,11 @@
           v-for="(book, index) in filteredBooks"
           :key="index"
           :class="book.state === 1 ? 'book-card' : 'book-card disabled-card'"
-          :title="book.state === 1 ? '查看图书详情' : '图书已下架'"
+          :title="
+            book.state === 1
+              ? $t('userBook.titleInfo')
+              : $t('userBook.titleInfoDisabled')
+          "
           @click="openBook(book)"
         >
           <i
@@ -21,7 +25,7 @@
                 ? `/assets/img/${book.img}`
                 : '/assets/img/image-add-fill.png'
             "
-            alt="封面"
+            :alt="$t('userBook.imgAlt')"
             :class="{ 'default-cover': !book.img, 'book-cover': book.img }"
           />
           <div class="book-info">
@@ -29,7 +33,7 @@
               <strong>{{ book.name }}</strong>
             </p>
             <p>{{ book.author }}</p>
-            <p>库存：{{ book.num }}本</p>
+            <p>{{ $t("userBook.num") }} {{ book.num }}本</p>
             <p>{{ book.menu }}</p>
           </div>
         </div>
@@ -41,18 +45,22 @@
 
     <!-- 页码条 -->
     <div class="pagination">
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span
-        >第 {{ currentPage }} 页 / 共 {{ totalPages ? totalPages : 1 }} 页</span
-      >
+      <button @click="firstPage">{{ $t("userBook.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("userBook.prevPage") }}
+      </button>
+      <span>
+        {{
+          $t("userBook.pageInfo", { currentPage, totalPages: totalPages || 1 })
+        }}
+      </span>
       <button
         @click="nextPage"
         :disabled="currentPage === totalPages || !totalPages"
       >
-        下一页
+        {{ $t("userBook.nextPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <button @click="lastPage">{{ $t("userBook.lastPage") }}</button>
     </div>
 
     <!-- 图书详情模态框 -->
@@ -74,7 +82,7 @@
     <!-- 左侧导航栏 -->
     <UserLeftGuide
       class="left-guide-model"
-      :guideTitle="'全部图书'"
+      :guideTitle="$t('userBook.guideTitle')"
       :guideList="menus"
       @handleTitle="handleTitle"
       @handleInfo="handleInfo"
@@ -129,7 +137,7 @@ export default {
       pageSize: 12, // 每页展示12本书 6x2
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: this.$t("userBook.boxMsg"),
     };
   },
 
@@ -151,7 +159,7 @@ export default {
           const isCategoryMatch = this.selectedCategory
             ? book.menu === this.selectedCategory
             : true;
-            
+
           const isNameMatch = searchQuery
             ? book.name.toLowerCase().includes(searchQuery)
             : true;
@@ -217,11 +225,11 @@ export default {
         const response = await api.get(endpoints.selectBook);
         this.books = response.data.books || [];
         if (this.books.length === 0) {
-          this.boxMsg = "未找到任何图书记录";
+          this.boxMsg = this.$t("userBook.bookEmpty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取图书数据失败";
+        this.boxMsg = this.$t("userBook.bookError");
       }
     },
 
@@ -231,7 +239,7 @@ export default {
         this.menus = response.data.menus;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取分类信息数据失败";
+        this.boxMsg = this.$t("userBook.menuError");
       }
     },
 
@@ -295,9 +303,9 @@ export default {
       const resultCount = this.filteredBooks.length;
       if (this.searchQuery) {
         if (resultCount > 0) {
-          this.message = `已为您找到 ${resultCount} 本符合搜索条件的图书`;
+          this.message = this.$t("userBook.searchResult", { resultCount });
         } else {
-          this.message = "未找到符合搜索条件的图书";
+          this.message = this.$t("userBook.searchEmpty");
         }
       } else {
         this.message = "";

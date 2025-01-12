@@ -10,7 +10,7 @@
                 ? `/assets/img/${book.img}`
                 : '/assets/img/image-add-fill.png'
             "
-            alt="封面"
+            :alt="$t('borrowBox.imgAlt')"
             :class="{ 'default-cover': !book.img, 'book-cover': book.img }"
           />
         </div>
@@ -18,12 +18,24 @@
         <!-- 右侧图书其他信息 -->
         <div class="book-info">
           <p class="book-title">{{ book.name }}</p>
-          <p><strong>作者:</strong> {{ book.author }}</p>
-          <p><strong>分类:</strong> {{ book.menu }}</p>
-          <p><strong>价格:</strong> {{ book.price }}元</p>
-          <p><strong>出版社:</strong> {{ book.press }}</p>
-          <p><strong>库存数量:</strong> {{ book.num }}本</p>
-          <p><strong>入库日期:</strong> {{ book.adddate }}</p>
+          <p>
+            <strong>{{ $t("borrowBox.author") }}</strong> {{ book.author }}
+          </p>
+          <p>
+            <strong>{{ $t("borrowBox.menu") }}</strong> {{ book.menu }}
+          </p>
+          <p>
+            <strong>{{ $t("borrowBox.price") }}</strong> {{ book.price }}元
+          </p>
+          <p>
+            <strong>{{ $t("borrowBox.press") }}</strong> {{ book.press }}
+          </p>
+          <p>
+            <strong>{{ $t("borrowBox.num") }}</strong> {{ book.num }}本
+          </p>
+          <p>
+            <strong>{{ $t("borrowBox.adddate") }}</strong> {{ book.adddate }}
+          </p>
         </div>
       </div>
 
@@ -36,18 +48,18 @@
       <div class="borrow-actions">
         <div class="borrow-inputs">
           <div>
-            <label for="borrow-days">预计借阅天数 (最大30天):</label>
+            <label for="borrow-days">{{ $t("borrowBox.borrowDays") }}:</label>
             <input
               id="borrow-days"
               type="number"
               v-model="borrowDays"
-              placeholder="输入天数"
+              :placeholder="$t('borrowBox.borrowDaysPlaceholder')"
               min="1"
               max="30"
             />
           </div>
           <div>
-            <label for="over-date">预计归还日期:</label>
+            <label for="over-date">{{ $t("borrowBox.overDate") }}:</label>
             <input
               id="over-date"
               type="date"
@@ -59,10 +71,10 @@
         </div>
         <div class="buttons">
           <button class="action-button borrow-button" @click="handleBorrow">
-            确认借阅
+            {{ $t("borrowBox.handleBorrow") }}
           </button>
           <button class="action-button cancel-button" @click="handleCancel">
-            取消
+            {{ $t("borrowBox.handleCancel") }}
           </button>
         </div>
       </div>
@@ -95,16 +107,16 @@ export default {
       type: Object,
       default: () => ({
         id: null,
-        name: "未知书籍",
-        author: "未知作者",
-        menu: "未知分类",
-        price: "未知价格",
-        press: "未知出版社",
+        name: "Unknown",
+        author: "Unknown",
+        menu: "Unknown",
+        price: "Unknown",
+        press: "Unknown",
         num: 0,
         img: "image-add-fill.png",
-        info: "暂无更多信息",
+        info: "Unknown",
         state: 1,
-        adddate: "未知日期",
+        adddate: "Unknown",
       }),
     },
   },
@@ -175,23 +187,23 @@ export default {
     // 借阅逻辑
     async handleBorrow() {
       if (!this.userInfo.usertoken) {
-        this.alertMsg = "请先登录";
+        this.alertMsg = this.$t("borrowBox.loginError");
         return;
       }
 
       if (!this.borrowDays || !this.overDate) {
-        this.alertMsg = "请填写预计借阅天数和归还日期";
+        this.alertMsg = this.$t("borrowBox.formError");
         return;
       }
 
       if (this.book.num <= 0) {
-        this.alertMsg = "库存不足，无法借阅";
+        this.alertMsg = this.$t("borrowBox.emptyError");
         return;
       }
 
       // 借阅天数超过 30 天
       if (this.borrowDays > 30) {
-        this.alertMsg = "借阅天数不能超过30天";
+        this.alertMsg = this.$t("borrowBox.overDaysError");
         return;
       }
 
@@ -219,16 +231,16 @@ export default {
 
         await api.post(endpoints.addLog, newLog);
 
-        this.message = `借阅成功: ${this.book.name}`;
+        this.message = this.$t("borrowBox.borrowSuccess");
         this.$emit("reSelect");
       } catch (error) {
         const errMsg = error.response?.data?.error || error.message;
         console.error(errMsg);
 
         if (error.response?.status === 400) {
-          this.alertMsg = errMsg; // 已借阅
+          this.alertMsg = this.$t("borrowBox.borrowRepeat");
         } else {
-          this.alertMsg = "借阅失败，请稍后再试";
+          this.alertMsg = this.$t("borrowBox.borrowFail");
         }
       }
     },

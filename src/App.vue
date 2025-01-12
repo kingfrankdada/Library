@@ -30,7 +30,7 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import HeaderGuide from "@/components/HeaderGuide.vue";
-import { eventBus } from "@/utils/eventBus"; // 导入 eventBus
+import { eventBus } from "@/utils/eventBus";
 import { mapMutations, mapState } from "vuex";
 
 export default {
