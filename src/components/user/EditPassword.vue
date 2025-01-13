@@ -4,42 +4,42 @@
       <table>
         <tbody>
           <tr>
-            <td>帐户名称</td>
+            <td>{{ $t("editPassword.username") }}</td>
             <td>
               {{ userInfo.username }}
             </td>
           </tr>
           <tr>
-            <td>旧密码</td>
+            <td>{{ $t("editPassword.oldPassword") }}</td>
             <td>
               <input
                 v-model="oldPassword"
                 type="password"
-                placeholder="输入您的旧密码"
+                :placeholder="$t('editPassword.oldPasswordPlaceholder')"
                 class="input-field"
                 autocomplete="current-password"
               />
             </td>
           </tr>
           <tr>
-            <td>新密码</td>
+            <td>{{ $t("editPassword.newPassword") }}</td>
             <td>
               <input
                 v-model="newPassword"
                 type="password"
-                placeholder="输入您的新密码"
+                :placeholder="$t('editPassword.newPasswordPlaceholder')"
                 class="input-field"
                 autocomplete="new-password"
               />
             </td>
           </tr>
           <tr>
-            <td>确认您的新密码</td>
+            <td>{{ $t("editPassword.confirmPassword") }}</td>
             <td>
               <input
                 v-model="confirmPassword"
                 type="password"
-                placeholder="输入您的确认密码"
+                :placeholder="$t('editPassword.confirmPasswordPlaceholder')"
                 class="input-field"
                 autocomplete="new-password"
               />
@@ -51,7 +51,7 @@
     <!-- <p class="warning">
       <i class="ri-alert-line"></i>警告：密码修改后需重新登录
     </p> -->
-    <button @click="submitForm">重置密码</button>
+    <button @click="submitForm">{{ $t("editPassword.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -106,11 +106,11 @@ export default {
     async submitForm() {
       try {
         if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
-          this.alertMsg = "请输入完整信息";
+          this.alertMsg = this.$t("editPassword.submitForm.empty");
         } else if (this.newPassword !== this.confirmPassword) {
-          this.alertMsg = "两次密码不一致";
+          this.alertMsg = this.$t("editPassword.submitForm.notMatch");
         } else if (this.newPassword.length < 6) {
-          this.alertMsg = "密码不能少于6位";
+          this.alertMsg = this.$t("editPassword.submitForm.short");
         } else {
           await api.post(endpoints.resetPassword(this.userId), {
             id: this.userId,
@@ -122,7 +122,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "旧密码错误，请重新输入";
+        this.alertMsg = this.$t("editPassword.submitForm.error");
       }
     },
   },

@@ -53,6 +53,17 @@ export default {
     btnMsg: "Comfirm",
   },
 
+  editTag: {
+    title: "Edit Tag",
+    placeholder: "Enter Infomation",
+    btnMsg: "Submit",
+  },
+
+  inputTag: {
+    placeholder: "Enter Infomation",
+    empty: "Empty content",
+  },
+
   publicHome: {
     title_1: "Smart Organizational Library Assistant Resource",
     subtitle_1: "A modern online book management platform based on Vue2 and Node.js, aiming to provide a one-stop digital library management solution for universities, driving library management towards a more efficient and modern digital era.",
@@ -86,6 +97,7 @@ export default {
     nextPage: "Next",
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
+    btnMsg: "Borrow",
     guideTitle: "All Books",
     bookEmpty: "No books found",
     bookError: "Book information loading failed",
@@ -97,7 +109,7 @@ export default {
   bookBox: {
     imgAlt: "Cover",
     scoreTitle: "Score:",
-    scoreInfo: "{score} / 5 {numScore} people participate",
+    scoreInfo: "{score} / 5 By {numScore} Users",
     scoreNone: "No score",
     author: "Author:",
     menu: "Category:",
@@ -106,8 +118,8 @@ export default {
     info: "Description:",
     num: "Stock:",
     adddate: "Add Date:",
-    messageTitle: "Messages",
-    messageNone: "No messages",
+    messageTitle: "Comments",
+    messageNone: "No Comments",
     btnMsg: "Borrow",
     noneCredit: "Insufficient credit",
     login: "Please login first",
@@ -124,7 +136,7 @@ export default {
     view: "View",
   },
 
-  
+
   borrowBox: {
     imgAlt: "Cover",
     author: "Author:",
@@ -146,5 +158,132 @@ export default {
     borrowSuccess: "Borrow success",
     borrowRepeat: "You have borrowed this book",
     borrowFail: "Borrow failed, please try again later",
-  }
+  },
+
+  userForum: {
+    illegalTitle: "ILLEGAL MESSAGE",
+    illegalInfo: "[This comment is illegal, it has been blocked]",
+    yourself: "You",
+    anonymous: "Anonymous",
+    title: "Enter your title",
+    info: "Enter your message",
+    submit: "Submit",
+    isAnonymous: "Anonymous",
+    borrowMsg: "Borrow Comments",
+    loginFirst: "Please login first",
+    defaultBoxMsg: "Loading forum messages...",
+    emptyBoxMsg: "No forum messages found",
+    errorBoxMsg: "Failed to load forum messages",
+    updateError: "Failed to update forum messages",
+    emptyError: "Forum title or content incomplete",
+    addError: "Forum message addition failed",
+    delSuccess: "Forum message deleted successfully",
+    delError: "Forum message deletion failed",
+  },
+
+
+  userSetting: {
+    personalInfo: "Account Information",
+    personalInfoTip: "The basic information you provided when you registered, including username, email, and registration date",
+    username: "用户名:",
+    superAdmin: "[Superior Admin]",
+    admin: "[Admin]",
+    user: "[User]",
+    email: "email:",
+    registerDate: "Registration Date:",
+    edit: "Edit Account",
+    security: "Security Information",
+    securityTip: "For the protection of your account security, it is recommended to change the password periodically and manage your account information carefully",
+    changePassword: "Change Password",
+    delAccount: "Delete Account",
+    credit: "Credit Score",
+    creditTip: "Your user behavior will affect your credit score, and low credit scores will disable some user functions",
+    currentCredit: "Current Credit Score:",
+    creditContent: "Credit score is based on user behavior to dynamically adjust and ensure fairness and security in the system",
+    goCredit: "View Credit Details",
+    guideTitle: "User Center",
+    editUser: "Edit Account",
+    editPassword: "Change Password",
+
+    guideList: {
+      collection: "Collection",
+      borrow: "Borrow",
+      comment: "Comment",
+      credit: "Credit",
+    },
+
+    selectUsersByUserName: {
+      empty: "Empty user information",
+      error: "User information loading failed",
+    }
+  },
+
+
+  editUser: {
+    title: "Edit Account Information",
+    subTitle: "Double-click to edit",
+    username: "Username",
+    email: "Email",
+    tip: "Tips: Double-click to edit, press Enter to submit the form item",
+    submit: "Submit",
+
+    selectUsersByUserName: {
+      empty: "No user information",
+      error: "User information loading failed",
+    },
+
+    submitForm: {
+      empty: "Username and email cannot be empty",
+      success: "User information updated successfully",
+      error: "User information update failed, please try again later",
+    },
+  },
+
+  editPassword: {
+    username: "Username",
+    oldPassword: "Old Password",
+    oldPasswordPlaceholder: "Enter your old password",
+    newPassword: "New Password",
+    newPasswordPlaceholder: "Enter your new password",
+    confirmPassword: "Confirm Password",
+    confirmPasswordPlaceholder: "Enter your new password again",
+    submit: "Reset",
+
+    submitForm: {
+      empty: "Username and password required",
+      notMatch: "New password and confirmed password do not match",
+      short: "Password length must be at least 6 characters",
+      error: "Old password verification failed, please try again later",
+    }
+  },
+
+  delUser: {
+    title: "WARNING",
+    info: "This operation will log out and clear all your account data",
+    confirm: "CONFIRM",
+    cancel: "CANCEL",
+    error: "Deletion failed, please try again later",
+  },
+
+
+  userCollection: {
+    titleInfo: "View Book Details",
+    titleDisabled: "Book Unavailable",
+    imgAlt: "Cover",
+    num: "Stock:",
+    firstPage: "Home",
+    prevPage: "Pre",
+    nextPage: "Next",
+    lastPage: "Last",
+    pageInfo: "Page {currentPage} of {totalPages}",
+    btnMsg: "View",
+    defaultBoxMsg: "Loading favorite books...",
+
+    selectFavorite: {
+      empty: "No favorite books found",
+      error: "Favorite book information loading failed",
+    },
+
+    menuError: "Menu information loading failed",
+  },
 };

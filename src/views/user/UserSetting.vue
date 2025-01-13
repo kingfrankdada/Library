@@ -7,55 +7,64 @@
       <div class="user-container">
         <div class="user-info">
           <p class="user-info-title">
-            用户基本信息<i
+            {{ $t("userSetting.personalInfo")
+            }}<i
               class="ri-question-line"
-              title="您在注册时候提供的基本信息,包含用户名称，邮箱，注册日期等"
+              :title="$t('userSetting.personalInfoTip')"
             ></i>
           </p>
           <p class="user-info-content">
-            用户名：{{ userInfo.username }}
-            <span v-if="userInfo.role == 0" style="color: red"
-              >[超级管理员]</span
-            >
-            <span v-else-if="userInfo.role == 1" style="color: red"
-              >[管理员]</span
-            >
-            <span v-else style="color: green">[用户]</span>
+            {{ $t("userSetting.username") }} {{ userInfo.username }}
+            <span v-if="userInfo.role == 0" style="color: red">{{
+              $t("userSetting.superAdmin")
+            }}</span>
+            <span v-else-if="userInfo.role == 1" style="color: red">{{
+              $t("userSetting.admin")
+            }}</span>
+            <span v-else style="color: green">{{
+              $t("userSetting.user")
+            }}</span>
           </p>
-          <p class="user-info-content">邮箱：{{ users[0].email }}</p>
           <p class="user-info-content">
-            注册日期：{{ formatDate(users[0].adddate) }}
+            {{ $t("userSetting.email") }} {{ users[0].email }}
+          </p>
+          <p class="user-info-content">
+            {{ $t("userSetting.registerDate") }}
+            {{ formatDate(users[0].adddate) }}
           </p>
           <button class="user-info-button" @click="editUser">
-            修改帐户信息
+            {{ $t("userSetting.edit") }}
           </button>
           <div class="line"></div>
           <div class="account-security">
-            <p class="account-security-title">账户安全信息</p>
+            <p class="account-security-title">
+              {{ $t("userSetting.security") }}
+            </p>
             <p class="account-security-description">
-              为了保护您的账户安全，建议定期更改密码，并妥善管理您的账户信息。
+              {{ $t("userSetting.securityTip") }}
             </p>
             <button class="user-info-button" @click="changePassword">
-              修改密码
+              {{ $t("userSetting.changePassword") }}
             </button>
             <button class="user-info-button red-button" @click="delAccount">
-              注销账户
+              {{ $t("userSetting.delAccount") }}
             </button>
           </div>
         </div>
         <!-- 用户信誉分 -->
         <div class="user-credit">
           <p class="user-credit-title">
-            用户信誉分<i
+            {{ $t("userSetting.credit")
+            }}<i
               class="ri-question-line"
-              title="您的用户行为会影响您的信誉分，当信誉分过低将会禁用用户使用部分功能"
+              :title="$t('userSetting.creditTip')"
             ></i>
           </p>
           <!-- echarts -->
           <div class="user-credit-echarts" ref="creditChartRef"></div>
           <p>
             <strong
-              >当前信誉分：
+              >{{ $t("userSetting.currentCredit") }}
               <span :style="{ color: creditCountColor }">
                 {{ users[0].credit_count }}
               </span></strong
@@ -63,10 +72,10 @@
           </p>
           <div class="user-credit-content">
             <p>
-              在本系统中，信誉分机制旨在激励用户遵守规则并维护良好的使用环境。用户的信誉分会基于其行为表现进行动态调整，从而确保系统的公平性与安全性。
+              {{ $t("userSetting.creditContent") }}
             </p>
             <button class="user-info-button" @click="goCredit">
-              查看信誉分明细
+              {{ $t("userSetting.goCredit") }}
             </button>
           </div>
         </div>
@@ -77,14 +86,16 @@
     <!-- 左侧导航 -->
     <UserLeftGuide
       class="left-guide-model"
-      :guideTitle="'用户中心'"
+      :guideTitle="$t('userSetting.guideTitle')"
       :guideList="guideList"
       @handleTitle="handleTitle"
     ></UserLeftGuide>
     <!-- 修改用户信息模态框 -->
     <NormalModal v-if="isEditUserModalVisible" class="select-modal" size="mid">
-      <div v-if="isEditUser" class="select-text">修改帐户信息</div>
-      <div v-else class="select-text">修改帐户密码</div>
+      <div v-if="isEditUser" class="select-text">
+        {{ $t("userSetting.editUser") }}
+      </div>
+      <div v-else class="select-text">{{ $t("userSetting.editPassword") }}</div>
       <EditUser
         v-if="isEditUser"
         :user="users[0]"
@@ -141,36 +152,7 @@ export default {
           adddate: "",
         },
       ],
-      guideList: [
-        {
-          id: 1,
-          name: "collection",
-          title: "我的收藏",
-          path: "/user/collection",
-          icon: "ri-heart-line",
-        },
-        {
-          id: 2,
-          name: "borrow",
-          title: "我的借阅",
-          path: "/user/borrow",
-          icon: "ri-book-open-line",
-        },
-        {
-          id: 3,
-          name: "comment",
-          title: "我的留言",
-          path: "/user/comment",
-          icon: "ri-message-3-line",
-        },
-        {
-          id: 4,
-          name: "credit",
-          title: "我的信誉分",
-          path: "/user/credit",
-          icon: "ri-bank-card-line",
-        },
-      ],
+      guideList: [],
       isEditUser: true, // 修改用户信息还是修改密码
       creditChart: null,
       alertMsg: "",
@@ -208,9 +190,12 @@ export default {
     if (!this.userInfo.usertoken) {
       this.$router.push("/home");
     }
+    this.setGuideList();
     window.addEventListener("resize", this.resizeCharts);
     // 归还图书，刷新echarts
     eventBus.$on("borrow-returned", this.handleBorrowReturned);
+
+    eventBus.$on("language-changed", this.setGuideList);
     this.selectUsersByUserName().then(() => {
       this.initCreditChart();
       this.setEditUserModalVisible(false);
@@ -241,6 +226,41 @@ export default {
     ]),
     ...mapMutations("UserInfo", ["setUserInfo"]),
 
+    setGuideList() {
+      this.$nextTick(() => {
+        this.guideList = [
+          {
+            id: 1,
+            name: "collection",
+            title: this.$t("userSetting.guideList.collection"),
+            path: "/user/collection",
+            icon: "ri-heart-line",
+          },
+          {
+            id: 2,
+            name: "borrow",
+            title: this.$t("userSetting.guideList.borrow"),
+            path: "/user/borrow",
+            icon: "ri-book-open-line",
+          },
+          {
+            id: 3,
+            name: "comment",
+            title: this.$t("userSetting.guideList.comment"),
+            path: "/user/comment",
+            icon: "ri-message-3-line",
+          },
+          {
+            id: 4,
+            name: "credit",
+            title: this.$t("userSetting.guideList.credit"),
+            path: "/user/credit",
+            icon: "ri-bank-card-line",
+          },
+        ];
+      });
+    },
+
     async selectUsersByUserName() {
       try {
         const response = await api.get(
@@ -253,11 +273,11 @@ export default {
             creditCount: user.credit_count,
           })) || {};
         if (this.users.length === 0) {
-          this.alertMsg = "未找到任何用户记录";
+          this.alertMsg = this.$t("userSetting.selectUsersByUserName.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取用户数据失败";
+        this.alertMsg = this.$t("userSetting.selectUsersByUserName.error");
       }
     },
 

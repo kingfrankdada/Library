@@ -77,7 +77,7 @@
       <!-- 操作按钮 -->
       <div class="book-actions">
         <button class="action-button borrow-button" @click="actionButton">
-          {{ translatedBtnMsg }}
+          {{ btnMsg }}
         </button>
         <!-- <button class="action-button message-button" @click="messageBook">
           留言
@@ -163,9 +163,6 @@ export default {
 
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
-    translatedBtnMsg() {
-      return this.$t("bookBox.btnMsg");
-    },
   },
 
   components: {
@@ -244,6 +241,8 @@ export default {
         press: this.book.press,
         num: this.book.num,
         img: this.book.img,
+        num_score: this.book.num_score,
+        score: this.book.score,
         info: this.book.info,
         state: this.book.state,
         adddate: this.book.adddate,
@@ -264,7 +263,8 @@ export default {
         );
         this.message = this.$t("bookBox.cancelFavoriteSuccess");
         this.$emit("reSelect");
-        // this.$emit("close");
+        // 如果当前页面为收藏，则关闭，反之
+        if (this.$route.name === "userCollection") this.$emit("close");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = this.$t("bookBox.cancelFavoriteFail");
@@ -291,7 +291,7 @@ export default {
 
     // 操作按钮
     actionButton() {
-      switch (this.translatedBtnMsg) {
+      switch (this.btnMsg) {
         case this.$t("bookBox.borrow"):
           if (this.userInfo.usertoken) {
             if (this.users[0].credit_count >= 25) {

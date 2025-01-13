@@ -853,8 +853,8 @@ app.post('/api/delMessage/:id', (req, res) => {
 // 添加收藏api
 app.post('/api/addFavorite', (req, res) => {
   const newFavorite = req.body;
-  const query = 'INSERT INTO favorite (id, name, user, author, menu, price, press, num, img, info, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [newFavorite.id, newFavorite.name, newFavorite.user, newFavorite.author, newFavorite.menu, newFavorite.price, newFavorite.press, newFavorite.num, newFavorite.img, newFavorite.info, newFavorite.state, newFavorite.adddate];
+  const query = 'INSERT INTO favorite (id, name, user, author, menu, price, press, num, img, num_score, score, info, state, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [newFavorite.id, newFavorite.name, newFavorite.user, newFavorite.author, newFavorite.menu, newFavorite.price, newFavorite.press, newFavorite.num, newFavorite.img, newFavorite.num_score, newFavorite.score, newFavorite.info, newFavorite.state, newFavorite.adddate];
   connection.query(query, values, (err, results) => {
     if (err) {
       console.error('添加收藏失败:', err.stack);

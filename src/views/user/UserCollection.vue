@@ -6,7 +6,11 @@
           v-for="(book, index) in filteredBooks"
           :key="index"
           :class="book.state === 1 ? 'book-card' : 'book-card disabled-card'"
-          :title="book.state === 1 ? '查看图书详情' : '图书已下架'"
+          :title="
+            book.state === 1
+              ? $t('userCollection.titleInfo')
+              : $t('userCollection.titleDisabled')
+          "
           @click="openBook(book)"
         >
           <i
@@ -21,7 +25,7 @@
                 ? `/assets/img/${book.img}`
                 : '/assets/img/image-add-fill.png'
             "
-            alt="封面"
+            :alt="$t('userCollection.imgAlt')"
             :class="{ 'default-cover': !book.img, 'book-cover': book.img }"
           />
           <div class="book-info">
@@ -29,7 +33,7 @@
               <strong>{{ book.name }}</strong>
             </p>
             <p>{{ book.author }}</p>
-            <p>库存：{{ book.num }}本</p>
+            <p>{{ $t("userCollection.num") }}{{ book.num }}本</p>
             <p>{{ book.menu }}</p>
           </div>
         </div>
@@ -41,18 +45,25 @@
 
     <!-- 页码条 -->
     <div class="pagination">
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span
-        >第 {{ currentPage }} 页 / 共 {{ totalPages ? totalPages : 1 }} 页</span
-      >
+      <button @click="firstPage">{{ $t("userCollection.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("userCollection.prevPage") }}
+      </button>
+      <span>
+        {{
+          $t("userCollection.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
       <button
         @click="nextPage"
         :disabled="currentPage === totalPages || !totalPages"
       >
-        下一页
+        {{ $t("userCollection.nextPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <button @click="lastPage">{{ $t("userCollection.lastPage") }}</button>
     </div>
 
     <!-- 图书详情模态框 -->
@@ -61,7 +72,7 @@
       :book="selectedBook"
       @close="selectedBook = null"
       @reSelect="selectFavorite"
-      :btnMsg="'在图书中心查看'"
+      :btnMsg="$t('userCollection.btnMsg')"
     ></BookBox>
 
     <!-- 左侧导航栏 -->
@@ -97,7 +108,7 @@ import MessageBox from "@/components/MessageBox.vue";
 import BookBox from "@/components/BookBox.vue";
 
 export default {
-  name: "UserBook",
+  name: "UserCollection",
 
   components: {
     AlertBox,
@@ -117,7 +128,7 @@ export default {
       pageSize: 12, // 每页展示12本书 6x2
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
     };
   },
 
@@ -139,7 +150,7 @@ export default {
           const isCategoryMatch = this.selectedCategory
             ? book.menu === this.selectedCategory
             : true;
-            
+
           const isNameMatch = searchQuery
             ? book.name.toLowerCase().includes(searchQuery)
             : true;
@@ -176,6 +187,9 @@ export default {
     this.selectFavorite();
     this.selectMenus();
     this.searchQuery = this.$route.query.search || "";
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("userCollection.defaultBoxMsg");
+    });
   },
 
   methods: {
@@ -198,11 +212,11 @@ export default {
         );
         this.books = response.data.favorite || [];
         if (this.books.length === 0) {
-          this.boxMsg = "未找到任何图书记录";
+          this.boxMsg = this.$t("userCollection.selectFavorite.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取图书数据失败";
+        this.boxMsg = this.$t("userCollection.selectFavorite.error");
       }
     },
 
@@ -212,7 +226,7 @@ export default {
         this.menus = response.data.menus;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取分类信息数据失败";
+        this.boxMsg = this.$t("userCollection.menuError");
       }
     },
 

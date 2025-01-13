@@ -53,6 +53,17 @@ export default {
     btnMsg: "确定",
   },
 
+  editTag: {
+    title: "修改详情",
+    placeholder: "编辑内容",
+    btnMsg: "提交",
+  },
+
+  inputTag: {
+    placeholder: "输入标签",
+    empty: "标签不能为空",
+  },
+
   publicHome: {
     title_1: "Smart Organizational Library Assistant Resource",
     subtitle_1: "基于 Vue2 和 Node.js 开发的现代化图书管理平台，旨在为高校提供数字化一站式在线图书管理方案，推动高校图书管理迈向更高效、更现代的数字化时代。",
@@ -86,6 +97,7 @@ export default {
     nextPage: "下一页",
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    btnMsg: "借阅",
     guideTitle: "全部图书",
     bookEmpty: "未找到任何图书信息",
     bookError: "图书信息加载失败",
@@ -121,7 +133,7 @@ export default {
     userInfoNone: "未找到用户信息",
     userInfoError: "用户信息加载失败",
     borrow: "借阅",
-    view: "查看",
+    view: "在图书中心查看",
   },
 
   borrowBox: {
@@ -145,5 +157,129 @@ export default {
     borrowSuccess: "借阅成功，请前往用户中心-我的借阅查看",
     borrowRepeat: "您已借阅过此书籍",
     borrowFail: "借阅失败，请稍后再试",
-  }
+  },
+
+  userForum: {
+    illegalTitle: "违规评论",
+    illegalInfo: "[该评论涉嫌违规，已屏蔽]",
+    yourself: "你",
+    anonymous: "匿名用户",
+    title: "输入您的留言标题",
+    info: "输入您的留言内容",
+    submit: "发表",
+    isAnonymous: "匿名发表",
+    borrowMsg: "显示借阅评论",
+    loginFirst: "请先登录再进行留言",
+    defaultBoxMsg: "正在加载论坛留言...",
+    emptyBoxMsg: "未找到任何论坛留言记录",
+    errorBoxMsg: "加载论坛留言失败",
+    updateError: "更新论坛留言数据失败",
+    emptyError: "论坛标题或内容不完整",
+    addError: "论坛留言添加失败",
+    delSuccess: "论坛留言删除成功",
+    delError: "论坛留言删除失败",
+  },
+
+  userSetting: {
+    personalInfo: "账户基本信息",
+    personalInfoTip: "您在注册时候提供的基本信息,包含用户名称，邮箱，注册日期等",
+    username: "用户名:",
+    superAdmin: "[超级管理员]",
+    admin: "[管理员]",
+    user: "[用户]",
+    email: "邮箱:",
+    registerDate: "注册日期:",
+    edit: "修改账户信息",
+    security: "账户安全信息",
+    securityTip: "为了保护您的账户安全，建议定期更改密码，并妥善管理您的账户信息",
+    changePassword: "修改密码",
+    delAccount: "注销账户",
+    credit: "账户信誉分",
+    creditTip: "您的用户行为会影响您的信誉分，当信誉分过低将会禁用用户使用部分功能",
+    currentCredit: "当前信誉分:",
+    creditContent: "在本系统中，信誉分机制旨在激励用户遵守规则并维护良好的使用环境。用户的信誉分会基于其行为表现进行动态调整，从而确保系统的公平性与安全性。",
+    goCredit: "查看信誉分明细",
+    guideTitle: "用户中心",
+    editUser: "修改帐户信息",
+    editPassword: "修改帐户密码",
+
+    guideList: {
+      collection: "我的收藏",
+      borrow: "我的借阅",
+      comment: "我的留言",
+      credit: "我的信誉分",
+    },
+
+    selectUsersByUserName: {
+      empty: "未找到任何用户信息",
+      error: "用户信息加载失败",
+    }
+  },
+
+  editUser: {
+    title: "修改个人信息",
+    subTitle: "双击表单项进行编辑",
+    username: "用户名",
+    email: "邮箱",
+    tip: "Tips：双击表单项进行编辑，按下回车键提交表单项",
+    submit: "提交",
+
+    selectUsersByUserName: {
+      empty: "未找到任何用户信息",
+      error: "用户信息加载失败",
+    },
+
+    submitForm: {
+      empty: "用户名和邮箱不能为空",
+      success: "更新用户数据成功",
+      error: "信息修改失败，请稍后再试",
+    },
+  },
+
+  editPassword: {
+    username: "用户名",
+    oldPassword: "旧密码",
+    oldPasswordPlaceholder: "输入您的旧密码",
+    newPassword: "新密码",
+    newPasswordPlaceholder: "输入您的新密码",
+    confirmPassword: "确认密码",
+    confirmPasswordPlaceholder: "再次输入您的新密码",
+    submit: "重置密码",
+
+    submitForm: {
+      empty: "请输入完整信息",
+      notMatch: "两次密码不一致",
+      short: "密码不能少于6位",
+      error: "旧密码错误，请重新输入",
+    }
+  },
+
+  delUser: {
+    title: "警告",
+    info: "此操作将会退出登录并清除您的所有用户数据",
+    confirm: "确认",
+    cancel: "取消",
+    error: "注销失败，请稍后再试",
+  },
+
+  userCollection: {
+    titleInfo: "查看图书详情",
+    titleDisabled: "图书已下架",
+    imgAlt: "封面",
+    num: "库存数量:",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    btnMsg: "在图书中心查看",
+    defaultBoxMsg: "正在加载收藏图书...",
+
+    selectFavorite: {
+      empty: "未找到任何图书记录",
+      error: "图书信息加载失败",
+    },
+
+    menuError: "分类信息加载失败",
+  },
 };

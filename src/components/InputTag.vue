@@ -6,7 +6,7 @@
       ref="inputRef"
       class="input"
       type="text"
-      placeholder="输入标签"
+      :placeholder="$t('inputTag.placeholder')"
       :value="value"
       @blur="isEdit = false"
       @keyup.enter="handleEnter"
@@ -51,7 +51,7 @@ export default {
     },
     handleEnter(e) {
       if (e.target.value.trim() === "") {
-        this.alertMsg = "标签不能为空";
+        this.alertMsg = this.$t("inputTag.empty");
         return;
       }
       this.$emit("input", e.target.value);

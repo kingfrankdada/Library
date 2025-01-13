@@ -12,21 +12,22 @@
           >
             <div class="message-header">
               <strong>{{
-                message.state === 0 ? "违规评论" : message.title
+                message.state === 0
+                  ? $t("userForum.illegalTitle")
+                  : message.title
               }}</strong>
             </div>
             <p class="message-info">
-              <span v-if="message.state === 0" style="color: red"
-                >[该评论涉嫌违规，已屏蔽]</span
-              >
+              <span v-if="message.state === 0" style="color: red">{{
+                $t("userForum.illegalInfo")
+              }}</span>
               <span v-else>{{ message.info }}</span>
             </p>
             <div class="message-footer">
               <span class="message-details">
-                {{
-                  message.adduser == userInfo.username ? "你" : message.adduser
-                }}
-                发表于 {{ message.adddate }}
+                {{ formattedUser(message.adduser) }}
+                &nbsp;
+                {{ message.adddate }}
                 <i class="ri-eye-line"></i>
                 {{ message.views }}
                 <!-- 显示浏览量 -->
@@ -58,26 +59,26 @@
         <input
           v-model="newMessage.title"
           type="text"
-          placeholder="标题"
+          :placeholder="$t('userForum.title')"
           class="input-title"
         />
         <textarea
           v-model="newMessage.info"
-          placeholder="输入您的留言内容"
+          :placeholder="$t('userForum.info')"
           class="input-info"
         ></textarea>
-        <button @click="submitForm" class="submit-button">提交留言</button>
+        <button @click="submitForm" class="submit-button">{{ $t("userForum.submit") }}</button>
         <div class="input-anonymous">
           <input type="checkbox" v-model="isAnonymous" />
-          <label>匿名发表</label>
+          <label>{{ $t("userForum.isAnonymous") }}</label>
         </div>
         <div class="display-borrow">
           <input type="checkbox" v-model="isBorrowMsg" />
-          <label>显示借阅评论</label>
+          <label>{{ $t("userForum.borrowMsg") }}</label>
         </div>
       </div>
       <div v-else>
-        <i class="ri-alert-line">&nbsp;请先登录再进行留言</i>
+        <i class="ri-alert-line">&nbsp;{{ $t("userForum.loginFirst") }}</i>
       </div>
     </div>
 
@@ -112,7 +113,7 @@ export default {
       },
       messages: [],
       alertMsg: "",
-      boxMsg: "正在加载论坛留言...",
+      boxMsg: "",
       isAnonymous: false,
       isBorrowMsg: true, // 是否显示借阅留言
       likedMessages: new Set(),
@@ -138,9 +139,20 @@ export default {
 
   mounted() {
     this.selectMessages();
+    this.boxMsg = this.$t("userForum.defaultBoxMsg");
   },
 
   methods: {
+    formattedUser(username) {
+      if (username == "匿名用户") {
+        return this.$t("userForum.anonymous");
+      } else if (username == this.userInfo.username) {
+        return this.$t("userForum.yourself");
+      } else {
+        return username;
+      }
+    },
+
     async selectMessages() {
       try {
         const response = await api.get(endpoints.selectMessage);
@@ -151,7 +163,7 @@ export default {
         // this.messages = this.messages.filter((message) => message.state == 1);
 
         if (this.messages.length === 0) {
-          this.boxMsg = "未找到任何论坛留言记录";
+          this.boxMsg = this.$t("userForum.emptyBoxMsg");
         } else {
           this.messages.forEach((message) => {
             this.viewMessage(message);
@@ -160,7 +172,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取论坛留言数据失败";
+        this.boxMsg = this.$t("userForum.errorBoxMsg");
       }
     },
 
@@ -195,7 +207,7 @@ export default {
         });
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新论坛留言数据失败";
+        this.alertMsg = this.$t("userForum.updateError");
       }
     },
 
@@ -210,7 +222,7 @@ export default {
       this.newMessage.views = 0;
       this.newMessage.likes = 0;
       if (!this.newMessage.title || !this.newMessage.info) {
-        this.alertMsg = "论坛标题或内容不完整";
+        this.alertMsg = this.$t("userForum.emptyError");
         return;
       }
       try {
@@ -219,7 +231,7 @@ export default {
         this.selectMessages();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "论坛留言添加失败";
+        this.alertMsg = this.$t("userForum.addError");
       }
     },
 
@@ -239,11 +251,11 @@ export default {
     async delMessage(message) {
       try {
         await api.post(endpoints.delMessage(message.id), message);
-        this.alertMsg = "删除论坛留言成功";
+        this.alertMsg = this.$t("userForum.delSuccess");
         this.selectMessages();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除论坛留言失败";
+        this.alertMsg = this.$t("userForum.delError");
       }
     },
   },
@@ -387,7 +399,7 @@ export default {
 
 .display-borrow {
   position: absolute;
-  right: 140px;
+  right: 200px;
   bottom: 45px;
 }
 

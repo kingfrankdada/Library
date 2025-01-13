@@ -69,6 +69,7 @@
       :book="selectedBook"
       @close="selectedBook = null"
       @borrowBook="borrowBook"
+      :btnMsg="$t('userBook.btnMsg')"
     ></BookBox>
 
     <!-- 图书借阅模态框 -->

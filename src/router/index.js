@@ -56,16 +56,16 @@ const router = new VueRouter({
       component: UserSetting,
       children: [{
           path: 'collection',
-          name: 'userSettingCollection',
+          name: 'userCollection',
           component: UserCollection
         }, {
           path: 'borrow',
-          name: 'userSettingBorrow',
+          name: 'userBorrow',
           component: UserBorrow
         },
         {
           path: 'comment',
-          name: 'userSettingComment',
+          name: 'userComment',
           component: UserComment
         },
         {

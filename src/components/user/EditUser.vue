@@ -3,13 +3,13 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>双击可进行编辑</th>
+          <th>{{ $t("editUser.title") }}</th>
+          <th>{{ $t("editUser.subTitle") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>帐户名称*</td>
+          <td>{{ $t("editUser.username") }}*</td>
           <td>
             <InputTag
               v-model="users[0].username"
@@ -18,15 +18,15 @@
           </td>
         </tr>
         <tr>
-          <td>帐户邮箱*</td>
+          <td>{{ $t("editUser.email") }}*</td>
           <td>
             <InputTag v-model="users[0].email" @input="updateUser()"></InputTag>
           </td>
         </tr>
       </tbody>
     </table>
-    <p>Tips：双击表单项进行编辑，按下回车键提交表单项</p>
-    <button @click="submitForm">提交</button>
+    <p>{{ $t("editUser.tip") }}</p>
+    <button @click="submitForm">{{ $t("editUser.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -98,11 +98,11 @@ export default {
             creditCount: user.credit_count,
           })) || [];
         if (this.users.length === 0) {
-          this.alertMsg = "未找到任何用户记录";
+          this.alertMsg = this.$t("editUser.selectUsersByUserName.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取用户数据失败";
+        this.alertMsg = this.$t("editUser.selectUsersByUserName.error");
       }
     },
 
@@ -127,7 +127,7 @@ export default {
     async submitForm() {
       const user = this.users[0];
       if (!user.username || !user.email) {
-        this.alertMsg = "用户名和邮箱不能为空";
+        this.alertMsg = this.$t("editUser.submitForm.empty");
         return;
       }
       try {
@@ -150,11 +150,11 @@ export default {
         };
         await api.post(endpoints.addLog, newLog);
 
-        this.alertMsg = "更新用户数据成功";
+        this.alertMsg = this.$t("editUser.submitForm.success");
         this.$emit("close");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新用户数据失败";
+        this.alertMsg = this.$t("editUser.submitForm.error");
       }
     },
   },

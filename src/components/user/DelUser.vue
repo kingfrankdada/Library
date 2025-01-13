@@ -7,14 +7,20 @@
     ></i>
     <NormalModal size="small" v-if="isDelUserModalVisible">
       <div class="delete-form-content">
-        <p class="warning-title"><i class="ri-alert-line"></i>警告</p>
+        <p class="warning-title">
+          <i class="ri-alert-line"></i>{{ $t("delUser.title") }}
+        </p>
         <p class="warning-message">
-          <strong>此操作将会退出登录并清除您的所有用户数据</strong>
+          <strong>{{ $t("delUser.info") }}</strong>
         </p>
       </div>
       <div class="delete-form-btn">
-        <div class="delete-btn" @click="handleDel">确认</div>
-        <div class="cancel-btn" @click="close">取消</div>
+        <div class="delete-btn" @click="handleDel">
+          {{ $t("delUser.confirm") }}
+        </div>
+        <div class="cancel-btn" @click="close">
+          {{ $t("delUser.cancel") }}
+        </div>
       </div>
     </NormalModal>
   </div>
@@ -75,7 +81,7 @@ export default {
         // this.alertMsg = "删除用户成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除用户失败";
+        this.alertMsg = this.$t("delUser.error");
       }
       this.setUserInfo({
         role: "",

@@ -2,13 +2,15 @@
   <div class="edit" @click="handleClickOutside">
     <div class="edit-content">
       <span class="close-button" @click="close">&times;</span>
-      <strong class="edit-title">修改详情</strong>
+      <strong class="edit-title">{{ $t("editTag.title") }}</strong>
       <textarea
         v-model="editableInfo"
         class="edit-textarea"
-        placeholder="编辑内容"
+        :placeholder="$t('editTag.placeholder')"
       ></textarea>
-      <button class="submit-button" @click="submitForm">提交</button>
+      <button class="submit-button" @click="submitForm">
+        {{ $t("editTag.btnMsg") }}
+      </button>
     </div>
   </div>
 </template>
@@ -19,7 +21,7 @@ export default {
   props: {
     editMsg: {
       type: [String, Number],
-      default: "系统错误！",
+      default: "Error",
     },
     editId: {
       type: Number,
