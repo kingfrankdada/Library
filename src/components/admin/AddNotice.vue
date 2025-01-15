@@ -3,55 +3,58 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>输入</th>
+          <th>{{ $t("addNotice.field") }}</th>
+          <th>{{ $t("addNotice.input") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>标题*</td>
+          <td>{{ $t("addNotice.title") }}*</td>
           <td>
             <input
               v-model="newNotice.title"
               type="text"
-              placeholder="输入公告标题"
+              :placeholder="$t('addNotice.titlePlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>详情内容*</td>
+          <td>{{ $t("addNotice.info") }}*</td>
           <td>
             <textarea
               v-model="newNotice.info"
               type="text"
-              placeholder="输入公告内容"
+              :placeholder="$t('addNotice.infoPlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>是否置顶*</td>
+          <td>{{ $t("addNotice.isTop") }}*</td>
           <td>
             <select v-model="newNotice.top">
-              <option value="1">置顶</option>
-              <option value="0">正常</option>
+              <option value="" disabled>
+                {{ $t("addNotice.isTopPlaceholder") }}
+              </option>
+              <option value="1">{{ $t("addNotice.top") }}</option>
+              <option value="0">{{ $t("addNotice.normal") }}</option>
             </select>
           </td>
         </tr>
         <tr>
-          <td>添加用户</td>
+          <td>{{ $t("addNotice.adduser") }}</td>
           <td>
             {{ userInfo.username }}
           </td>
         </tr>
         <tr>
-          <td>添加日期</td>
+          <td>{{ $t("addNotice.adddate") }}</td>
           <td>
             {{ new Date().toLocaleDateString() }}
           </td>
         </tr>
       </tbody>
     </table>
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm">{{ $t("addNotice.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -107,17 +110,16 @@ export default {
         !this.newNotice.info ||
         !this.newNotice.top
       ) {
-        this.alertMsg = "公告信息不完整";
+        this.alertMsg = this.$t("addNotice.submitForm.empty");
         return;
       }
       try {
         await api.post(endpoints.addNotice, this.newNotice);
-        // this.alertMsg = "公告添加成功";
-        this.message = "公告添加成功，请前往公告管理查看";
+        this.message = this.$t("addNotice.submitForm.success");
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "公告添加失败";
+        this.alertMsg = this.$t("addNotice.submitForm.fail");
       }
     },
 
@@ -125,7 +127,6 @@ export default {
       this.newNotice = {};
     },
   },
-  mounted() {},
 };
 </script>
 

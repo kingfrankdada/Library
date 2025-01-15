@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索用户名，IP，事件类型，详情或日期"
+        :placeholder="$t('adminLog.searchPlaceholder')"
       />
     </div>
 
@@ -17,7 +17,7 @@
           :checked="isLogActive"
           @change="toggleLog($event.target.checked)"
         />
-        启用日志记录功能
+        {{ $t("adminLog.enableLog") }}
       </label>
       <label>
         <input
@@ -25,20 +25,20 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("adminLog.showRecentDays") }}
       </label>
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminLog.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminLog.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedLogs">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminLog.delete") }}
       </label>
     </div>
 
@@ -58,7 +58,7 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortLogs('username')">
-            用户名
+            {{ $t("adminLog.username") }}
             <span :class="getSortIcon('username')"></span>
           </th>
           <th @click="sortLogs('user_ip')">
@@ -66,18 +66,18 @@
             <span :class="getSortIcon('user_ip')"></span>
           </th>
           <th @click="sortLogs('type')">
-            事件类型
+            {{ $t("adminLog.type") }}
             <span :class="getSortIcon('type')"></span>
           </th>
           <th @click="sortLogs('info')">
-            详情
+            {{ $t("adminLog.info") }}
             <span :class="getSortIcon('info')"></span>
           </th>
           <th @click="sortLogs('adddate')">
-            日期
+            {{ $t("adminLog.adddate") }}
             <span :class="getSortIcon('adddate')"></span>
           </th>
-          <th>删除</th>
+          <th>{{ $t("adminLog.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -107,7 +107,11 @@
             {{ log.adddate }}
           </td>
           <td>
-            <button :title="'删除日志'" class="del-btn" @click="delLog(log)">
+            <button
+              :title="$t('adminLog.delete')"
+              class="del-btn"
+              @click="delLog(log)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -115,23 +119,32 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminLog.noLog") }}</p>
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminLog.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminLog.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminLog.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminLog.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminLog.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminLog.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -166,7 +179,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       showCopyButton: false,
       logs: [],
       searchText: "",
@@ -236,7 +249,7 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredLogs.length / this.pageSize);
+      return Math.ceil(this.filteredLogs.length / this.pageSize || 1);
     },
   },
 
@@ -245,6 +258,9 @@ export default {
     //   this.$router.push("/admin");
     // }
     this.selectLogs();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminLog.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -338,10 +354,15 @@ export default {
       try {
         const response = await api.post(endpoints.isLogActive, { status });
         this.showCopyButton = false;
-        this.message = response.data.message;
+        this.message = this.$t("adminLog.toggleLog.response", {
+          status:
+            response.data.message === "true"
+              ? this.$t("adminLog.toggleLog.open")
+              : this.$t("adminLog.toggleLog.close"),
+        });
       } catch (error) {
-        console.error("切换日志功能失败:", error.message);
-        this.message = "切换日志功能失败";
+        // console.error("切换日志功能失败:", error.message);
+        this.alertMsg = this.$t("adminLog.toggleLog.fail");
       }
     },
 
@@ -399,11 +420,11 @@ export default {
           );
         }
         if (this.logs.length === 0) {
-          this.boxMsg = "未找到任何日志记录";
+          this.boxMsg = this.$t("adminLog.selectLogs.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取日志数据失败";
+        this.boxMsg = this.$t("adminLog.selectLogs.fail");
       }
     },
 
@@ -414,14 +435,14 @@ export default {
         this.selectLogs();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除日志失败";
+        this.alertMsg = this.$t("adminLog.delLog.fail");
       }
     },
 
     // 删除选中的日志
     async deleteSelectedLogs() {
       if (this.selectedLogs.length === 0) {
-        this.alertMsg = "请选择要删除的日志";
+        this.alertMsg = this.$t("adminLog.deleteSelectedLogs.empty");
         return;
       }
       try {
@@ -432,10 +453,10 @@ export default {
         this.selectLogs();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminLog.deleteSelectedLogs.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminLog.deleteSelectedLogs.fail");
       }
     },
 
@@ -460,7 +481,7 @@ export default {
     // 查看日志详情
     openInfo(text) {
       this.showCopyButton = true;
-      this.message = "查看详情：" + text;
+      this.message = this.$t("adminLog.openInfo.message") + text;
     },
 
     // 首页

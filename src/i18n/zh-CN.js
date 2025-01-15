@@ -5,6 +5,31 @@ export default {
     language: "系统语言",
   },
 
+  publicLogin: {
+    logo: "高校图书管理系统",
+    changeReg: "没有账户？立刻注册",
+    loginError: "用户名或密码错误",
+  },
+
+  publicReg: {
+    logo: "高校图书管理系统",
+    changeLogin: "已有账户？立刻登录",
+
+    handleReg: {
+      empty: "用户名和密码不能为空",
+      short: "密码长度不能少于6位",
+      notMatch: "两次密码不一致",
+      success: "注册成功，用户名：{username}",
+      fail: "注册失败: {error}",
+    }
+  },
+
+  publicLogout: {
+    info: "确定要退出登录吗？",
+    confirm: "确定",
+    cancel: "取消",
+  },
+
   headerGuide: {
     title: "高校图书管理系统",
     home: "主页",
@@ -100,8 +125,8 @@ export default {
     btnMsg: "借阅",
     guideTitle: "全部图书",
     bookEmpty: "未找到任何图书信息",
-    bookError: "图书信息加载失败",
-    menuError: "分类信息加载失败",
+    bookError: "图书信息加载失败，请稍后再试",
+    menuError: "分类信息加载失败，请稍后再试",
     searchResult: "已为您找到 {resultCount} 本符1合搜索条件的图书",
     searchEmpty: "未找到符合搜索条件的图书",
   },
@@ -129,9 +154,9 @@ export default {
     addFavoriteFail: "收藏添加失败",
     cancelFavoriteSuccess: "取消收藏成功",
     cancelFavoriteFail: "取消收藏失败",
-    messageError: "留言信息加载失败",
+    messageError: "留言信息加载失败，请稍后再试",
     userInfoNone: "未找到用户信息",
-    userInfoError: "用户信息加载失败",
+    userInfoError: "用户信息加载失败，请稍后再试",
     borrow: "借阅",
     view: "在图书中心查看",
   },
@@ -212,7 +237,7 @@ export default {
 
     selectUsersByUserName: {
       empty: "未找到任何用户信息",
-      error: "用户信息加载失败",
+      error: "用户信息加载失败，请稍后再试",
     }
   },
 
@@ -226,7 +251,7 @@ export default {
 
     selectUsersByUserName: {
       empty: "未找到任何用户信息",
-      error: "用户信息加载失败",
+      error: "用户信息加载失败，请稍后再试",
     },
 
     submitForm: {
@@ -249,7 +274,7 @@ export default {
     submitForm: {
       empty: "请输入完整信息",
       notMatch: "两次密码不一致",
-      short: "密码不能少于6位",
+      short: "密码长度不能少于6位",
       error: "旧密码错误，请重新输入",
     }
   },
@@ -277,9 +302,729 @@ export default {
 
     selectFavorite: {
       empty: "未找到任何图书记录",
-      error: "图书信息加载失败",
+      error: "图书信息加载失败，请稍后再试",
     },
 
-    menuError: "分类信息加载失败",
+    menuError: "分类信息加载失败，请稍后再试",
   },
+
+  userBorrow: {
+    searchPlaceholder: "搜索借阅图书名称或借阅日期",
+    showRecentDays: "仅显示最近七天",
+    startDate: "借出日期",
+    overDate: "预计归还日期",
+    days: "预计借阅天数",
+    bookname: "书名",
+    returnDate: "实际归还日期",
+    recordDays: "实际借阅天数",
+    creditDelta: "信誉分变化",
+    state: "状态",
+    actions: "操作",
+    borrowing: "借阅中",
+    returned: "已归还",
+    overdue: "已逾期",
+    return: "归还",
+    renew: "续借",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    btnMsg: "在图书中心查看",
+    defaultBoxMsg: "正在加载借阅记录...",
+
+    fetchBorrowBorrows: {
+      empty: "未找到任何借阅记录",
+      error: "借阅记录加载失败，请稍后再试",
+    },
+
+    selectUsersByUserName: {
+      empty: "未找到任何用户信息",
+      error: "用户信息加载失败，请稍后再试",
+    },
+
+    handleReturn: {
+      login: "请先登录",
+      success: "归还成功，请对此次借阅进行评价",
+      fail: "归还失败，请稍后再试",
+    },
+
+    handleRenew: {
+      login: "请先登录",
+      credit: "信誉分过低，无法续借",
+      fail: "续借失败，请稍后再试",
+    }
+  },
+
+  renewBox: {
+    imgAlt: "封面",
+    author: "作者:",
+    menu: "分类:",
+    press: "出版社:",
+    price: "价格:",
+    info: "更多信息:",
+    num: "库存数量:",
+    adddate: "入库日期:",
+    renewDays: "预计续借天数 (最大7天):",
+    renewDaysPlaceholder: "输入天数",
+    overDate: "预计归还日期:",
+    renew: "确认续借",
+    cancel: "取消",
+
+    handleRenew: {
+      login: "请先登录",
+      formEmpty: "请填写预计续借天数和归还日期",
+      bookEmpty: "库存不足，无法续借",
+      overDays: "续借天数不能超过7天",
+      success: "续借成功: {bookname}",
+      bookRepeat: "您已续借过此书籍",
+      fail: "续借失败，请稍后再试",
+    }
+  },
+
+  returnBox: {
+    messagePlaceholder: "请输入您对此次借阅的留言",
+    btnMsg: "确认",
+
+    submitRating: {
+      empty: "图书信息或评分不完整",
+      fail: "评分提交失败，请稍后再试",
+    },
+
+    addMessage: {
+      fail: "论坛留言添加失败，请稍后再试",
+    }
+  },
+
+  userComment: {
+    searchPlaceholder: "搜索留言标题或内容",
+    illegalTitle: "[违规言论]",
+    illegalInfo: "[该留言涉嫌违规，已屏蔽]",
+    delBtn: "删除",
+    emptyMsg: "未找到任何留言记录",
+
+    selectMessageByUserName: {
+      error: "留言信息加载失败，请稍后再试",
+    },
+
+    delComment: {
+      success: "留言删除成功",
+      fail: "留言删除失败，请稍后再试",
+    }
+  },
+
+  userCredit: {
+    searchPlaceholder: "搜索信誉分明细或日期",
+    showRecentDays: "仅显示最近七天",
+    delete: "清空信誉分记录",
+    date: "日期",
+    creditCount: "当前信誉分",
+    info: "详情",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    defaultBoxMsg: "正在加载信誉分明细...",
+
+    selectCredits: {
+      empty: "未找到任何信誉分记录",
+      error: "信誉分明细加载失败，请稍后再试",
+    },
+
+    deleteAll: {
+      success: "清空信誉分记录成功",
+      empty: "未找到任何信誉分记录",
+      fail: "清空信誉分记录失败，请稍后再试",
+    }
+  },
+
+  adminHome: {
+    realTimeData: "实时数据",
+    onlineUsers: "在线用户",
+    bookCount: "收录图书",
+    borrowCount: "借阅记录",
+    logCount: "日志记录",
+    cpuData: "服务器CPU资源",
+    cpuType: "CPU型号:",
+    cpuSpeed: "CPU频率(GHz):",
+    memData: "服务器内存资源",
+    memTotal: "总内存:",
+    memUsed: "已使用:",
+    userActivity: "用户活跃度",
+    borrowLog: "借阅记录",
+    sysLog: "系统日志",
+
+    getDailyUser: {
+      empty: "未找到任何活跃度信息",
+      error: "活跃度信息加载失败，请稍后再试",
+    },
+
+    selectBooks: {
+      empty: "未找到任何图书记录",
+      error: "图书信息加载失败，请稍后再试",
+    },
+
+    selectLogs: {
+      empty: "未找到任何日志记录",
+      error: "日志信息加载失败，请稍后再试",
+    },
+  },
+
+  adminLeftGuide: {
+    title: "管理员控制台",
+
+    menuList: {
+      book: "图书管理",
+      menu: "分类管理",
+      borrow: "借阅管理",
+      notice: "公告管理",
+      forum: "论坛管理",
+      user: "用户管理",
+      log: "日志管理",
+    }
+  },
+
+  adminBook: {
+    searchPlaceholder: "搜索图书标题，作者，分类，出版社",
+    addBook: "添加图书",
+    showRecentDays: "仅显示最近七天",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    closeSelected: "关闭",
+    openSelected: "开放",
+    deleteSelected: "删除",
+    name: "书名",
+    author: "作者",
+    menu: "分类",
+    press: "出版社",
+    price: "价格",
+    num: "库存",
+    cover: "封面",
+    info: "详情",
+    state: "状态",
+    score: "评分",
+    adddate: "入库日期",
+    delete: "删除",
+    imgAlt: "封面",
+    editTitle: "双击可进入编辑模式",
+    noBook: "未找到任何图书",
+    open: "正常",
+    close: "关闭",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    defaultBoxMsg: "正在加载图书信息...",
+
+    selectMenuTitles: {
+      error: "分类信息加载失败, 请稍后再试",
+    },
+
+    selectBooks: {
+      empty: "未找到任何图书记录",
+      error: "图书信息加载失败, 请稍后再试",
+    },
+
+    delBook: {
+      success: "图书删除成功",
+      fail: "图书删除失败，请稍后再试",
+    },
+
+    deleteSelectedBooks: {
+      success: "删除选中成功",
+      empty: "未选中任何图书记录",
+      fail: "图书删除失败，请稍后再试",
+    },
+
+    openSelectedBooks: {
+      success: "开放选中成功",
+      empty: "未选中任何图书记录",
+      fail: "图书开放失败，请稍后再试",
+    },
+
+    closeSelectedBooks: {
+      success: "关闭选中成功",
+      empty: "未选中任何图书记录",
+      fail: "图书关闭失败，请稍后再试",
+    },
+
+    updateBook: {
+      fail: "图书更新失败，请稍后再试",
+    }
+  },
+
+  addBook: {
+    title: "字段",
+    input: "输入",
+    name: "图书名称",
+    namePlaceholder: "输入图书名称",
+    author: "作者",
+    authorPlaceholder: "输入作者",
+    menu: "分类",
+    menuPlaceholder: "选择分类",
+    price: "价格",
+    pricePlaceholder: "输入价格",
+    press: "出版社",
+    pressPlaceholder: "输入出版社",
+    num: "库存",
+    numPlaceholder: "输入库存",
+    cover: "封面",
+    info: "详情",
+    infoPlaceholder: "输入详情",
+    state: "状态",
+    open: "正常",
+    close: "关闭",
+    autoPush: "自动推送公告",
+    autoPushTip: "开启后在图书上线时自动推送公告，可在管理员仪表盘-公告管理中查看",
+    adddate: "添加日期",
+    submit: "提交",
+
+    fetchMenuTitles: {
+      fail: "分类信息加载失败, 请稍后再试",
+    },
+
+    handleImageChange: {
+      alert: "请上传图片格式文件（jpg, jpeg, png, gif）",
+      fail: "上传失败，请稍后再试",
+    },
+
+    submitForm: {
+      empty: "图书信息不完整",
+      success: "图书添加成功",
+      noticeFail: "公告推送失败，请稍后再试",
+      fail: "图书添加失败，请稍后再试",
+    }
+  },
+
+  adminMenu: {
+    searchPlaceholder: "搜索分类名称",
+    addMenu: "添加分类",
+    showRecentDays: "仅显示最近七天",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    delete: "删除",
+    title: "分类名称",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    defaultBoxMsg: "正在加载分类信息...",
+    noMenu: "未找到任何分类",
+
+    selectMenus: {
+      empty: "未找到任何分类记录",
+      fail: "分类信息加载失败, 请稍后再试",
+    },
+
+    delMenu: {
+      fail: "分类删除失败，请稍后再试",
+    },
+
+    deleteSelectedMenus: {
+      empty: "未选中任何分类记录",
+      success: "删除选中成功",
+      fail: "分类删除失败，请稍后再试",
+    },
+
+    updateMenu: {
+      fail: "分类更新失败，请稍后再试",
+    }
+  },
+
+  addMenu: {
+    title: "字段",
+    input: "输入",
+    name: "分类名称",
+    namePlaceholder: "输入分类名称",
+    submit: "提交",
+
+    submitForm: {
+      empty: "分类信息不完整",
+      success: "分类添加成功",
+      fail: "分类添加失败，请稍后再试",
+    }
+  },
+
+  adminBorrow: {
+    searchPlaceholder: "搜索借阅信息或用户名",
+    add: "添加借阅",
+    showRecentDays: "仅显示最近七天",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    returnSelected: "归还",
+    delete: "删除",
+    user: "用户名",
+    book: "图书名称",
+    startDate: "借阅日期",
+    overDate: "预计归还日期",
+    days: "预计借阅天数",
+    returnDate: "实际归还日期",
+    recordDays: "实际借阅天数",
+    overtime: "逾期天数",
+    state: "借阅状态",
+    credit: "信誉分",
+    adddate: "添加日期",
+    overdue: "已逾期",
+    returned: "已归还",
+    borrowing: "借阅中",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+    defaultBoxMsg: "正在加载借阅记录...",
+    noBorrow: "未找到任何借阅记录",
+
+    selectBorrows: {
+      empty: "未找到任何借阅记录",
+      fail: "借阅记录加载失败，请稍后再试",
+    },
+
+    delBorrow: {
+      fail: "借阅记录删除失败，请稍后再试",
+    },
+
+    deleteSelectedBorrows: {
+      empty: "未选中任何借阅记录",
+      success: "删除选中成功",
+      fail: "借阅记录删除失败，请稍后再试",
+    },
+
+    updateBorrow: {
+      fail: "借阅记录更新失败，请稍后再试",
+    },
+
+    returnSelectedBorrows: {
+      empty: "未选中任何借阅记录",
+      success: "归还选中成功",
+      fail: "借阅记录归还失败，请稍后再试",
+    }
+  },
+
+  addBorrow: {
+    title: "字段",
+    input: "输入",
+    username: "借阅用户",
+    usernamePlaceholder: "选择借阅用户",
+    book: "借阅图书",
+    bookPlaceholder: "选择借阅图书",
+    startdate: "借阅日期",
+    overdate: "预计归还日期",
+    days: "预计借阅天数",
+    daysPlaceholder: "输入预计借阅天数",
+    adduser: "添加用户",
+    adddate: "添加日期",
+    submit: "提交",
+
+    selectBooks: {
+      empty: "未找到任何图书记录",
+      fail: "图书信息加载失败，请稍后再试",
+    },
+
+    selectUsers: {
+      fail: "用户信息加载失败，请稍后再试",
+    },
+
+    submitForm: {
+      empty: "借阅信息不完整",
+      success: "借阅添加成功",
+      fail: "借阅添加失败，请稍后再试",
+    }
+  },
+
+  adminNotice: {
+    searchPlaceholder: "搜索公告名，角色或注册信息",
+    add: "添加公告",
+    showRecentDays: "仅显示最近七天",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    top: "置顶",
+    normal: "正常",
+    untop: "取消置顶",
+    delete: "删除",
+    title: "公告标题",
+    info: "详情内容",
+    isTop: "是否置顶",
+    infoTip: "双击可进入编辑模式",
+    defaultBoxMsg: "正在加载公告信息...",
+    noNotice: "未找到任何公告",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+
+    selectNotices: {
+      empty: "未找到任何公告记录",
+      fail: "公告信息加载失败, 请稍后再试",
+    },
+
+    delNotice: {
+      fail: "公告删除失败，请稍后再试",
+    },
+
+    deleteSelectedNotices: {
+      empty: "未选中任何公告记录",
+      success: "删除选中成功",
+      fail: "公告删除失败，请稍后再试",
+    },
+
+    topSelectedNotices: {
+      empty: "未选中任何公告记录",
+      success: "置顶选中成功",
+      fail: "公告置顶失败，请稍后再试",
+    },
+
+    untopSelectedNotices: {
+      empty: "未选中任何公告记录",
+      success: "取消置顶选中成功",
+      fail: "公告取消置顶失败，请稍后再试",
+    },
+
+    updateNotice: {
+      fail: "公告更新失败，请稍后再试",
+    }
+  },
+
+  addNotice: {
+    field: "字段",
+    input: "输入",
+    title: "公告标题",
+    titlePlaceholder: "请输入公告标题",
+    info: "公告内容",
+    infoPlaceholder: "请输入公告内容",
+    adduser: "添加用户",
+    adddate: "添加日期",
+    isTop: "是否置顶",
+    isTopPlaceholder: "请选择是否置顶",
+    top: "置顶",
+    normal: "正常",
+    submit: "提交",
+
+    submitForm: {
+      empty: "公告信息不完整",
+      success: "公告添加成功",
+      fail: "公告添加失败，请稍后再试",
+    }
+  },
+
+  adminForum: {
+    searchPlaceholder: "搜索留言名，发表用户或日期",
+    add: "添加留言",
+    showRecentDays: "仅显示最近七天",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    ban: "屏蔽",
+    unban: "解除屏蔽",
+    delete: "删除",
+    title: "留言标题",
+    info: "留言内容",
+    adduser: "发表用户",
+    adddate: "发表日期",
+    views: "浏览数",
+    likes: "点赞数",
+    state: "状态",
+    infoTip: "双击可进入编辑模式",
+    normal: "正常",
+    banned: "屏蔽",
+    defaultBoxMsg: "正在加载留言信息...",
+    noMessage: "未找到任何留言",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+
+    selectMessages: {
+      empty: "未找到任何留言记录",
+      fail: "留言信息加载失败, 请稍后再试",
+    },
+
+    delMessage: {
+      fail: "留言删除失败，请稍后再试",
+    },
+
+    deleteSelectedMessages: {
+      empty: "未选中任何留言记录",
+      success: "删除选中成功",
+      fail: "留言删除失败，请稍后再试",
+    },
+
+    banSelectedMessages: {
+      empty: "未选中任何留言记录",
+      success: "屏蔽选中成功",
+      fail: "留言屏蔽失败，请稍后再试",
+    },
+
+    unbanSelectedMessages: {
+      empty: "未选中任何留言记录",
+      success: "解除屏蔽选中成功",
+      fail: "留言解除屏蔽失败，请稍后再试",
+    },
+
+    updateMessage: {
+      fail: "留言更新失败，请稍后再试",
+    }
+  },
+
+  addMessage: {
+    field: "字段",
+    input: "输入",
+    title: "留言标题",
+    titlePlaceholder: "请输入留言标题",
+    info: "留言内容",
+    infoPlaceholder: "请输入留言内容",
+    adduser: "添加用户",
+    adduserPlaceholder: "请输入添加用户",
+    adddate: "添加日期",
+    submit: "提交",
+
+    submitForm: {
+      empty: "留言信息不完整",
+      success: "留言添加成功",
+      fail: "留言添加失败，请稍后再试",
+    }
+  },
+
+  adminUser: {
+    searchPlaceholder: "搜索用户名，注册日期或角色",
+    add: "添加用户",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    ban: "封禁",
+    unban: "解除封禁",
+    delete: "删除",
+    username: "用户名",
+    role: "权限组",
+    roleTip: "该项会在重新登陆后生效",
+    email: "邮箱",
+    state: "状态",
+    credit: "信誉分",
+    adddate: "注册日期",
+    superAdmin: "超级管理员",
+    admin: "管理员",
+    user: "用户",
+    normal: "正常",
+    banned: "封禁",
+    denied: "权限不足",
+    defaultBoxMsg: "正在加载用户信息...",
+    noUser: "未找到任何用户",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+
+    selectUsers: {
+      empty: "未找到任何用户记录",
+      fail: "用户信息加载失败，请稍后再试",
+    },
+
+    delUser: {
+      fail: "用户删除失败，请稍后再试",
+    },
+
+    deleteSelectedUsers: {
+      empty: "未选中任何用户记录",
+      denied: "权限不足",
+      success: "删除选中成功",
+      fail: "用户删除失败，请稍后再试",
+    },
+
+    banSelectedUsers: {
+      empty: "未选中任何用户记录",
+      denied: "权限不足",
+      success: "封禁选中成功",
+      fail: "用户封禁失败，请稍后再试",
+    },
+
+    unbanSelectedUsers: {
+      empty: "未选中任何用户记录",
+      denied: "权限不足",
+      success: "解除封禁选中成功",
+      fail: "用户解除封禁失败，请稍后再试",
+    },
+
+    updateUser: {
+      fail: "用户更新失败，请稍后再试",
+    }
+  },
+
+  addUser: {
+    field: "字段",
+    input: "输入",
+    username: "用户名",
+    usernamePlaceholder: "请输入用户名",
+    state: "状态",
+    normal: "正常",
+    banned: "封禁",
+    email: "邮箱",
+    emailPlaceholder: "输入预设用户邮箱",
+    adddate: "注册日期",
+    submit: "提交",
+
+    submitForm: {
+      empty: "用户名和邮箱不能为空",
+      success: "用户添加成功，初始密码为：{password}",
+      fail: "用户添加失败，请稍后再试",
+    }
+  },
+
+  adminLog: {
+    searchPlaceholder: "搜索用户名，IP，事件类型，详情或日期",
+    enableLog: "启用日志记录",
+    showRecentDays: "仅显示最近七天",
+    enableSelection: "启用复选框",
+    selectAll: "全选",
+    delete: "删除",
+    username: "用户名",
+    type: "事件类型",
+    info: "详情",
+    adddate: "日期",
+    defaultBoxMsg: "正在加载日志信息...",
+    noLog: "未找到任何日志",
+    pageSize: "每页显示",
+    firstPage: "首页",
+    prevPage: "上一页",
+    nextPage: "下一页",
+    lastPage: "尾页",
+    pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+
+    toggleLog: {
+      response: "日志记录已{status}",
+      open: "启用",
+      close: "关闭",
+      fail: "日志记录启用失败，请稍后再试",
+    },
+
+    selectLogs: {
+      empty: "未找到任何日志记录",
+      fail: "日志信息加载失败，请稍后再试",
+    },
+
+    delLog: {
+      fail: "日志删除失败，请稍后再试",
+    },
+
+    deleteSelectedLogs: {
+      empty: "未选中任何日志记录",
+      success: "删除选中成功",
+      fail: "日志删除失败，请稍后再试",
+    },
+
+    openInfo: {
+      message: "查看详情：",
+    }
+  }
 };

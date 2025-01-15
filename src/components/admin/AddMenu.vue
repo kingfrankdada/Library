@@ -3,18 +3,18 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>输入</th>
+          <th>{{ $t("addMenu.title") }}</th>
+          <th>{{ $t("addMenu.input") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>名称*</td>
+          <td>{{ $t("addMenu.name") }}*</td>
           <td>
             <input
               v-model="newMenu.title"
               type="text"
-              placeholder="输入分类名称"
+              :placeholder="$t('addMenu.namePlaceholder')"
             />
           </td>
         </tr>
@@ -29,7 +29,7 @@
         </tr> -->
       </tbody>
     </table>
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm">{{ $t("addMenu.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -68,12 +68,12 @@ export default {
   methods: {
     async submitForm() {
       if (!this.newMenu.title) {
-        this.alertMsg = "分类信息不完整";
+        this.alertMsg = this.$t("addMenu.submitForm.empty");
         return;
       }
       try {
         await api.post(endpoints.addMenu, this.newMenu);
-        this.alertMsg = "分类添加成功";
+        this.alertMsg = this.$t("addMenu.submitForm.success");
 
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {
@@ -88,11 +88,11 @@ export default {
           adddate: adddate,
         };
         await api.post(endpoints.addLog, newLog);
-        
+
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "分类添加失败";
+        this.alertMsg = this.$t("addMenu.submitForm.fail");
       }
     },
 

@@ -3,7 +3,7 @@
     <div v-if="isLeftGuideVisible" class="left-guide">
       <!-- <div class="left-guide"> -->
       <div class="guide-title" @click="handleAdmin">
-        <span>管理员控制台</span>
+        <span>{{ $t("adminLeftGuide.title") }}</span>
         <div class="line"></div>
       </div>
       <div v-for="item in filteredMenuList" :key="item.id" class="guide-list">
@@ -24,63 +24,14 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import { eventBus } from "@/utils/eventBus";
 
 export default {
   name: "AdminLeftGuide",
 
   data() {
     return {
-      menuList: [
-        {
-          id: 1,
-          name: "book",
-          title: "图书管理",
-          path: "/admin/book",
-          icon: "ri-book-3-line",
-        },
-        {
-          id: 2,
-          name: "menu",
-          title: "分类管理",
-          path: "/admin/menu",
-          icon: "ri-list-check",
-        },
-        {
-          id: 3,
-          name: "borrow",
-          title: "借阅管理",
-          path: "/admin/borrow",
-          icon: "ri-book-open-line",
-        },
-        {
-          id: 4,
-          name: "notice",
-          title: "公告管理",
-          path: "/admin/notice",
-          icon: "ri-mail-line",
-        },
-        {
-          id: 5,
-          name: "forum",
-          title: "论坛管理",
-          path: "/admin/forum",
-          icon: "ri-chat-new-line",
-        },
-        {
-          id: 6,
-          name: "user",
-          title: "用户管理",
-          path: "/admin/user",
-          icon: "ri-user-line",
-        },
-        {
-          id: 7,
-          name: "log",
-          title: "日志管理",
-          path: "/admin/log",
-          icon: "ri-history-line",
-        },
-      ],
+      menuList: [],
     };
   },
 
@@ -104,6 +55,12 @@ export default {
     this.setLeftGuideVisible(true);
   },
 
+  mounted() {
+    eventBus.$on("language-changed", this.setDocument);
+
+    this.setDocument();
+  },
+
   methods: {
     ...mapMutations("AdminLeftGuide", ["setLeftGuideVisible"]),
     ...mapMutations("NormalModal", ["setSelectModalVisible"]),
@@ -123,10 +80,67 @@ export default {
         this.$router.push("/admin");
       }
     },
+
+    setDocument() {
+      this.$nextTick(() => {
+        this.menuList = [
+          {
+            id: 1,
+            name: "book",
+            title: this.$t("adminLeftGuide.menuList.book"),
+            path: "/admin/book",
+            icon: "ri-book-3-line",
+          },
+          {
+            id: 2,
+            name: "menu",
+            title: this.$t("adminLeftGuide.menuList.menu"),
+            path: "/admin/menu",
+            icon: "ri-list-check",
+          },
+          {
+            id: 3,
+            name: "borrow",
+            title: this.$t("adminLeftGuide.menuList.borrow"),
+            path: "/admin/borrow",
+            icon: "ri-book-open-line",
+          },
+          {
+            id: 4,
+            name: "notice",
+            title: this.$t("adminLeftGuide.menuList.notice"),
+            path: "/admin/notice",
+            icon: "ri-mail-line",
+          },
+          {
+            id: 5,
+            name: "forum",
+            title: this.$t("adminLeftGuide.menuList.forum"),
+            path: "/admin/forum",
+            icon: "ri-chat-new-line",
+          },
+          {
+            id: 6,
+            name: "user",
+            title: this.$t("adminLeftGuide.menuList.user"),
+            path: "/admin/user",
+            icon: "ri-user-line",
+          },
+          {
+            id: 7,
+            name: "log",
+            title: this.$t("adminLeftGuide.menuList.log"),
+            path: "/admin/log",
+            icon: "ri-history-line",
+          },
+        ];
+      });
+    },
   },
 
   beforeDestroy() {
     this.setSelectModalVisible(false);
+    eventBus.$off("language-changed", this.setDocument);
   },
 };
 </script>

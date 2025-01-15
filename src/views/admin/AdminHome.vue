@@ -7,33 +7,39 @@
       <div class="dashboard">
         <!-- 实时数据卡片 -->
         <div class="card real-time-data">
-          <div class="card-title">实时数据</div>
+          <div class="card-title">{{ $t("adminHome.realTimeData") }}</div>
           <div class="card-body">
             <div class="card-form-item">
-              <h4>在线用户数</h4>
+              <p>{{ $t("adminHome.onlineUsers") }}</p>
               <span class="card-form-count">{{ onlineUserCount }}</span>
             </div>
             <div class="card-form-item">
-              <h4>收录图书数</h4>
+              <p>{{ $t("adminHome.bookCount") }}</p>
               <span class="card-form-count">{{ books.length }}</span>
             </div>
             <div class="card-form-item">
-              <h4>{{ userInfo.role != 0 ? "借阅信息数" : "系统日志数" }}</h4>
+              <p>
+                {{
+                  userInfo.role != 0
+                    ? $t("adminHome.borrowCount")
+                    : $t("adminHome.logCount")
+                }}
+              </p>
               <span class="card-form-count">{{ logs.length }}</span>
             </div>
           </div>
         </div>
         <!-- CPU数据卡片 -->
         <div class="card cpu-data">
-          <div class="card-title">服务器处理器数据</div>
+          <div class="card-title">{{ $t("adminHome.cpuData") }}</div>
           <div class="card-body">
             <div class="card-form-item">
               <span class="card-form-text">
-                CPU型号:
+                {{ $t("adminHome.cpuType") }}
                 <br />
                 {{ systemInfo.cpuUsage.brand }}
                 <br />
-                CPU频率(GHz):
+                {{ $t("adminHome.cpuSpeed") }}
                 <br />
                 {{ systemInfo.cpuUsage.speed.toFixed(2) }}
               </span>
@@ -43,15 +49,15 @@
         </div>
         <!-- 内存数据卡片 -->
         <div class="card book-data">
-          <div class="card-title">服务器内存数据</div>
+          <div class="card-title">{{ $t("adminHome.memData") }}</div>
           <div class="card-body">
             <div class="card-form-item">
               <span class="card-form-text">
-                内存总大小:
+                {{ $t("adminHome.memTotal") }}
                 <br />
                 {{ formatSpeed(systemInfo.memoryUsage.totalMemory) }}
                 <br />
-                已使用内存:
+                {{ $t("adminHome.memUsed") }}
                 <br />
                 {{ formatSpeed(systemInfo.memoryUsage.usedMemory) }}
               </span>
@@ -61,7 +67,7 @@
         </div>
         <!-- 账号活跃情况卡片 -->
         <div class="card account-activity">
-          <div class="card-title">历史在线记录</div>
+          <div class="card-title">{{ $t("adminHome.userActivity") }}</div>
           <div class="card-body">
             <div
               class="history-count-chart-container"
@@ -72,7 +78,11 @@
         <!-- 公告卡片 -->
         <div class="card log-ratio">
           <div class="card-title">
-            {{ userInfo.role != 0 ? "借阅信息" : "系统日志" }}
+            {{
+              userInfo.role != 0
+                ? $t("adminHome.borrowLog")
+                : $t("adminHome.sysLog")
+            }}
           </div>
           <div class="card-body">
             <div class="log-chart-container">
@@ -121,7 +131,7 @@ export default {
     return {
       systemInfo: {
         cpuUsage: {
-          brand: "获取中...",
+          brand: "Loading...",
           speed: 0,
           usedPercentage: 0,
         },
@@ -289,7 +299,7 @@ export default {
         });
 
         if (this.dailyUser.length === 0) {
-          this.alertMsg = "未找到任何在线用户记录";
+          this.alertMsg = this.$t("adminHome.getDailyUser.empty");
         } else {
           // 获取数据后，历史在线表
           this.$nextTick(() => {
@@ -298,7 +308,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取历史在线数据失败";
+        this.alertMsg = this.$t("adminHome.getDailyUser.error");
       }
     },
 
@@ -310,7 +320,7 @@ export default {
         this.books = books || [];
 
         if (this.books.length === 0) {
-          this.alertMsg = "未找到任何图书记录";
+          this.alertMsg = this.$t("adminHome.selectBooks.empty");
         } else {
           // 获取数据后，更新分类占比表
           this.$nextTick(() => {
@@ -319,7 +329,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取图书数据失败";
+        this.alertMsg = this.$t("adminHome.selectBooks.error");
       }
     },
 
@@ -336,18 +346,18 @@ export default {
           );
         }
         if (this.logs.length === 0) {
-          this.boxMsg = "未找到任何日志记录";
+          this.boxMsg = this.$t("adminHome.selectLogs.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取日志数据失败";
+        this.boxMsg = this.$t("adminHome.selectLogs.error");
       }
     },
 
     // 格式化速度
     formatSpeed(speed) {
       if (isNaN(speed) || speed === undefined || speed === null || speed < 0) {
-        return "获取中...";
+        return "Loading...";
       }
       if (speed < 1024 * 1024) {
         return `${(speed / 1024).toFixed(2)} Kb`;

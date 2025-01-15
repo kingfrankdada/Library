@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索公告名，角色或注册信息"
+        :placeholder="$t('adminNotice.searchPlaceholder')"
       />
     </div>
 
@@ -13,7 +13,7 @@
     <div class="toolbar">
       <label @click="isAddModalVisible = true">
         <i class="ri-mail-add-line"></i>
-        添加公告
+        {{ $t("adminNotice.add") }}
       </label>
       <label>
         <input
@@ -21,28 +21,28 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("adminNotice.showRecentDays") }}
       </label>
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminNotice.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminNotice.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="topSelectedNotices">
         <i class="ri-expand-up-down-fill"></i>
-        置顶
+        {{ $t("adminNotice.top") }}
       </label>
       <label v-show="enableSelection" @click="untopSelectedNotices">
         <i class="ri-contract-up-down-fill"></i>
-        取消置顶
+        {{ $t("adminNotice.untop") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedNotices">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminNotice.delete") }}
       </label>
     </div>
 
@@ -62,18 +62,18 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortNotices('title')">
-            公告*
+            {{ $t("adminNotice.title") }}*
             <span :class="getSortIcon('title')"></span>
           </th>
           <th @click="sortNotices('info')">
-            详情内容*
+            {{ $t("adminNotice.info") }}*
             <span :class="getSortIcon('info')"></span>
           </th>
           <th @click="sortNotices('top')">
-            是否置顶
+            {{ $t("adminNotice.isTop") }}
             <span :class="getSortIcon('top')"></span>
           </th>
-          <th>删除</th>
+          <th>{{ $t("adminNotice.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -94,7 +94,7 @@
           </td>
           <td
             class="notice-info"
-            title="双击可进入编辑模式"
+            :title="$t('adminNotice.infoTip')"
             @dblclick="openEdit(notice)"
           >
             {{ notice.info }}
@@ -105,12 +105,20 @@
               v-model="notice.top"
               @change="updateNotice(notice)"
             >
-              <option style="color: red" value="1">置顶</option>
-              <option style="color: green" value="0">正常</option>
+              <option style="color: red" value="1">
+                {{ $t("adminNotice.top") }}
+              </option>
+              <option style="color: green" value="0">
+                {{ $t("adminNotice.normal") }}
+              </option>
             </select>
           </td>
           <td>
-            <button class="del-btn" title="删除" @click="delNotice(notice)">
+            <button
+              class="del-btn"
+              :title="$t('adminNotice.delete')"
+              @click="delNotice(notice)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -118,7 +126,7 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminNotice.noNotice") }}</p>
 
     <!-- 编辑公告模态框 -->
     <EditTag
@@ -138,25 +146,34 @@
       @close="closeModal"
       size="large"
     >
-      <div class="select-text">添加公告</div>
+      <div class="select-text">{{ $t("adminNotice.add") }}</div>
       <AddNotice></AddNotice>
     </NormalModal>
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminNotice.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminNotice.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminNotice.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminNotice.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminNotice.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminNotice.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -200,7 +217,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       editMsg: "", // 编辑公告传入数据
       editId: null, // 存储编辑的公告 ID
       editName: "",
@@ -272,12 +289,15 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredNotices.length / this.pageSize);
+      return Math.ceil(this.filteredNotices.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectNotices();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminNotice.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -387,11 +407,11 @@ export default {
         const response = await api.get(endpoints.selectNotice);
         this.notices = response.data.notice || [];
         if (this.notices.length === 0) {
-          this.boxMsg = "未找到任何公告记录";
+          this.boxMsg = this.$t("adminNotice.selectNotices.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取公告数据失败";
+        this.boxMsg = this.$t("adminNotice.selectNotices.fail");
       }
     },
 
@@ -402,7 +422,7 @@ export default {
         // this.alertMsg = "删除公告成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除公告失败";
+        this.alertMsg = this.$t("adminNotice.delNotice.fail");
       }
 
       // 添加删除日志
@@ -422,7 +442,7 @@ export default {
         await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "添加日志失败";
+        // this.alertMsg = "添加日志失败";
       }
 
       this.selectNotices();
@@ -431,7 +451,7 @@ export default {
     // 删除选中的公告
     async deleteSelectedNotices() {
       if (this.selectedNotices.length === 0) {
-        this.alertMsg = "请选择要删除的公告";
+        this.alertMsg = this.$t("adminNotice.deleteSelectedNotices.empty");
         return;
       }
 
@@ -465,17 +485,17 @@ export default {
         this.selectNotices();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminNotice.deleteSelectedNotices.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminNotice.deleteSelectedNotices.fail");
       }
     },
 
     // 置顶选中的公告
     async topSelectedNotices() {
       if (this.selectedNotices.length === 0) {
-        this.alertMsg = "请选择要置顶的公告";
+        this.alertMsg = this.$t("adminNotice.topSelectedNotices.empty");
         return;
       }
 
@@ -512,17 +532,17 @@ export default {
         this.selectNotices();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "置顶成功";
+        this.message = this.$t("adminNotice.topSelectedNotices.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "置顶失败";
+        this.alertMsg = this.$t("adminNotice.topSelectedNotices.fail");
       }
     },
 
     // 取消置顶选中的公告
     async untopSelectedNotices() {
       if (this.selectedNotices.length === 0) {
-        this.alertMsg = "请选择要取消置顶的公告";
+        this.alertMsg = this.$t("adminNotice.untopSelectedNotices.empty");
         return;
       }
 
@@ -559,10 +579,10 @@ export default {
         this.selectNotices();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "取消置顶成功";
+        this.message = this.$t("adminNotice.untopSelectedNotices.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "取消置顶失败";
+        this.alertMsg = this.$t("adminNotice.untopSelectedNotices.fail");
       }
     },
 
@@ -590,7 +610,7 @@ export default {
         this.selectNotices();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新公告数据失败";
+        this.alertMsg = this.$t("adminNotice.updateNotice.fail");
       }
     },
 

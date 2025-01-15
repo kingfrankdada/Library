@@ -3,49 +3,49 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>输入</th>
+          <th>{{ $t("addUser.field") }}</th>
+          <th>{{ $t("addUser.input") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>名称*</td>
+          <td>{{ $t("addUser.username") }}*</td>
           <td>
             <input
               v-model="newUser.username"
               type="text"
-              placeholder="输入用户名称"
+              :placeholder="$t('addUser.usernamePlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>状态*</td>
+          <td>{{ $t("addUser.state") }}*</td>
           <td>
             <select v-model="newUser.state">
-              <option value="1">正常</option>
-              <option value="0">关闭</option>
+              <option value="1">{{ $t("addUser.normal") }}</option>
+              <option value="0">{{ $t("addUser.banned") }}</option>
             </select>
           </td>
         </tr>
         <tr>
-          <td>预设邮箱*</td>
+          <td>{{ $t("addUser.email") }}*</td>
           <td>
             <input
               v-model="newUser.email"
               type="text"
-              placeholder="输入预设用户邮箱"
+              :placeholder="$t('addUser.emailPlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>注册日期</td>
+          <td>{{ $t("addUser.adddate") }}</td>
           <td>
             {{ new Date().toLocaleDateString() }}
           </td>
         </tr>
       </tbody>
     </table>
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm">{{ $t("addUser.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -101,13 +101,15 @@ export default {
       this.newUser.adddate = new Date().toISOString().split("T")[0];
       this.newUser.password = Math.random().toString(36).slice(-8);
       if (!this.newUser.username || !this.newUser.email) {
-        this.alertMsg = "用户信息不完整";
+        this.alertMsg = this.$t("addUser.submitForm.empty");
         return;
       }
       try {
         await api.post(endpoints.reg, this.newUser);
         // this.alertMsg = "用户添加成功";
-        this.message = "用户添加成功，初始密码为：" + this.newUser.password;
+        this.message = this.$t("addUser.submitForm.success", {
+          password: this.newUser.password,
+        });
         this.showCopyButton = true;
 
         // 添加更新日志
@@ -127,14 +129,19 @@ export default {
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "用户添加失败";
+        this.alertMsg = this.$t("addUser.submitForm.fail");
       }
     },
 
     resetForm() {
       this.newUser = {
         username: "",
+        password: "",
+        role: 2,
+        creditCount: 100,
         state: 1,
+        adddate: "",
+        email: "",
       };
     },
   },

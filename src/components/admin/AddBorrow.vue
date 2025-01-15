@@ -3,17 +3,19 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>输入</th>
+          <th>{{ $t("addBorrow.title") }}</th>
+          <th>{{ $t("addBorrow.input") }}</th>
         </tr>
       </thead>
       <tbody>
         <!-- 用户选择框 -->
         <tr>
-          <td>借阅用户*</td>
+          <td>{{ $t("addBorrow.username") }}*</td>
           <td>
             <select v-model="newBorrow.username">
-              <option value="" disabled>选择用户名</option>
+              <option value="" disabled>
+                {{ $t("addBorrow.usernamePlaceholder") }}
+              </option>
               <option
                 v-for="(user, index) in filteredUsers"
                 :key="index"
@@ -27,10 +29,12 @@
 
         <!-- 书籍选择框 -->
         <tr>
-          <td>借阅书籍*</td>
+          <td>{{ $t("addBorrow.book") }}*</td>
           <td>
             <select v-model="newBorrow.bookname">
-              <option value="" disabled>选择书籍</option>
+              <option value="" disabled>
+                {{ $t("addBorrow.bookPlaceholder") }}
+              </option>
               <option
                 v-for="(book, index) in filteredBooks"
                 :key="index"
@@ -45,7 +49,7 @@
 
         <!-- 借阅日期 -->
         <tr>
-          <td>借阅日期*</td>
+          <td>{{ $t("addBorrow.startdate") }}*</td>
           <td>
             {{ newBorrow.start_date }}
           </td>
@@ -53,7 +57,7 @@
 
         <!-- 归还日期 -->
         <tr>
-          <td>归还日期*</td>
+          <td>{{ $t("addBorrow.overdate") }}*</td>
           <td>
             <input
               v-model="newBorrow.over_date"
@@ -66,12 +70,12 @@
 
         <!-- 借阅天数 -->
         <tr>
-          <td>借阅天数*</td>
+          <td>{{ $t("addBorrow.days") }}*</td>
           <td>
             <input
               v-model="newBorrow.days"
               type="number"
-              placeholder="输入借阅天数或自动计算"
+              :placeholder="$t('addBorrow.daysPlaceholder')"
               @change="updateOverDateFromDays"
               :min="1"
             />
@@ -80,19 +84,19 @@
 
         <!-- 添加用户 -->
         <tr>
-          <td>添加用户</td>
+          <td>{{ $t("addBorrow.adduser") }}</td>
           <td>{{ userInfo.username }}</td>
         </tr>
 
         <!-- 添加日期 -->
         <tr>
-          <td>添加日期</td>
+          <td>{{ $t("addBorrow.adddate") }}</td>
           <td>{{ new Date().toLocaleDateString() }}</td>
         </tr>
       </tbody>
     </table>
 
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm">{{ $t("addBorrow.submit") }}</button>
 
     <!-- 自定义弹窗捕获 -->
     <AlertBox
@@ -100,6 +104,11 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
@@ -107,12 +116,14 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
+import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "AddBorrow",
   components: {
     AlertBox,
+    MessageBox,
   },
   computed: {
     ...mapState("UserInfo", ["userInfo"]),
@@ -135,6 +146,7 @@ export default {
       filteredBooks: [],
       filteredUsers: [],
       alertMsg: "",
+      message: "",
     };
   },
   mounted() {
@@ -147,10 +159,13 @@ export default {
       try {
         const response = await api.get(endpoints.selectBook);
         this.books = response.data.books || [];
+        if (this.books.length === 0) {
+          this.alertMsg = this.$t("addBorrow.selectBooks.empty");
+        }
         this.filteredBooks = [...this.books];
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取图书数据失败";
+        this.alertMsg = this.$t("addBorrow.selectBooks.fail");
       }
     },
 
@@ -162,7 +177,7 @@ export default {
         this.filteredUsers = [...this.users];
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取用户数据失败";
+        this.alertMsg = this.$t("addBorrow.selectUsers.fail");
       }
     },
 
@@ -202,7 +217,7 @@ export default {
         !this.newBorrow.over_date ||
         !this.newBorrow.days
       ) {
-        this.alertMsg = "借阅信息不完整";
+        this.alertMsg = this.$t("addBorrow.submitForm.empty");
         return;
       }
 
@@ -230,7 +245,7 @@ export default {
 
         await api.post(endpoints.addLog, newLog);
 
-        this.alertMsg = "借阅添加成功，请前借阅管理查看";
+        this.message = this.$t("addBorrow.submitForm.success");
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         const errorMessage = error.response?.data?.error || error.message;
@@ -239,7 +254,7 @@ export default {
         if (error.response?.status === 400) {
           this.alertMsg = errorMessage; // 已借阅
         } else {
-          this.alertMsg = "借阅失败，请稍后再试";
+          this.alertMsg = this.$t("addBorrow.submitForm.fail");
         }
       }
     },

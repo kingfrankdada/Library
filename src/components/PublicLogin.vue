@@ -12,7 +12,7 @@
 
       <div class="login-logo">
         <!-- <i class="ri-book-3-line"></i> -->
-        <span>高校图书管理系统</span>
+        <span>{{ $t("publicLogin.logo") }}</span>
       </div>
 
       <div class="login-form" @keyup.enter="handleLogin">
@@ -35,7 +35,7 @@
       </div>
       <div class="reg-change-btn">
         <div class="reg-change-btn-item" @click="changeRegModal">
-          没有账户？立刻注册
+          {{ $t("publicLogin.changeReg") }}
         </div>
       </div>
 
@@ -105,7 +105,7 @@ export default {
         try {
           const ipResponse = await axios.get(
             "https://api.ipify.org?format=json",
-            { timeout: 2000 }
+            { timeout: 1500 }
           );
           userIP = ipResponse.data.ip;
         } catch (error) {
@@ -156,7 +156,7 @@ export default {
         this.setLoginModalVisible(false);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "登录失败:用户名或密码错误";
+        this.alertMsg = this.$t("publicLogin.loginError");
       }
     },
   },

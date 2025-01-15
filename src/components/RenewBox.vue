@@ -10,7 +10,7 @@
                 ? `/assets/img/${book.img}`
                 : '/assets/img/image-add-fill.png'
             "
-            alt="封面"
+            :alt="$t('renewBox.imgAlt')"
             :class="{ 'default-cover': !book.img, 'book-cover': book.img }"
           />
         </div>
@@ -18,12 +18,24 @@
         <!-- 右侧图书其他信息 -->
         <div class="book-info">
           <p class="book-title">{{ book.name }}</p>
-          <p><strong>作者:</strong> {{ book.author }}</p>
-          <p><strong>分类:</strong> {{ book.menu }}</p>
-          <p><strong>价格:</strong> {{ book.price }}元</p>
-          <p><strong>出版社:</strong> {{ book.press }}</p>
-          <p><strong>库存数量:</strong> {{ book.num }}本</p>
-          <p><strong>入库日期:</strong> {{ book.adddate }}</p>
+          <p>
+            <strong>{{ $t("renewBox.author") }}</strong> {{ book.author }}
+          </p>
+          <p>
+            <strong>{{ $t("renewBox.menu") }}</strong> {{ book.menu }}
+          </p>
+          <p>
+            <strong>{{ $t("renewBox.price") }}</strong> {{ book.price }}元
+          </p>
+          <p>
+            <strong>{{ $t("renewBox.press") }}</strong> {{ book.press }}
+          </p>
+          <p>
+            <strong>{{ $t("renewBox.num") }}</strong> {{ book.num }}
+          </p>
+          <p>
+            <strong>{{ $t("renewBox.adddate") }}</strong> {{ book.adddate }}
+          </p>
         </div>
       </div>
 
@@ -36,18 +48,18 @@
       <div class="renew-actions">
         <div class="renew-inputs">
           <div>
-            <label for="renew-days">预计续借天数 (最大7天):</label>
+            <label for="renew-days">{{ $t("renewBox.renewDays") }}</label>
             <input
               id="renew-days"
               type="number"
               v-model="renewDays"
-              placeholder="输入天数"
+              :placeholder="$t('renewBox.renewDaysPlaceholder')"
               min="1"
               max="7"
             />
           </div>
           <div>
-            <label for="over-date">预计归还日期:</label>
+            <label for="over-date">{{ $t("renewBox.overDate") }}</label>
             <input
               id="over-date"
               type="date"
@@ -59,10 +71,10 @@
         </div>
         <div class="buttons">
           <button class="action-button renew-button" @click="handleRenew">
-            确认续借
+            {{ $t("renewBox.renew") }}
           </button>
           <button class="action-button cancel-button" @click="handleCancel">
-            取消
+            {{ $t("renewBox.cancel") }}
           </button>
         </div>
       </div>
@@ -95,16 +107,16 @@ export default {
       type: Object,
       default: () => ({
         id: null,
-        name: "未知书籍",
-        author: "未知作者",
-        menu: "未知分类",
-        price: "未知价格",
-        press: "未知出版社",
+        name: "Unknown",
+        author: "Unknown",
+        menu: "Unknown",
+        price: "Unknown",
+        press: "Unknown",
         num: 0,
         img: "image-add-fill.png",
-        info: "暂无更多信息",
+        info: "Unknown",
         state: 1,
-        adddate: "未知日期",
+        adddate: "Unknown",
       }),
     },
   },
@@ -175,23 +187,23 @@ export default {
     // 续借逻辑
     async handleRenew() {
       if (!this.userInfo.usertoken) {
-        this.alertMsg = "请先登录";
+        this.alertMsg = this.$t("renewBox.handleRenew.login");
         return;
       }
 
       if (!this.renewDays || !this.overDate) {
-        this.alertMsg = "请填写预计续借天数和归还日期";
+        this.alertMsg = this.$t("renewBox.handleRenew.formEmpty");
         return;
       }
 
       if (this.book.num <= 0) {
-        this.alertMsg = "库存不足，无法续借";
+        this.alertMsg = this.$t("renewBox.handleRenew.bookEmpty");
         return;
       }
 
       // 续借天数超过 7 天
       if (this.renewDays > 7) {
-        this.alertMsg = "续借天数不能超过7天";
+        this.alertMsg = this.$t("renewBox.handleRenew.overDays");
         return;
       }
 
@@ -219,14 +231,20 @@ export default {
 
         await api.post(endpoints.addLog, newLog);
 
-        this.message = `续借成功: ${this.book.name}`;
+        // this.message = this.$t("renewBox.handleRenew.success", {
+        //   bookname: this.book.name,
+        // });
+        this.$emit("success", this.book.name);
         this.$emit("reSelect");
+        this.$nextTick(() => {
+          this.$emit("close");
+        });
       } catch (error) {
         const errorMessage = error.response?.data?.error || error.message;
         console.error(errorMessage);
         if (error.response?.status === 404) {
-          this.alertMsg = "已经续借过该图书";
-        } else this.alertMsg = "续借失败，请重试";
+          this.alertMsg = this.$t("renewBox.handleRenew.bookRepeat");
+        } else this.alertMsg = this.$t("renewBox.handleRenew.fail");
       }
     },
 

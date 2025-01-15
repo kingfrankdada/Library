@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索用户名，角色或注册信息"
+        :placeholder="$t('adminUser.searchPlaceholder')"
       />
     </div>
 
@@ -13,7 +13,7 @@
     <div class="toolbar">
       <label @click="isAddModalVisible = true">
         <i class="ri-user-add-line"></i>
-        添加用户
+        {{ $t("adminUser.add") }}
       </label>
       <!-- <label>
         <input
@@ -25,24 +25,24 @@
       </label> -->
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminUser.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminUser.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="banSelectedUsers">
         <i class="ri-prohibited-line"></i>
-        封禁
+        {{ $t("adminUser.ban") }}
       </label>
       <label v-show="enableSelection" @click="unbanSelectedUsers">
         <i class="ri-checkbox-circle-line"></i>
-        取消封禁
+        {{ $t("adminUser.unban") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedUsers">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminUser.delete") }}
       </label>
     </div>
 
@@ -62,34 +62,31 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortUsers('username')">
-            用户*
+            {{ $t("adminUser.username") }}*
             <span :class="getSortIcon('username')"></span>
           </th>
           <th v-if="userInfo.role == 0" @click="sortUsers('role')">
-            权限组*
-            <i
-              class="ri-question-line"
-              title="提示：该项会在重新登陆后生效"
-            ></i>
+            {{ $t("adminUser.role") }}*
+            <i class="ri-question-line" :title="$t('adminUser.roleTip')"></i>
             <span :class="getSortIcon('role')"></span>
           </th>
           <th @click="sortUsers('email')">
-            邮箱*
+            {{ $t("adminUser.email") }}*
             <span :class="getSortIcon('email')"></span>
           </th>
           <th @click="sortUsers('state')">
-            状态*
+            {{ $t("adminUser.state") }}*
             <span :class="getSortIcon('state')"></span>
           </th>
           <th @click="sortUsers('creditCount')">
-            信誉分*
+            {{ $t("adminUser.credit") }}*
             <span :class="getSortIcon('creditCount')"></span>
           </th>
           <th @click="sortUsers('adddate')">
-            注册日期
+            {{ $t("adminUser.adddate") }}
             <span :class="getSortIcon('adddate')"></span>
           </th>
-          <th>删除</th>
+          <th>{{ $t("adminUser.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -106,9 +103,9 @@
           </td>
           <td v-if="userInfo.role == 0">
             <select v-model="user.role" @change="updateUser(user)">
-              <option value="0">超级管理员</option>
-              <option value="1">管理员</option>
-              <option value="2">用户</option>
+              <option value="0">{{ $t("adminUser.superAdmin") }}</option>
+              <option value="1">{{ $t("adminUser.admin") }}</option>
+              <option value="2">{{ $t("adminUser.user") }}</option>
             </select>
           </td>
           <td>
@@ -120,8 +117,12 @@
               v-model="user.state"
               @change="updateUser(user)"
             >
-              <option style="color: green" value="1">正常</option>
-              <option style="color: red" value="0">封禁</option>
+              <option style="color: green" value="1">
+                {{ $t("adminUser.normal") }}
+              </option>
+              <option style="color: red" value="0">
+                {{ $t("adminUser.banned") }}
+              </option>
             </select>
           </td>
           <td>
@@ -135,7 +136,11 @@
             <button
               :disabled="userInfo.role != 0"
               class="del-btn"
-              :title="userInfo.role != 0 ? '权限不足' : '删除'"
+              :title="
+                userInfo.role != 0
+                  ? $t('adminUser.denied')
+                  : $t('adminUser.delete')
+              "
               @click="delUser(user)"
             >
               <i class="ri-delete-bin-5-fill"></i>
@@ -145,7 +150,7 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminUser.noUser") }}</p>
 
     <!-- 用户添加模态框 -->
     <NormalModal
@@ -154,25 +159,34 @@
       @close="closeModal"
       size="large"
     >
-      <div class="select-text">添加用户</div>
+      <div class="select-text">{{ $t("adminUser.add") }}</div>
       <AddUser></AddUser>
     </NormalModal>
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminUser.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminUser.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminUser.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminUser.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminUser.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminUser.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -214,7 +228,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       users: [],
       searchText: "",
       sortColumn: null,
@@ -287,12 +301,15 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredUsers.length / this.pageSize);
+      return Math.ceil(this.filteredUsers.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectUsers();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminUser.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -397,11 +414,11 @@ export default {
           })) || [];
 
         if (this.users.length === 0) {
-          this.boxMsg = "未找到任何用户记录";
+          this.boxMsg = this.$t("adminUser.selectUsers.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取用户数据失败";
+        this.boxMsg = this.$t("adminUser.selectUsers.fail");
       }
     },
 
@@ -412,7 +429,7 @@ export default {
         // this.alertMsg = "删除用户成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除用户失败";
+        this.alertMsg = this.$t("adminUser.delUser.fail");
       }
 
       // 添加删除日志
@@ -433,7 +450,7 @@ export default {
         await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "添加日志失败";
+        // this.alertMsg = "添加日志失败";
       }
 
       this.selectUsers();
@@ -442,12 +459,12 @@ export default {
     // 删除选中的用户
     async deleteSelectedUsers() {
       if (this.selectedUsers.length === 0) {
-        this.alertMsg = "请选择要删除的用户";
+        this.alertMsg = this.$t("adminUser.deleteSelectedUsers.empty");
         return;
       }
 
       if (this.userInfo.role != 0) {
-        this.alertMsg = "权限不足";
+        this.alertMsg = this.$t("adminUser.deleteSelectedUsers.denied");
         return;
       }
 
@@ -483,22 +500,22 @@ export default {
         this.selectUsers();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminUser.deleteSelectedUsers.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminUser.deleteSelectedUsers.fail");
       }
     },
 
     // 封禁选中用户
     async banSelectedUsers() {
       if (this.selectedUsers.length === 0) {
-        this.alertMsg = "请选择要封禁的用户";
+        this.alertMsg = this.$t("adminUser.banSelectedUsers.empty");
         return;
       }
 
       if (this.userInfo.role != 0) {
-        this.alertMsg = "权限不足";
+        this.alertMsg = this.$t("adminUser.banSelectedUsers.denied");
         return;
       }
 
@@ -538,22 +555,22 @@ export default {
         this.selectUsers();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "封禁成功";
+        this.message = this.$t("adminUser.banSelectedUsers.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "封禁失败";
+        this.alertMsg = this.$t("adminUser.banSelectedUsers.fail");
       }
     },
 
     // 取消封禁选中用户
     async unbanSelectedUsers() {
       if (this.selectedUsers.length === 0) {
-        this.alertMsg = "请选择要取消封禁的用户";
+        this.alertMsg = this.$t("adminUser.unbanSelectedUsers.empty");
         return;
       }
 
       if (this.userInfo.role != 0) {
-        this.alertMsg = "权限不足";
+        this.alertMsg = this.$t("adminUser.unbanSelectedUsers.denied");
         return;
       }
 
@@ -593,10 +610,10 @@ export default {
         this.selectUsers();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "取消封禁成功";
+        this.message = this.$t("adminUser.unbanSelectedUsers.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "取消封禁失败";
+        this.alertMsg = this.$t("adminUser.unbanSelectedUsers.fail");
       }
     },
     async updateUser(user) {
@@ -637,7 +654,7 @@ export default {
         this.selectUsers();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新用户数据失败";
+        this.alertMsg = this.$t("adminUser.updateUser.fail");
       }
     },
 

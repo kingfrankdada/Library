@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索借阅图书名称或借阅日期"
+        :placeholder="$t('userBorrow.searchPlaceholder')"
       />
     </div>
 
@@ -17,7 +17,7 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("userBorrow.showRecentDays") }}
       </label>
     </div>
 
@@ -26,38 +26,38 @@
       <thead>
         <tr>
           <th @click="sortBorrows('start_date')">
-            借出日期
+            {{ $t("userBorrow.startDate") }}
             <span :class="getSortIcon('start_date')"></span>
           </th>
           <th @click="sortBorrows('over_date')">
-            预计归还日期
+            {{ $t("userBorrow.overDate") }}
             <span :class="getSortIcon('over_date')"></span>
           </th>
           <th @click="sortBorrows('days')">
-            预计借阅天数
+            {{ $t("userBorrow.days") }}
             <span :class="getSortIcon('days')"></span>
           </th>
           <th @click="sortBorrows('bookname')">
-            书名
+            {{ $t("userBorrow.bookName") }}
             <span :class="getSortIcon('bookname')"></span>
           </th>
           <th @click="sortBorrows('return_date')">
-            实际归还日期
+            {{ $t("userBorrow.returnDate") }}
             <span :class="getSortIcon('return_date')"></span>
           </th>
           <th @click="sortBorrows('record_days')">
-            实际借阅天数
+            {{ $t("userBorrow.recordDays") }}
             <span :class="getSortIcon('record_days')"></span>
           </th>
           <th @click="sortBorrows('credit_delta')">
-            信誉分变化
+            {{ $t("userBorrow.creditDelta") }}
             <span :class="getSortIcon('credit_delta')"></span>
           </th>
           <th @click="sortBorrows('state')">
-            状态
+            {{ $t("userBorrow.state") }}
             <span :class="getSortIcon('state')"></span>
           </th>
-          <th>操作</th>
+          <th>{{ $t("userBorrow.actions") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -66,8 +66,8 @@
           <td :title="record.over_date">{{ record.over_date }}</td>
           <td :title="record.days">{{ record.days || "-" }}</td>
           <td :title="record.bookname">{{ record.bookname }}</td>
-          <td :title="record.return_date || '借阅中'">
-            {{ record.return_date || "借阅中" }}
+          <td :title="record.return_date || $t('userBorrow.borrowing')">
+            {{ record.return_date || $t("userBorrow.borrowing") }}
           </td>
           <td :title="record.record_days">{{ record.record_days || "--" }}</td>
           <td :style="record.credit_delta > 0 ? 'color: red' : 'color: green'">
@@ -84,24 +84,26 @@
           >
             {{
               record.state === 0
-                ? "已归还"
+                ? $t("userBorrow.returned")
                 : record.state === 1
-                ? "借阅中"
-                : "已逾期"
+                ? $t("userBorrow.borrowing")
+                : $t("userBorrow.overdue")
             }}
           </td>
 
           <td>
             <div v-if="!record.return_date" class="action-buttons">
-              <button @click="handleReturn(record)">归还</button>
+              <button @click="handleReturn(record)">
+                {{ $t("userBorrow.return") }}
+              </button>
               <button
                 @click="handleRenew(record)"
                 v-if="record.is_renew === 0 && record.state === 1"
               >
-                续借
+                {{ $t("userBorrow.renew") }}
               </button>
             </div>
-            <span v-else>已归还</span>
+            <span v-else>{{ $t("userBorrow.returned") }}</span>
           </td>
         </tr>
       </tbody>
@@ -111,25 +113,30 @@
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("userBorrow.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("userBorrow.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("userBorrow.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>{{
+        $t("userBorrow.pageInfo", { currentPage, totalPages: totalPages || 1 })
+      }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("userBorrow.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("userBorrow.lastPage") }}</button>
     </div>
     <!-- 图书借阅模态框 -->
     <RenewBox
       v-if="selectedBorrowBook"
       :book="selectedBorrowBook"
       @reSelect="fetchBorrowBorrows"
+      @success="renewSuccess"
       @close="selectedBorrowBook = null"
     ></RenewBox>
 
@@ -194,12 +201,12 @@ export default {
       searchText: "",
       alertMsg: "",
       message: "",
-      boxMsg: "暂无借阅记录",
+      boxMsg: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10,
       currentPage: 1,
-      showRecentDays: false,
+      showRecentDays: true,
     };
   },
   computed: {
@@ -255,13 +262,16 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredBorrows.length / this.pageSize);
+      return Math.ceil(this.filteredBorrows.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.fetchBorrowBorrows();
     this.selectUsersByUserName();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("userBorrow.defaultBoxMsg");
+    });
   },
   watch: {
     searchText() {
@@ -281,11 +291,11 @@ export default {
         );
         this.records = response.data.record || [];
         if (this.records.length === 0) {
-          this.boxMsg = "未找到借阅记录";
+          this.boxMsg = this.$t("userBorrow.fetchBorrowBorrows.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取借阅记录失败";
+        this.boxMsg = this.$t("userBorrow.fetchBorrowBorrows.error");
       }
     },
 
@@ -301,11 +311,11 @@ export default {
             ...user,
           })) || {};
         if (this.users.length === 0) {
-          this.alertMsg = "未找到任何用户记录";
+          this.alertMsg = this.$t("userBorrow.selectUsersByUserName.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取用户数据失败";
+        this.alertMsg = this.$t("userBorrow.selectUsersByUserName.error");
       }
     },
 
@@ -328,7 +338,7 @@ export default {
     // 归还图书
     async handleReturn(record) {
       if (!this.userInfo.usertoken) {
-        this.alertMsg = "请先登录";
+        this.alertMsg = this.$t("userBorrow.handleReturn.login");
         return;
       }
       try {
@@ -354,24 +364,24 @@ export default {
         await api.post(endpoints.addLog, newLog);
 
         this.returnBook = this.records.find((item) => item.id === record.id);
-        this.returnMsg = "归还成功，请对此次借阅进行评价";
+        this.returnMsg = this.$t("userBorrow.handleReturn.success");
         this.fetchBorrowBorrows();
         // 刷新eharts
         eventBus.$emit("borrow-returned");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "归还失败，请稍后再试";
+        this.alertMsg = this.$t("userBorrow.handleReturn.fail");
       }
     },
 
     // 续借图书
     async handleRenew(record) {
       if (!this.userInfo.usertoken) {
-        this.alertMsg = "请先登录";
+        this.alertMsg = this.$t("userBorrow.handleRenew.login");
         return;
       }
       if (this.users[0].credit_count <= 50) {
-        this.alertMsg = "信誉分过低，无法续借";
+        this.alertMsg = this.$t("userBorrow.handleRenew.credit");
         return;
       }
 
@@ -384,8 +394,13 @@ export default {
         this.selectedBorrowBook = this.books[0];
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取图书数据失败";
+        this.alertMsg = this.$t("userBorrow.handleRenew.fail");
       }
+    },
+
+    renewSuccess(bookname) {
+      this.fetchBorrowBorrows();
+      this.message = this.$t("renewBox.handleRenew.success", { bookname });
     },
 
     // 翻页

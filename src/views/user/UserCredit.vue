@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索信誉分明细详情或日期"
+        :placeholder="$t('userCredit.searchPlaceholder')"
       />
     </div>
 
@@ -17,7 +17,11 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("userCredit.showRecentDays") }}
+      </label>
+      <label @click="deleteAll">
+        <i class="ri-delete-bin-5-fill"></i>
+        {{ $t("userCredit.delete") }}
       </label>
     </div>
 
@@ -26,15 +30,15 @@
       <thead>
         <tr>
           <th @click="sortCredits('adddate')">
-            变更日期
+            {{ $t("userCredit.date") }}
             <span :class="getSortIcon('adddate')"></span>
           </th>
           <th @click="sortCredits('credit_count')">
-            当前信誉分
+            {{ $t("userCredit.creditCount") }}
             <span :class="getSortIcon('credit_count')"></span>
           </th>
           <th @click="sortCredits('credit_count')">
-            详情
+            {{ $t("userCredit.info") }}
             <span :class="getSortIcon('credit_count')"></span>
           </th>
           <!-- <th>删除</th> -->
@@ -62,19 +66,28 @@
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("userCredit.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("userCredit.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("userCredit.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span
+        >{{
+          $t("userCredit.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("userCredit.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("userCredit.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -108,14 +121,14 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       credits: [],
       searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
       currentPage: 1, // 当前页
-      showRecentDays: false,
+      showRecentDays: true,
     };
   },
 
@@ -170,12 +183,15 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredCredits.length / this.pageSize);
+      return Math.ceil(this.filteredCredits.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectCredits();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("userCredit.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -212,11 +228,11 @@ export default {
           (credit) => credit.username === this.userInfo.username
         );
         if (this.credits.length === 0) {
-          this.boxMsg = "未找到任何信誉分记录";
+          this.boxMsg = this.$t("userCredit.selectCredits.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "未找到任何信誉分记录";
+        this.boxMsg = this.$t("userCredit.selectCredits.error");
       }
     },
     // 排序信誉分
@@ -235,6 +251,22 @@ export default {
         return this.sortOrder === "asc" ? "sort-asc-icon" : "sort-desc-icon";
       }
       return "sort-icon";
+    },
+
+    async deleteAll() {
+      if (this.credits.length > 0) {
+        try {
+          await api.post(endpoints.delCredit(this.userInfo.username));
+        } catch (error) {
+          console.error(error.response?.data?.error || error.message);
+          this.alertMsg = this.$t("userCredit.deleteAll.error");
+          return;
+        }
+        this.message = this.$t("userCredit.deleteAll.success");
+        this.selectCredits();
+      } else {
+        this.alertMsg = this.$t("userCredit.deleteAll.empty");
+      }
     },
 
     // 翻页：上一页
@@ -314,6 +346,11 @@ export default {
   font-size: 14px;
   color: var(--text-color);
   cursor: pointer;
+  margin-right: 10px;
+}
+
+.toolbar label:last-child:hover {
+  color: red;
 }
 
 table {

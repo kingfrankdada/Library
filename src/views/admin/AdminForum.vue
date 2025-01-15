@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索留言名，发表用户或日期"
+        :placeholder="$t('adminForum.searchPlaceholder')"
       />
     </div>
 
@@ -13,7 +13,7 @@
     <div class="toolbar">
       <label @click="isAddModalVisible = true">
         <i class="ri-chat-new-line"></i>
-        添加留言
+        {{ $t("adminForum.add") }}
       </label>
       <label>
         <input
@@ -21,28 +21,28 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("adminForum.showRecentDays") }}
       </label>
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminForum.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminForum.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="banSelectedMessages">
         <i class="ri-prohibited-line"></i>
-        屏蔽
+        {{ $t("adminForum.ban") }}
       </label>
       <label v-show="enableSelection" @click="unbanSelectedMessages">
         <i class="ri-checkbox-circle-line"></i>
-        取消屏蔽
+        {{ $t("adminForum.unban") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedMessages">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminForum.delete") }}
       </label>
     </div>
 
@@ -62,27 +62,34 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortMessages('title')">
-            论坛留言*
+            {{ $t("adminForum.title") }}*
             <span :class="getSortIcon('title')"></span>
           </th>
           <th @click="sortMessages('info')">
-            详情内容*
+            {{ $t("adminForum.info") }}*
             <span :class="getSortIcon('info')"></span>
           </th>
-          <th @click="sortMessages('adduser')">发表用户*</th>
+          <th @click="sortMessages('adduser')">
+            {{ $t("adminForum.adduser") }}*
+          </th>
           <th @click="sortMessages('views')">
-            浏览数*
+            {{ $t("adminForum.views") }}*
             <span :class="getSortIcon('views')"></span>
           </th>
           <th @click="sortMessages('likes')">
-            点赞数*
+            {{ $t("adminForum.likes") }}*
             <span :class="getSortIcon('likes')"></span>
           </th>
           <th @click="sortMessages('state')">
-            状态*
+            {{ $t("adminForum.state") }}*
             <span :class="getSortIcon('state')"></span>
           </th>
-          <th>删除</th>
+          <!-- adddate -->
+          <th @click="sortMessages('adddate')">
+            {{ $t("adminForum.adddate") }}
+            <span :class="getSortIcon('adddate')"></span>
+          </th>
+          <th>{{ $t("adminForum.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -103,7 +110,7 @@
           </td>
           <td
             class="message-info"
-            title="双击可进入编辑模式"
+            :title="$t('adminForum.infoTip')"
             @dblclick="openEdit(message)"
           >
             {{ message.info }}
@@ -132,12 +139,21 @@
               v-model="message.state"
               @change="updateMessage(message)"
             >
-              <option style="color: green" value="1">正常</option>
-              <option style="color: red" value="0">屏蔽</option>
+              <option style="color: green" value="1">
+                {{ $t("adminForum.normal") }}
+              </option>
+              <option style="color: red" value="0">
+                {{ $t("adminForum.banned") }}
+              </option>
             </select>
           </td>
+          <td>{{ message.adddate }}</td>
           <td>
-            <button class="del-btn" title="删除" @click="delMessage(message)">
+            <button
+              class="del-btn"
+              :title="$t('adminForum.delete')"
+              @click="delMessage(message)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -145,7 +161,7 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminForum.noMessage") }}</p>
 
     <!-- 编辑留言模态框 -->
     <EditTag
@@ -171,19 +187,28 @@
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminForum.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminForum.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminForum.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminForum.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminForum.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminForum.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -212,7 +237,7 @@ import NormalModal from "@/components/NormalModal.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "AdminMessage",
+  name: "adminForum",
 
   components: {
     AddMessage,
@@ -227,7 +252,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       editMsg: "", // 编辑留言传入数据
       editId: null, // 存储编辑的留言 ID
       editName: "",
@@ -300,12 +325,15 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredMessages.length / this.pageSize);
+      return Math.ceil(this.filteredMessages.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectMessages();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminForum.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -423,11 +451,11 @@ export default {
         const response = await api.get(endpoints.selectMessage);
         this.messages = response.data.message || [];
         if (this.messages.length === 0) {
-          this.boxMsg = "未找到任何留言记录";
+          this.boxMsg = this.$t("adminForum.selectMessages.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取留言数据失败";
+        this.boxMsg = this.$t("adminForum.selectMessages.fail");
       }
     },
 
@@ -438,7 +466,7 @@ export default {
         // this.alertMsg = "删除留言成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除留言失败";
+        this.alertMsg = this.$t("adminForum.delMessage.fail");
       }
 
       // 添加删除日志
@@ -458,7 +486,7 @@ export default {
         await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "添加日志失败";
+        // this.alertMsg = "添加日志失败";
       }
 
       this.selectMessages();
@@ -467,7 +495,7 @@ export default {
     // 删除选中的留言
     async deleteSelectedMessages() {
       if (this.selectedMessages.length === 0) {
-        this.alertMsg = "请选择要删除的留言";
+        this.alertMsg = this.$t("adminForum.delMessage.empty");
         return;
       }
 
@@ -503,22 +531,17 @@ export default {
         this.selectMessages();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminForum.delMessage.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminForum.delMessage.fail");
       }
     },
 
     // 批量屏蔽选中公告
     async banSelectedMessages() {
       if (this.selectedMessages.length === 0) {
-        this.alertMsg = "请选择要屏蔽的公告";
-        return;
-      }
-
-      if (this.userInfo.role != 0) {
-        this.alertMsg = "权限不足";
+        this.alertMsg = this.$t("adminForum.banMessage.empty");
         return;
       }
 
@@ -555,17 +578,17 @@ export default {
         this.selectMessages();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "屏蔽成功";
+        this.message = this.$t("adminForum.banMessage.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "屏蔽失败";
+        this.alertMsg = this.$t("adminForum.banMessage.fail");
       }
     },
 
     // 批量取消屏蔽选中公告
     async unbanSelectedMessages() {
       if (this.selectedMessages.length === 0) {
-        this.alertMsg = "请选择要取消屏蔽的公告";
+        this.alertMsg = this.$t("adminForum.unbanSelectedMessages.empty");
         return;
       }
 
@@ -602,10 +625,10 @@ export default {
         this.selectMessages();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "取消屏蔽成功";
+        this.message = this.$t("adminForum.unbanSelectedMessages.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "取消屏蔽失败";
+        this.alertMsg = this.$t("adminForum.unbanSelectedMessages.fail");
       }
     },
 
@@ -637,7 +660,7 @@ export default {
         this.selectMessages();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新留言数据失败";
+        this.alertMsg = this.$t("adminForum.updateMessage.fail");
       }
     },
 

@@ -33,7 +33,7 @@
               <strong>{{ book.name }}</strong>
             </p>
             <p>{{ book.author }}</p>
-            <p>{{ $t("userBook.num") }} {{ book.num }}本</p>
+            <p>{{ $t("userBook.num") }} {{ book.num }}</p>
             <p>{{ book.menu }}</p>
           </div>
         </div>
@@ -189,7 +189,7 @@ export default {
         return isCategoryMatch && isNameMatch;
       });
 
-      return Math.ceil(filtered.length / this.pageSize);
+      return Math.ceil(filtered.length / this.pageSize || 1);
     },
   },
 

@@ -3,31 +3,38 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>输入</th>
+          <th>{{ $t("addBook.title") }}</th>
+          <th>{{ $t("addBook.input") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>书名*</td>
-          <td>
-            <input v-model="newBook.name" type="text" placeholder="输入书名" />
-          </td>
-        </tr>
-        <tr>
-          <td>作者*</td>
+          <td>{{ $t("addBook.name") }}*</td>
           <td>
             <input
-              v-model="newBook.author"
+              v-model="newBook.name"
               type="text"
-              placeholder="输入作者"
+              :placeholder="$t('addBook.namePlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>分类*</td>
+          <td>{{ $t("addBook.author") }}*</td>
+          <td>
+            <input
+              v-model="newBook.author"
+              type="text"
+              :placeholder="$t('addBook.authorPlaceholder')"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>{{ $t("addBook.menu") }}*</td>
           <td>
             <select v-model="newBook.menu">
+              <option value="" disabled>
+                {{ $t("addBook.menuPlaceholder") }}
+              </option>
               <option v-for="title in menuTitles" :key="title" :value="title">
                 {{ title }}
               </option>
@@ -35,45 +42,45 @@
           </td>
         </tr>
         <tr>
-          <td>价格*</td>
+          <td>{{ $t("addBook.price") }}*</td>
           <td>
             <input
               v-model="newBook.price"
               type="number"
-              placeholder="输入价格"
+              :placeholder="$t('addBook.pricePlaceholder')"
               :min="1"
             />
           </td>
         </tr>
         <tr>
-          <td>出版社*</td>
+          <td>{{ $t("addBook.press") }}*</td>
           <td>
             <input
               v-model="newBook.press"
               type="text"
-              placeholder="输入出版社"
+              :placeholder="$t('addBook.pressPlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>库存数量*</td>
+          <td>{{ $t("addBook.num") }}*</td>
           <td>
             <input
               v-model="newBook.num"
               type="number"
-              placeholder="输入库存数量"
+              :placeholder="$t('addBook.numPlaceholder')"
               :min="1"
             />
           </td>
         </tr>
         <tr>
-          <td>封面</td>
+          <td>{{ $t("addBook.cover") }}</td>
           <td class="image-upload-container">
             <input
               type="file"
               ref="imageInput"
               @change="handleImageChange"
-              accept=".jpg, .jpeg, .png, .gif"
+              accept=".jpg, .jpeg, .png, .gif, .bmp"
             />
             <span v-if="selectedImage" class="close-button" @click="clearImage"
               >&times;</span
@@ -81,52 +88,45 @@
           </td>
         </tr>
         <tr>
-          <td>更多信息</td>
+          <td>{{ $t("addBook.info") }}</td>
           <td>
             <textarea
               v-model="newBook.info"
               type="text"
-              placeholder="输入图书详情内容"
+              :placeholder="$t('addBook.infoPlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>状态*</td>
+          <td>{{ $t("addBook.state") }}*</td>
           <td>
             <select v-model="newBook.state">
-              <option value="1">正常</option>
-              <option value="0">关闭</option>
+              <option value="1">{{ $t("addBook.open") }}</option>
+              <option value="0">{{ $t("addBook.close") }}</option>
             </select>
           </td>
         </tr>
         <tr>
           <td>
-            自动推送公告<i
-              class="ri-question-line"
-              style="
-                margin-left: 5px;
-                color: var(--first-color);
-                font-size: 16px;
-              "
-              title="开启后在图书上线时自动推送公告，可在管理员仪表盘-公告管理中查看"
-            ></i>
+            {{ $t("addBook.autoPush") }}
+            <i class="ri-question-line" :title="$t('addBook.autoPushTip')"></i>
           </td>
           <td>
             <select v-model="isNoticeActive">
-              <option :value="true">开启</option>
-              <option :value="false">关闭</option>
+              <option :value="true">{{ $t("addBook.open") }}</option>
+              <option :value="false">{{ $t("addBook.close") }}</option>
             </select>
           </td>
         </tr>
         <tr>
-          <td>添加日期</td>
+          <td>{{ $t("addBook.adddate") }}</td>
           <td>
             {{ new Date().toLocaleDateString() }}
           </td>
         </tr>
       </tbody>
     </table>
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm">{{ $t("addBook.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -188,7 +188,7 @@ export default {
         this.menuTitles = response.data.titles;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取分类信息失败";
+        this.alertMsg = this.$t("adminBook.fetchMenuTitles.fail");
       }
     },
 
@@ -206,10 +206,11 @@ export default {
           "image/jpg",
           "image/png",
           "image/gif",
+          "image/bmp",
         ];
 
         if (!allowedFileList.includes(file.type)) {
-          this.alertMsg = "请上传图片格式文件（jpg, jpeg, png, gif）";
+          this.alertMsg = this.$t("addBook.handleImageChange.alert");
           this.selectedImage = null;
           event.target.value = "";
           return;
@@ -229,7 +230,7 @@ export default {
           this.newBook.img = response.data.fileName;
         } catch (error) {
           console.error(error.response?.data?.error || error.message);
-          this.alertMsg = "图片上传失败";
+          this.alertMsg = this.$t("addBook.uploadImage.fail");
         }
       }
     },
@@ -246,7 +247,7 @@ export default {
         !this.newBook.num ||
         !this.newBook.state
       ) {
-        this.alertMsg = "图书信息不完整";
+        this.alertMsg = this.$t("addBook.submitForm.empty");
         return;
       }
 
@@ -283,14 +284,14 @@ export default {
             await api.post(endpoints.addLog, newLog);
           } catch (error) {
             console.error(error.response?.data?.error || error.message);
-            this.alertMsg = "公告添加失败";
+            this.alertMsg = this.$t("addBook.submitForm.noticeFail");
           }
         }
-        this.message = "图书添加成功";
+        this.message = this.$t("addBook.submitForm.success");
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "图书添加失败";
+        this.alertMsg = this.$t("addBook.submitForm.fail");
       }
     },
 
@@ -408,5 +409,11 @@ input[type="file"] {
 
 .close-button:hover {
   color: #000;
+}
+
+i {
+  margin-left: 5px;
+  color: var(--first-color);
+  font-size: 16px;
 }
 </style>

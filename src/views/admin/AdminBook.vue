@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索图书标题，作者，分类，出版社"
+        :placeholder="$t('adminBook.searchPlaceholder')"
       />
     </div>
 
@@ -13,7 +13,7 @@
     <div class="toolbar">
       <label @click="isAddModalVisible = true">
         <i class="ri-contacts-book-upload-line"></i>
-        添加图书
+        {{ $t("adminBook.addBook") }}
       </label>
       <label>
         <input
@@ -21,28 +21,28 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("adminBook.showRecentDays") }}
       </label>
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminBook.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminBook.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="closeSelectedBooks">
         <i class="ri-prohibited-line"></i>
-        关闭
+        {{ $t("adminBook.closeSelected") }}
       </label>
       <label v-show="enableSelection" @click="openSelectedBooks">
         <i class="ri-checkbox-circle-line"></i>
-        开放
+        {{ $t("adminBook.openSelected") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedBooks">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminBook.delete") }}
       </label>
     </div>
 
@@ -62,44 +62,44 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortBooks('name')">
-            书名*
+            {{ $t("adminBook.name") }}*
             <span :class="getSortIcon('name')"></span>
           </th>
           <th @click="sortBooks('author')">
-            作者*
+            {{ $t("adminBook.author") }}*
             <span :class="getSortIcon('author')"></span>
           </th>
           <th @click="sortBooks('menu')">
-            分类*
+            {{ $t("adminBook.menu") }}*
             <span :class="getSortIcon('menu')"></span>
           </th>
           <th @click="sortBooks('price')">
-            价格*
+            {{ $t("adminBook.price") }}*
             <span :class="getSortIcon('price')"></span>
           </th>
           <th @click="sortBooks('press')">
-            出版社*
+            {{ $t("adminBook.press") }}*
             <span :class="getSortIcon('press')"></span>
           </th>
           <th @click="sortBooks('num')">
-            库存数量*
+            {{ $t("adminBook.num") }}*
             <span :class="getSortIcon('num')"></span>
           </th>
-          <th>封面</th>
-          <th>更多信息*</th>
+          <th>{{ $t("adminBook.cover") }}</th>
+          <th>{{ $t("adminBook.info") }}*</th>
           <th @click="sortBooks('state')">
-            状态*
+            {{ $t("adminBook.state") }}*
             <span :class="getSortIcon('state')"></span>
           </th>
           <th @click="sortBooks('score')">
-            评分*
+            {{ $t("adminBook.score") }}*
             <span :class="getSortIcon('score')"></span>
           </th>
           <th @click="sortBooks('adddate')">
-            添加日期
+            {{ $t("adminBook.adddate") }}
             <span :class="getSortIcon('adddate')"></span>
           </th>
-          <th>删除</th>
+          <th>{{ $t("adminBook.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -141,12 +141,12 @@
                   ? `/assets/img/${book.img}`
                   : '/assets/img/image-add-fill.png'
               "
-              alt="封面"
+              :alt="$t('adminBook.imgAlt')"
             />
           </td>
           <td
             class="book-info"
-            title="双击可进入编辑模式"
+            :title="$t('adminBook.editTitle')"
             @dblclick="openEdit(book)"
           >
             {{ book.info }}
@@ -157,8 +157,12 @@
               v-model="book.state"
               @change="updateBook(book)"
             >
-              <option style="color: green" value="1">正常</option>
-              <option style="color: red" value="0">关闭</option>
+              <option style="color: green" value="1">
+                {{ $t("adminBook.open") }}
+              </option>
+              <option style="color: red" value="0">
+                {{ $t("adminBook.close") }}
+              </option>
             </select>
           </td>
           <td>
@@ -166,7 +170,11 @@
           </td>
           <td>{{ book.adddate }}</td>
           <td>
-            <button class="del-btn" title="删除" @click="delBook(book)">
+            <button
+              class="del-btn"
+              :title="$t('adminBook.delete')"
+              @click="delBook(book)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -174,7 +182,7 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminBook.noBook") }}</p>
 
     <!-- 编辑图书模态框 -->
     <EditTag
@@ -194,25 +202,31 @@
       @close="closeModal"
       size="large"
     >
-      <div class="select-text">添加图书</div>
+      <div class="select-text">{{ $t("adminBook.addBook") }}</div>
       <AddBook></AddBook>
     </NormalModal>
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminBook.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminBook.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminBook.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminBook.pageInfo", { currentPage, totalPages: totalPages || 1 })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminBook.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminBook.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -256,7 +270,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       editMsg: "", // 编辑图书传入数据
       editId: null, // 存储编辑的图书 ID
       editName: "",
@@ -329,13 +343,16 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredBooks.length / this.pageSize);
+      return Math.ceil(this.filteredBooks.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectBooks();
     this.selectMenuTitles();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminBook.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -442,7 +459,7 @@ export default {
         this.menuTitles = response.data.titles;
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取分类信息数据失败";
+        this.boxMsg = this.$t("adminBook.selectMenuTitles.error");
       }
     },
 
@@ -451,11 +468,11 @@ export default {
         const response = await api.get(endpoints.selectBook);
         this.books = response.data.books || [];
         if (this.books.length === 0) {
-          this.boxMsg = "未找到任何图书记录";
+          this.boxMsg = this.$t("adminBook.selectBooks.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取图书数据失败";
+        this.boxMsg = this.$t("adminBook.selectBooks.error");
       }
     },
 
@@ -466,7 +483,7 @@ export default {
         // this.alertMsg = "删除图书成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除图书失败";
+        this.alertMsg = this.$t("adminBook.delBook.error");
       }
 
       // 添加删除日志
@@ -486,7 +503,6 @@ export default {
         await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "添加日志失败";
       }
 
       this.selectBooks();
@@ -495,7 +511,7 @@ export default {
     // 删除选中的图书
     async deleteSelectedBooks() {
       if (this.selectedBooks.length === 0) {
-        this.alertMsg = "请选择要删除的图书";
+        this.alertMsg = this.$t("adminBook.deleteSelectedBooks.empty");
         return;
       }
 
@@ -531,17 +547,17 @@ export default {
         this.selectBooks();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminBook.deleteSelectedBooks.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminBook.deleteSelectedBooks.fail");
       }
     },
 
     // 开放选中图书
     async openSelectedBooks() {
       if (this.selectedBooks.length === 0) {
-        this.alertMsg = "请选择要开放的图书";
+        this.alertMsg = this.$t("adminBook.openSelectedBooks.empty");
         return;
       }
 
@@ -578,17 +594,17 @@ export default {
         this.selectBooks();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "开放选中成功";
+        this.message = this.$t("adminBook.openSelectedBooks.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "开放选中失败";
+        this.alertMsg = this.$t("adminBook.openSelectedBooks.fail");
       }
     },
 
     // 关闭选中图书
     async closeSelectedBooks() {
       if (this.selectedBooks.length === 0) {
-        this.alertMsg = "请选择要关闭的图书";
+        this.alertMsg = this.$t("adminBook.closeSelectedBooks.empty");
         return;
       }
 
@@ -625,10 +641,10 @@ export default {
         this.selectBooks();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "关闭选中成功";
+        this.message = this.$t("adminBook.closeSelectedBooks.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "关闭选中失败";
+        this.alertMsg = this.$t("adminBook.closeSelectedBooks.fail");
       }
     },
     async updateBook(book) {
@@ -651,7 +667,7 @@ export default {
         this.selectBooks();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新图书数据失败";
+        this.alertMsg = this.$t("adminBook.updateBook.fail");
       }
     },
 

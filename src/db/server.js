@@ -995,7 +995,7 @@ app.post("/api/isLogActive", (req, res) => {
   isLogActive = status;
   console.log(`日志记录已${status ? "启用" : "关闭"}`);
   res.json({
-    message: `日志记录已${status ? "启用" : "关闭"}`
+    message: status ? "true" : "false"
   });
 });
 

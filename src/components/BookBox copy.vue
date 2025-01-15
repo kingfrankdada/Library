@@ -33,7 +33,7 @@
           <p><strong>分类:</strong> {{ book.menu }}</p>
           <!-- <p><strong>价格:</strong> {{ book.price }}元</p> -->
           <p><strong>出版社:</strong> {{ book.press }}</p>
-          <p><strong>库存数量:</strong> {{ book.num }}本</p>
+          <p><strong>库存数量:</strong> {{ book.num }}</p>
           <p><strong>入库日期:</strong> {{ book.adddate }}</p>
         </div>
 

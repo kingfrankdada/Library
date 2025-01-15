@@ -48,7 +48,7 @@
             <strong>{{ $t("bookBox.press") }}</strong> {{ book.press }}
           </p>
           <p>
-            <strong>{{ $t("bookBox.num") }}</strong> {{ book.num }}本
+            <strong>{{ $t("bookBox.num") }}</strong> {{ book.num }}
           </p>
           <p>
             <strong>{{ $t("bookBox.adddate") }}</strong> {{ book.adddate }}

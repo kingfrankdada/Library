@@ -5,7 +5,7 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索借阅信息或用户"
+        :placeholder="$t('adminBorrow.searchPlaceholder')"
       />
     </div>
 
@@ -13,7 +13,7 @@
     <div class="toolbar">
       <label @click="isAddModalVisible = true">
         <i class="ri-mail-add-line"></i>
-        添加借阅信息
+        {{ $t("adminBorrow.add") }}
       </label>
       <label>
         <input
@@ -21,24 +21,24 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("adminBorrow.showRecentDays") }}
       </label>
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminBorrow.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminBorrow.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="returnSelectedBorrows">
         <i class="ri-text-wrap"></i>
-        归还
+        {{ $t("adminBorrow.returnSelected") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedBorrows">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminBorrow.delete") }}
       </label>
     </div>
 
@@ -58,50 +58,50 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortBorrows('username')">
-            用户*
+            {{ $t("adminBorrow.user") }}*
             <span :class="getSortIcon('username')"></span>
           </th>
           <th @click="sortBorrows('bookname')">
-            图书*
+            {{ $t("adminBorrow.book") }}*
             <span :class="getSortIcon('bookname')"></span>
           </th>
           <th @click="sortBorrows('start_date')">
-            借阅日期*
+            {{ $t("adminBorrow.startDate") }}*
             <span :class="getSortIcon('start_date')"></span>
           </th>
           <th @click="sortBorrows('over_date')">
-            预计归还日期*
+            {{ $t("adminBorrow.overDate") }}*
             <span :class="getSortIcon('over_date')"></span>
           </th>
           <th @click="sortBorrows('days')">
-            预计借阅天数*
+            {{ $t("adminBorrow.days") }}*
             <span :class="getSortIcon('days')"></span>
           </th>
           <th @click="sortBorrows('return_date')">
-            实际归还日期*
+            {{ $t("adminBorrow.returnDate") }}*
             <span :class="getSortIcon('return_date')"></span>
           </th>
           <th @click="sortBorrows('record_days')">
-            实际借阅天数*
+            {{ $t("adminBorrow.recordDays") }}*
             <span :class="getSortIcon('record_days')"></span>
           </th>
           <th @click="sortBorrows('overtime')">
-            逾期天数*
+            {{ $t("adminBorrow.overtime") }}*
             <span :class="getSortIcon('overtime')"></span>
           </th>
           <th @click="sortBorrows('state')">
-            借阅状态*
+            {{ $t("adminBorrow.state") }}*
             <span :class="getSortIcon('state')"></span>
           </th>
           <th @click="sortBorrows('credit_delta')">
-            信誉分
+            {{ $t("adminBorrow.credit") }}
             <span :class="getSortIcon('credit_delta')"></span>
           </th>
           <th @click="sortBorrows('adddate')">
-            添加日期
+            {{ $t("adminBorrow.adddate") }}
             <span :class="getSortIcon('adddate')"></span>
           </th>
-          <th>删除</th>
+          <th>{{ $t("adminBorrow.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -170,17 +170,25 @@
               v-model="borrow.state"
               @change="updateBorrow(borrow)"
             >
-              <option style="color: red" value="2">已逾期</option>
-              <option style="color: orange" value="1">借阅中</option>
+              <option style="color: red" value="2">
+                {{ $t("adminBorrow.overdue") }}
+              </option>
+              <option style="color: orange" value="1">
+                {{ $t("adminBorrow.borrowing") }}
+              </option>
             </select>
           </td>
-          <td v-else style="color: green">已归还</td>
+          <td v-else style="color: green">{{ $t("adminBorrow.returned") }}</td>
           <td :style="borrow.credit_delta > 0 ? 'color: red' : 'color: green'">
             {{ borrow.credit_delta ? "-" + borrow.credit_delta : "-" }}
           </td>
           <td>{{ borrow.adddate }}</td>
           <td>
-            <button class="del-btn" title="删除" @click="delBorrow(borrow)">
+            <button
+              class="del-btn"
+              :title="$t('adminBorrow.delete')"
+              @click="delBorrow(borrow)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -188,7 +196,7 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminBorrow.noBorrow") }}</p>
 
     <!-- 编辑借阅信息模态框 -->
     <EditTag
@@ -208,25 +216,34 @@
       @close="closeModal"
       size="large"
     >
-      <div class="select-text">添加借阅信息</div>
+      <div class="select-text">{{ $t("adminBorrow.add") }}</div>
       <AddBorrow></AddBorrow>
     </NormalModal>
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminBorrow.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminBorrow.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminBorrow.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminBorrow.pageInfo", {
+            currentPage,
+            totalPages: totalPages || 1,
+          })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminBorrow.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminBorrow.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -270,7 +287,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       editMsg: "", // 编辑借阅信息传入数据
       editId: null, // 存储编辑的借阅信息 ID
       editName: "",
@@ -342,12 +359,15 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredBorrows.length / this.pageSize);
+      return Math.ceil(this.filteredBorrows.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectBorrows();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminBorrow.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -449,11 +469,11 @@ export default {
         const response = await api.get(endpoints.selectBorrow);
         this.borrows = response.data.record || [];
         if (this.borrows.length === 0) {
-          this.boxMsg = "未找到任何借阅记录";
+          this.boxMsg = this.$t("adminBorrow.selectBorrows.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取借阅数据失败";
+        this.boxMsg = this.$t("adminBorrow.selectBorrows.fail");
       }
     },
 
@@ -464,7 +484,7 @@ export default {
         // this.alertMsg = "删除借阅信息成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除借阅信息失败";
+        this.alertMsg = this.$t("adminBorrow.delBorrow.fail");
       }
 
       // 添加删除日志
@@ -484,7 +504,7 @@ export default {
         await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "添加日志失败";
+        // this.alertMsg = "添加日志失败";
       }
 
       this.selectBorrows();
@@ -493,7 +513,7 @@ export default {
     // 删除选中的借阅信息
     async deleteSelectedBorrows() {
       if (this.selectedBorrows.length === 0) {
-        this.alertMsg = "请选择要删除的借阅信息";
+        this.alertMsg = this.$t("adminBorrow.deleteSelectedBorrows.empty");
         return;
       }
 
@@ -529,10 +549,10 @@ export default {
         this.selectBorrows();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminBorrow.deleteSelectedBorrows.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminBorrow.deleteSelectedBorrows.fail");
       }
     },
 
@@ -565,14 +585,14 @@ export default {
         this.selectBorrows();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新借阅信息数据失败";
+        this.alertMsg = this.$t("adminBorrow.updateBorrow.fail");
       }
     },
 
     // 归还选中借阅信息
     async returnSelectedBorrows() {
       if (this.selectedBorrows.length === 0) {
-        this.alertMsg = "请选择要归还的借阅信息";
+        this.alertMsg = this.$t("adminBorrow.returnSelectedBorrows.empty");
         return;
       }
 
@@ -619,10 +639,10 @@ export default {
         this.selectBorrows();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "操作成功";
+        this.message = this.$t("adminBorrow.returnSelectedBorrows.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "操作失败";
+        this.alertMsg = this.$t("adminBorrow.returnSelectedBorrows.fail");
       }
     },
 

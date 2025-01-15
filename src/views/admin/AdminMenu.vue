@@ -2,14 +2,18 @@
   <div class="admin-menu">
     <!-- 搜索框 -->
     <div class="search-box">
-      <input type="text" v-model="searchText" placeholder="搜索分类标题" />
+      <input
+        type="text"
+        v-model="searchText"
+        :placeholder="$t('adminMenu.searchPlaceholder')"
+      />
     </div>
 
     <!-- 工具栏 -->
     <div class="toolbar">
       <label @click="isAddModalVisible = true">
         <i class="ri-menu-add-line"></i>
-        添加分类
+        {{ $t("adminMenu.addMenu") }}
       </label>
       <label>
         <input
@@ -17,20 +21,20 @@
           v-model="showRecentDays"
           @change="filterByRecentDays"
         />
-        仅显示最近七天
+        {{ $t("adminMenu.showRecentDays") }}
       </label>
       <label>
         <input type="checkbox" v-model="enableSelection" />
-        启用复选框
+        {{ $t("adminMenu.enableSelection") }}
       </label>
       <!-- 全选 -->
       <label v-show="enableSelection">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" />
-        全选
+        {{ $t("adminMenu.selectAll") }}
       </label>
       <label v-show="enableSelection" @click="deleteSelectedMenus">
         <i class="ri-delete-bin-5-fill"></i>
-        删除选中
+        {{ $t("adminMenu.delete") }}
       </label>
     </div>
 
@@ -50,11 +54,11 @@
             <span :class="getSortIcon('id')"></span>
           </th>
           <th @click="sortMenus('title')">
-            分类*
+            {{ $t("adminMenu.title") }}*
             <span :class="getSortIcon('title')"></span>
           </th>
           <!-- <th>状态*</th> -->
-          <th>删除</th>
+          <th>{{ $t("adminMenu.delete") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -74,7 +78,11 @@
             </select>
           </td> -->
           <td>
-            <button class="del-btn" title="删除" @click="delMenu(menu)">
+            <button
+              class="del-btn"
+              :title="$t('adminMenu.delete')"
+              @click="delMenu(menu)"
+            >
               <i class="ri-delete-bin-5-fill"></i>
             </button>
           </td>
@@ -82,7 +90,7 @@
       </tbody>
     </table>
 
-    <p v-else style="margin-left: 20px">{{ boxMsg }}</p>
+    <p v-else style="margin-left: 20px">{{ $t("adminMenu.noMenu") }}</p>
 
     <!-- 编辑分类模态框 -->
     <EditTag
@@ -102,25 +110,31 @@
       @close="closeModal"
       size="large"
     >
-      <div class="select-text">添加分类</div>
+      <div class="select-text">{{ $t("adminMenu.addMenu") }}</div>
       <AddMenu></AddMenu>
     </NormalModal>
 
     <!-- 分页控制 -->
     <div class="pagination">
-      <span>每页显示：</span>
+      <span>{{ $t("adminMenu.pageSize") }}</span>
       <select v-model="pageSize" @change="handlePageSizeChange">
         <option :value="10">10</option>
         <option :value="20">20</option>
         <option :value="50">50</option>
       </select>
-      <button @click="firstPage">首页</button>
-      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-      <span>第 {{ currentPage }} 页 / 共 {{ totalPages || 1 }} 页</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
+      <button @click="firstPage">{{ $t("adminMenu.firstPage") }}</button>
+      <button @click="prevPage" :disabled="currentPage === 1">
+        {{ $t("adminMenu.prevPage") }}
       </button>
-      <button @click="lastPage">尾页</button>
+      <span>
+        {{
+          $t("adminMenu.pageInfo", { currentPage, totalPages: totalPages || 1 })
+        }}
+      </span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        {{ $t("adminMenu.nextPage") }}
+      </button>
+      <button @click="lastPage">{{ $t("adminMenu.lastPage") }}</button>
     </div>
 
     <!-- 自定义弹窗捕获 -->
@@ -164,7 +178,7 @@ export default {
     return {
       alertMsg: "",
       message: "",
-      boxMsg: "暂无数据...",
+      boxMsg: "",
       editMsg: "", // 编辑分类传入数据
       editId: null, // 存储编辑的分类 ID
       editName: "",
@@ -230,12 +244,15 @@ export default {
 
     // 总页数
     totalPages() {
-      return Math.ceil(this.filteredMenus.length / this.pageSize);
+      return Math.ceil(this.filteredMenus.length / this.pageSize || 1);
     },
   },
 
   mounted() {
     this.selectMenus();
+    this.$nextTick(() => {
+      this.boxMsg = this.$t("adminMenu.defaultBoxMsg");
+    });
   },
 
   watch: {
@@ -341,11 +358,11 @@ export default {
         const response = await api.get(endpoints.selectMenu);
         this.menus = response.data.menus || [];
         if (this.menus.length === 0) {
-          this.boxMsg = "未找到任何分类记录";
+          this.boxMsg = this.$t("adminMenu.selectMenus.empty");
         }
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.boxMsg = "获取分类数据失败";
+        this.boxMsg = this.$t("adminMenu.selectMenus.fail");
       }
     },
 
@@ -356,7 +373,7 @@ export default {
         // this.alertMsg = "删除分类成功";
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除分类失败";
+        this.alertMsg = this.$t("adminMenu.delMenu.fail");
       }
 
       // 添加删除日志
@@ -376,7 +393,7 @@ export default {
         await api.post(endpoints.addLog, newLog);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "添加日志失败";
+        // this.alertMsg = "添加日志失败";
       }
 
       this.selectMenus();
@@ -385,7 +402,7 @@ export default {
     // 删除选中的分类
     async deleteSelectedMenus() {
       if (this.selectedMenus.length === 0) {
-        this.alertMsg = "请选择要删除的分类";
+        this.alertMsg = this.$t("adminMenu.deleteSelectedMenus.empty");
         return;
       }
 
@@ -421,10 +438,10 @@ export default {
         this.selectMenus();
         this.resetSelection();
         this.currentPage = 1;
-        this.message = "删除成功";
+        this.message = this.$t("adminMenu.deleteSelectedMenus.success");
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除失败";
+        this.alertMsg = this.$t("adminMenu.deleteSelectedMenus.fail");
       }
     },
 
@@ -452,7 +469,7 @@ export default {
         this.selectMenus();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "更新分类数据失败";
+        this.alertMsg = this.$t("adminMenu.updateMenu.fail");
       }
     },
 

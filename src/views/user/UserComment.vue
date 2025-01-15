@@ -5,11 +5,11 @@
       <input
         type="text"
         v-model="searchText"
-        placeholder="搜索留言标题或内容"
+        :placeholder="$t('userComment.searchPlaceholder')"
       />
     </div>
     <!-- 评论列表 -->
-    <div v-if="messages.length > 0" class="comment-list">
+    <div v-if="filteredMessages.length > 0" class="comment-list">
       <div
         v-for="message in filteredMessages"
         :key="message.id"
@@ -18,14 +18,14 @@
       >
         <div class="comment-header">
           <span class="title">{{
-            message.state === 0 ? "违规评论" : message.title
+            message.state === 0 ? $t("userComment.illegalTitle") : message.title
           }}</span>
           <span class="timestamp">{{ formatDate(message.adddate) }}</span>
         </div>
         <div class="comment-body">
-          <span v-if="message.state === 0" style="color: red"
-            >[该评论涉嫌违规，已屏蔽]</span
-          >
+          <span v-if="message.state === 0" style="color: red">
+            {{ $t("userComment.illegalInfo") }}
+          </span>
           <span v-else>{{ message.info }}</span>
         </div>
         <div class="comment-footer">
@@ -36,14 +36,16 @@
           {{ message.likes }}
           <!-- 显示点赞量 -->
           <button class="delete-btn" @click="delComment(message.id)">
-            删除
+            {{ $t("userComment.delBtn") }}
           </button>
         </div>
         <hr class="comment-separator" />
       </div>
     </div>
 
-    <div v-else style="text-align: center">未找到任何留言</div>
+    <div v-else style="text-align: center">
+      {{ $t("userComment.emptyMsg") }}
+    </div>
 
     <!-- 自定义弹窗捕获 -->
     <AlertBox
@@ -100,7 +102,7 @@ export default {
         this.messages = response.data.message || [];
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "获取论坛留言数据失败";
+        this.alertMsg = this.$t("userComment.selectMessageByUserName.error");
       }
     },
 
@@ -117,11 +119,11 @@ export default {
     async delComment(messageId) {
       try {
         await api.post(endpoints.delMessage(messageId));
-        this.alertMsg = "评论删除成功";
+        this.alertMsg = this.$t("userComment.delComment.success");
         this.selectMessageByUserName();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "删除评论失败";
+        this.alertMsg = this.$t("userComment.delComment.fail");
       }
     },
   },

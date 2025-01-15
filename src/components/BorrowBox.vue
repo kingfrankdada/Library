@@ -31,7 +31,7 @@
             <strong>{{ $t("borrowBox.press") }}</strong> {{ book.press }}
           </p>
           <p>
-            <strong>{{ $t("borrowBox.num") }}</strong> {{ book.num }}本
+            <strong>{{ $t("borrowBox.num") }}</strong> {{ book.num }}
           </p>
           <p>
             <strong>{{ $t("borrowBox.adddate") }}</strong> {{ book.adddate }}
@@ -48,7 +48,7 @@
       <div class="borrow-actions">
         <div class="borrow-inputs">
           <div>
-            <label for="borrow-days">{{ $t("borrowBox.borrowDays") }}:</label>
+            <label for="borrow-days">{{ $t("borrowBox.borrowDays") }}</label>
             <input
               id="borrow-days"
               type="number"

@@ -7,11 +7,15 @@
     ></i>
     <NormalModal size="small" v-if="isLogoutModalVisible">
       <div class="logout-form-content">
-        <p>确定要退出登录？</p>
+        <p>{{ $t("publicLogout.info") }}</p>
       </div>
       <div class="logout-form-btn">
-        <div class="logout-btn" @click="handleLogout">确认</div>
-        <div class="cancel-btn" @click="close">取消</div>
+        <div class="logout-btn" @click="handleLogout">
+          {{ $t("publicLogout.confirm") }}
+        </div>
+        <div class="cancel-btn" @click="close">
+          {{ $t("publicLogout.cancel") }}
+        </div>
       </div>
     </NormalModal>
   </div>

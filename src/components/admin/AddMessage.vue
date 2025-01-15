@@ -3,51 +3,51 @@
     <table>
       <thead>
         <tr>
-          <th>字段</th>
-          <th>输入</th>
+          <th>{{ $t("addMessage.field") }}</th>
+          <th>{{ $t("addMessage.input") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>标题*</td>
+          <td>{{ $t("addMessage.title") }}*</td>
           <td>
             <input
               v-model="newMessage.title"
               type="text"
-              placeholder="输入论坛留言标题"
+              :placeholder="$t('addMessage.titlePlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>详情内容*</td>
+          <td>{{ $t("addMessage.info") }}*</td>
           <td>
             <textarea
               v-model="newMessage.info"
               type="text"
-              placeholder="输入论坛留言内容"
+              :placeholder="$t('addMessage.infoPlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>添加用户</td>
+          <td>{{ $t("addMessage.adduser") }}</td>
           <td>
             <!-- {{ userInfo.username }} -->
             <input
               v-model="newMessage.adduser"
               type="text"
-              placeholder="输入论坛留言添加用户"
+              :placeholder="$t('addMessage.adduserPlaceholder')"
             />
           </td>
         </tr>
         <tr>
-          <td>添加日期</td>
+          <td>{{ $t("addMessage.adddate") }}</td>
           <td>
             {{ new Date().toLocaleDateString() }}
           </td>
         </tr>
       </tbody>
     </table>
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm">{{ $t("addMessage.submit") }}</button>
     <!-- 自定义弹窗捕获 -->
     <AlertBox
       v-if="alertMsg"
@@ -102,17 +102,17 @@ export default {
       this.newMessage.views = 0;
       this.newMessage.likes = 0;
       if (!this.newMessage.title || !this.newMessage.info) {
-        this.alertMsg = "论坛留言信息不完整";
+        this.alertMsg = this.$t("addMessage.submitForm.empty");
         return;
       }
       try {
         await api.post(endpoints.addMessage, this.newMessage);
         // this.alertMsg = "论坛留言添加成功";
-        this.message = "论坛留言添加成功，请前往论坛留言管理查看";
+        this.message = this.$t("addMessage.submitForm.success");
         this.resetForm(); // 提交后重置表单
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
-        this.alertMsg = "论坛留言添加失败";
+        this.alertMsg = this.$t("addMessage.submitForm.fail");
       }
     },
 
@@ -127,7 +127,6 @@ export default {
       };
     },
   },
-  mounted() {},
 };
 </script>
 

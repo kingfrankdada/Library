@@ -21,12 +21,12 @@
         <textarea
           type="text"
           v-model="newMessage.info"
-          placeholder="请输入您对此图书的留言"
+          :placeholder="$t('returnBox.messagePlaceholder')"
         ></textarea>
       </div>
 
       <div class="close-form" @click="handleSubmit">
-        <div class="close-form-item">确定</div>
+        <div class="close-form-item">{{ $t("returnBox.btnMsg") }}</div>
         <div class="close-form-loading"></div>
       </div>
     </div>
@@ -44,7 +44,7 @@ export default {
   props: {
     returnMsg: {
       type: String,
-      default: "系统错误！",
+      default: "Error",
     },
     book: {
       type: Object,
@@ -96,14 +96,14 @@ export default {
         const response = await api.get(endpoints.selectBookByBookname(name));
         this.selectedBook = response.data.books[0];
       } catch (error) {
-        console.error("选择图书失败:", error.message);
+        console.error("Error:", error.message);
       }
     },
 
     async submitRating() {
       try {
         if (!this.selectedBook.id || this.score === null) {
-          throw new Error("未正确选择图书或评分为空");
+          this.alertMsg = this.$t("returnBox.submitRating.empty");
         }
 
         const currentScore = this.selectedBook.score || 0;
@@ -123,10 +123,7 @@ export default {
 
         await this.updateBook(updatedBook);
       } catch (error) {
-        console.error(
-          "评分提交失败:",
-          error.response?.data?.error || error.message
-        );
+        this.alertMsg = this.$t("returnBox.submitRating.fail");
       }
     },
 
@@ -155,7 +152,7 @@ export default {
           await api.post(endpoints.addMessage, this.newMessage);
         } catch (error) {
           console.error(error.response?.data?.error || error.message);
-          this.alertMsg = "论坛留言添加失败";
+          this.alertMsg = this.$t("returnBox.addMessage.fail");
         }
       }
     },
@@ -210,7 +207,7 @@ export default {
   gap: 5px;
 }
 
-textarea{
+textarea {
   color: var(--text-color);
   background-color: var(--card-color);
 }

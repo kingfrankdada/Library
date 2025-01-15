@@ -6,7 +6,7 @@
 
     <div class="reg-logo">
       <!-- <i class="ri-book-3-line"></i> -->
-      <span>高校图书管理系统</span>
+      <span>{{ $t("publicReg.logo") }}</span>
     </div>
     <div class="reg-form" @keyup.enter="handleReg">
       <input
@@ -41,7 +41,7 @@
     </div>
     <div class="login-change-btn">
       <div class="login-change-btn-item" @click="changeLoginModal">
-        已有账户？立刻登陆
+        {{ $t("publicReg.changeLogin") }}
       </div>
     </div>
 
@@ -51,6 +51,11 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
@@ -60,12 +65,14 @@ import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
 import axios from "axios";
 import AlertBox from "@/components/AlertBox";
+import MessageBox from "./MessageBox.vue";
 
 export default {
   name: "UserReg",
 
   components: {
     AlertBox,
+    MessageBox,
   },
 
   data() {
@@ -78,6 +85,7 @@ export default {
       email: "",
       alertMsg: "",
       adddate: "",
+      message: "",
     };
   },
 
@@ -104,13 +112,13 @@ export default {
       this.email = this.email.trim();
       if (this.username === "" || this.password === "" || this.email === "") {
         // alert("用户名和密码不能为空");
-        this.alertMsg = "用户名，密码和邮箱不能为空";
+        this.alertMsg = this.$t("publicReg.handleReg.empty");
       } else if (this.password.length < 6) {
         // alert("密码不能少于6位");
-        this.alertMsg = "密码不能少于6位";
+        this.alertMsg = this.$t("publicReg.handleReg.short");
       } else if (this.password !== this.confirmPassword) {
         // alert("两次密码不一致");
-        this.alertMsg = "两次密码不一致";
+        this.alertMsg = this.$t("publicReg.handleReg.notMatch");
       } else {
         this.adddate = new Date().toISOString().split("T")[0];
         try {
@@ -180,11 +188,17 @@ export default {
 
           await api.post(endpoints.addCredit, newCredit);
 
-          this.alertMsg = `注册成功：用户 ${response.data.username}`;
+          // this.alertMsg = `注册成功：用户 ${response.data.username}`;
+          this.message = this.$t("publicReg.handleReg.success", {
+            username: response.data.username,
+          });
 
           this.setRegModalVisible(false);
         } catch (error) {
-          this.alertMsg = `注册失败：${error.response.data.error}`;
+          // this.alertMsg = `注册失败：${error.response.data.error}`;
+          this.alertMsg = this.$t("publicReg.handleReg.fail", {
+            error: error.response.data.error,
+          });
         }
       }
     },
