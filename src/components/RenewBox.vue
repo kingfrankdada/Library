@@ -333,6 +333,12 @@ export default {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow-y: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.book-description::-webkit-scrollbar {
+  display: none;
 }
 
 .renew-actions {

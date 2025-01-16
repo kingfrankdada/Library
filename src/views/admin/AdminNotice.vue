@@ -671,6 +671,12 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.admin-notice::-webkit-scrollbar {
+  display: none;
 }
 
 .search-box {

@@ -703,8 +703,13 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
 }
 
+.admin-borrow::-webkit-scrollbar {
+  display: none;
+}
 .search-box {
   display: flex;
   justify-content: center;

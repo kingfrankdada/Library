@@ -523,6 +523,12 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.admin-log::-webkit-scrollbar {
+  display: none;
 }
 
 .search-box {

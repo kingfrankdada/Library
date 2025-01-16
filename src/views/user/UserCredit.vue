@@ -317,6 +317,12 @@ export default {
   width: 85%;
   overflow-y: auto;
   background: var(--background-color);
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.credit-credit::-webkit-scrollbar {
+  display: none;
 }
 
 .search-box {
