@@ -45,7 +45,7 @@ export default {
     copyText() {
       // 提取复制信息
       const textMatch = this.message.match(
-        /(?:初始密码为|查看详情|password|details|anzeigen|passwort)：(.*)$/
+        /(?:初始密码为|初始密碼為|查看详情|查看詳情|password|details|anzeigen|passwort|詳細を見る|初期パスワードは|детали|пароль)：(.*)$/
       );
       const text = textMatch ? textMatch[1].trim() : "";
       if (!text) {

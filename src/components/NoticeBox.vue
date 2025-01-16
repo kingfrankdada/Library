@@ -13,10 +13,10 @@
       </div>
       <div class="notice-bottom">
         <p class="notice-bottom-item">
-          <strong>{{ $t("noticeBox.adduser") }}：</strong>{{ notice.adduser }}
+          <strong>{{ $t("noticeBox.adduser") }}&nbsp;</strong>{{ notice.adduser }}
         </p>
         <p class="notice-bottom-item">
-          <strong>{{ $t("noticeBox.adddate") }}</strong>{{ notice.adddate }}
+          <strong>{{ $t("noticeBox.adddate") }}&nbsp;</strong>{{ notice.adddate }}
         </p>
       </div>
       <div class="close-form" @click="close"></div>

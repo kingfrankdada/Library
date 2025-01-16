@@ -910,7 +910,7 @@ export default {
     state: "Status",
     credit: "Kreditpunktzahl",
     adddate: "Registrierungsdatum",
-    superAdmin: "Super-Administrator",
+    superAdmin: "Super Administrator",
     admin: "Administrator",
     user: "Benutzer",
     normal: "Normal",

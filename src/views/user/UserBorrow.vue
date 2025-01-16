@@ -579,7 +579,7 @@ button:hover {
 
 .pagination button {
   padding: 5px 10px;
-  width: 80px;
+  width: auto;
   align-items: center;
   justify-content: center;
   justify-items: center;
