@@ -170,7 +170,7 @@ export default {
     info: "更多信息:",
     num: "库存数量:",
     adddate: "入库日期:",
-    borrowDays: "预计借阅天数 (最大30天):",
+    borrowDays: "预计借阅天数 (最大30天)",
     borrowDaysPlaceholder: "输入天数",
     overDate: "预计归还日期:",
     handleBorrow: "确认借阅",
@@ -247,7 +247,7 @@ export default {
     username: "用户名",
     email: "邮箱",
     tip: "Tips：双击表单项进行编辑，按下回车键提交表单项",
-    submit: "提交",
+    submit: "保存",
 
     selectUsersByUserName: {
       empty: "未找到任何用户信息",
@@ -367,7 +367,7 @@ export default {
     num: "库存数量:",
     adddate: "入库日期:",
     renewDays: "预计续借天数 (最大7天):",
-    renewDaysPlaceholder: "输入天数",
+    renewDaysPlaceholder: "输入天数:",
     overDate: "预计归还日期:",
     renew: "确认续借",
     cancel: "取消",

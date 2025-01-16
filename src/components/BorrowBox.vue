@@ -59,7 +59,7 @@
             />
           </div>
           <div>
-            <label for="over-date">{{ $t("borrowBox.overDate") }}:</label>
+            <label for="over-date">{{ $t("borrowBox.overDate") }}</label>
             <input
               id="over-date"
               type="date"

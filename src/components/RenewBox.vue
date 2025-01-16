@@ -350,8 +350,8 @@ export default {
 
 .renew-inputs label {
   margin-right: 10px;
+  color: var(--first-color);
   font-size: 14px;
-  color: var(--text-color);
   font-weight: bold;
 }
 

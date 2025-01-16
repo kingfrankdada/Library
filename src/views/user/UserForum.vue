@@ -67,14 +67,18 @@
           :placeholder="$t('userForum.info')"
           class="input-info"
         ></textarea>
-        <button @click="submitForm" class="submit-button">{{ $t("userForum.submit") }}</button>
-        <div class="input-anonymous">
-          <input type="checkbox" v-model="isAnonymous" />
-          <label>{{ $t("userForum.isAnonymous") }}</label>
-        </div>
-        <div class="display-borrow">
-          <input type="checkbox" v-model="isBorrowMsg" />
-          <label>{{ $t("userForum.borrowMsg") }}</label>
+        <button @click="submitForm" class="submit-button">
+          {{ $t("userForum.submit") }}
+        </button>
+        <div class="bottom">
+          <div class="input-anonymous">
+            <input type="checkbox" v-model="isAnonymous" />
+            <label>{{ $t("userForum.isAnonymous") }}</label>
+          </div>
+          <div class="display-borrow">
+            <input type="checkbox" v-model="isBorrowMsg" />
+            <label>{{ $t("userForum.borrowMsg") }}</label>
+          </div>
         </div>
       </div>
       <div v-else>
@@ -387,24 +391,10 @@ export default {
   overflow: auto;
 }
 
-.input-anonymous {
-  position: absolute;
-  right: 40px;
-  bottom: 45px;
-}
-
-.input-anonymous input {
-  margin-right: 5px;
-}
-
-.display-borrow {
-  position: absolute;
-  right: 200px;
-  bottom: 45px;
-}
-
-.display-borrow input {
-  margin-right: 5px;
+.bottom {
+  display: flex;
+  gap: 20px;
+  justify-content: right;
 }
 
 .submit-button {

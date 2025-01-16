@@ -3,12 +3,16 @@ import VueI18n from "vue-i18n";
 
 import zhCN from "@/i18n/zh-CN";
 import en from "@/i18n/en";
+import de from "@/i18n/de";
+import jp from "@/i18n/jp";
 
 Vue.use(VueI18n);
 
 const messages = {
   "zh-CN": zhCN,
   en: en,
+  de: de,
+  jp: jp,
 };
 
 const i18n = new VueI18n({

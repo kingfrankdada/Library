@@ -171,7 +171,7 @@ export default {
     info: "Description:",
     num: "Stock:",
     adddate: "Add Date:",
-    borrowDays: "Borrow Days(Max 30):",
+    borrowDays: "Borrow Days(Max 30)",
     borrowDaysPlaceholder: "Input days",
     overDate: "Over Date:",
     handleBorrow: "Confirm Borrow",
@@ -373,7 +373,7 @@ export default {
     num: "Stock:",
     adddate: "Add Date:",
     renewDays: "Renew Days(Max 7):",
-    renewDaysPlaceholder: "Input days",
+    renewDaysPlaceholder: "Input days:",
     overDate: "End Date:",
     renew: "Renew",
     cancel: "Cancel",
@@ -482,7 +482,7 @@ export default {
   },
 
   adminLeftGuide: {
-    title: "Control Center",
+    title: "Dashboard",
 
     menuList: {
       book: "Book",

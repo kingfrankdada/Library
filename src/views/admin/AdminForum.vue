@@ -771,7 +771,7 @@ td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #eaeaea;
-  max-width: 125px;
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
