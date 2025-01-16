@@ -183,7 +183,7 @@ export default {
         this.updateCpuChart();
         // this.updateBookMenusChart();
       });
-    }, 2000);
+    }, 5000);
   },
 
   beforeDestroy() {

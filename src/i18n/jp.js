@@ -170,7 +170,7 @@ export default {
     info: "詳細情報:",
     num: "在庫数:",
     adddate: "入荷日:",
-    borrowDays: "予想借りる日数（最大30日）",
+    borrowDays: "予想借りる日数（最大30日）:",
     borrowDaysPlaceholder: "日数を入力",
     overDate: "予想返却日:",
     handleBorrow: "借りる確認",

@@ -171,7 +171,7 @@ export default {
     info: "Description:",
     num: "Stock:",
     adddate: "Add Date:",
-    borrowDays: "Borrow Days(Max 30)",
+    borrowDays: "Borrow Days(Max 30):",
     borrowDaysPlaceholder: "Input days",
     overDate: "Over Date:",
     handleBorrow: "Confirm Borrow",

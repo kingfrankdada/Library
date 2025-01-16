@@ -170,7 +170,7 @@ export default {
     info: "更多信息:",
     num: "库存数量:",
     adddate: "入库日期:",
-    borrowDays: "预计借阅天数 (最大30天)",
+    borrowDays: "预计借阅天数 (最大30天):",
     borrowDaysPlaceholder: "输入天数",
     overDate: "预计归还日期:",
     handleBorrow: "确认借阅",
