@@ -1026,5 +1026,11 @@ export default {
     openInfo: {
       message: "Посмотреть детали：",
     }
+  },
+
+  notFound: {
+    title: "Вернуться на главную страницу",
+    info: "404 Not Found",
+    message: "Как будто в пустоши без знаний....",
   }
 }

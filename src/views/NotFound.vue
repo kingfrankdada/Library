@@ -1,9 +1,9 @@
 <template>
   <div class="not-found">
-    <div class="content" @click="$router.push('/')" title="返回首页">
-      <img v-lazy="'/assets/images/404.png'" class="not-found-image" />
-      <p class="not-found-text">404 Not Found</p>
-      <p class="not-found-text-small">好像来到了没有知识的荒原...</p>
+    <div class="content" @click="$router.push('/')" :title="$t('notFound.title')">
+      <!-- <img v-lazy="'/assets/images/404.png'" class="not-found-image" /> -->
+      <p class="not-found-text">{{ $t("notFound.info") }}</p>
+      <p class="not-found-text-small">{{ $t("notFound.message") }}</p>
     </div>
   </div>
 </template>
@@ -14,8 +14,10 @@ export default {};
 
 <style scoped>
 .not-found {
-  height: 100%;
+  position: absolute;
   width: 100%;
+  height: 100%;
+  background: var(--background-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,7 +39,7 @@ export default {};
 .not-found-text {
   font-size: 48px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
   margin-top: 20px;
   text-align: center;
 }

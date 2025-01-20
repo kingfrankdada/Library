@@ -999,5 +999,11 @@ export default {
     openInfo: {
       message: "詳細を見る：",
     }
+  },
+
+  notFound: {
+    title: "トップページに戻る",
+    info: "404 Not Found",
+    message: "お探しのページは見つかりません...",
   }
 }

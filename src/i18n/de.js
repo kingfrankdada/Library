@@ -1025,6 +1025,11 @@ export default {
     openInfo: {
       message: "Details anzeigen："
     }
-  }
+  },
 
+  notFound: {
+    title: "Seite nicht gefunden",
+    info: "404 - Seite nicht gefunden",
+    message: "Die angeforderte Seite wurde nicht gefunden...",
+  }
 }

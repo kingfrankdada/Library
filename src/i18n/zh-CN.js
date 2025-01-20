@@ -1026,5 +1026,11 @@ export default {
     openInfo: {
       message: "查看详情：",
     }
+  },
+
+  notFound: {
+    title: "返回首页",
+    info: "404 Not Found",
+    message: "找不到该页面...",
   }
 };

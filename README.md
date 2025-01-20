@@ -119,6 +119,18 @@ DB_NAME=your_database_name
 
 - 运行 `yarn build` 打包项目，部署至生产服务器。
 
+### 3. **如何配置数据库初始化？**
+
+- 手动执行[db_init.sql](./src/db/db_init.sql), 或者在项目根目录运行 `yarn db-init` 初始化数据库。
+
+### 4. **如何部署生产环境？**
+
+- Linux 系统：项目根目录运行 `yarn global add serve yarn` 安装 serve 和 yarn
+
+- 项目根目录运行 `serve -s dist` 启动前端服务。
+
+- 项目根目录运行 `yarn start-server-prod` 启动后端nodemon服务。
+
 ## 开发日志
 
 本项目开发日志，记录了项目的迭代过程和新增功能，帮助开发者了解项目的进展和历史。

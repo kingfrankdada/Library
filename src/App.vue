@@ -141,7 +141,6 @@ export default {
   flex-shrink: 0;
 }
 
-/*=============== VARIABLES CSS ===============*/
 :root {
   --header-height: 8vh;
   --body-height: 92vh;
@@ -195,8 +194,6 @@ export default {
   --z-fixed: 100;
 }
 
-/*=============== THEME ===============*/
-/* Dark theme */
 .dark-theme {
   --first-color: hsl(230, 62%, 56%);
   --title-color: hsl(229, 80%, 33%);
@@ -239,7 +236,6 @@ export default {
   background-color: hsl(230, 16%, 35%);
 } */
 
-/*=============== BASE ===============*/
 * {
   box-sizing: border-box;
   padding: 0;
@@ -297,7 +293,6 @@ img {
   height: auto;
 }
 
-/*=============== REUSABLE CSS CLASSES ===============*/
 .container {
   max-width: 100%;
   margin-inline: 1.5rem;

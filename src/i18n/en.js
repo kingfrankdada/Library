@@ -1040,6 +1040,11 @@ export default {
     openInfo: {
       message: "View details：",
     }
-  }
+  },
 
+  notFound: {
+    title: "Back to Home",
+    info: "404 Not Found",
+    message: "The page you are looking for cannot be found...",
+  }
 };
