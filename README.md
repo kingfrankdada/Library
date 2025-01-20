@@ -125,11 +125,103 @@ DB_NAME=your_database_name
 
 ### 4. **如何部署生产环境？**
 
-- Linux 系统：项目根目录运行 `yarn global add serve yarn` 安装 serve 和 yarn
+- Linux 系统：
 
-- 项目根目录运行 `serve -s dist` 启动前端服务。
+- 安装nodejs
 
-- 项目根目录运行 `yarn start-server-prod` 启动后端nodemon服务。
+```bash
+sudo curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+sudo yum install -y nodejs
+```
+
+- 安装yarn
+
+```bash
+sudo npm install -g yarn
+```
+
+- 安装 serve
+
+```bash
+yarn global add serve
+```
+
+- (可选) 项目根目录`Library-main`安装依赖
+
+```bash
+yarn install
+```
+
+- 项目根目录`Library-main`先启动后端nodemon服务
+
+```bash
+yarn start-server-prod
+```
+
+- 生产环境目录`dist`启动前端生产环境，记下对应运行端口。
+
+```bash
+serve -s .
+```
+
+- 安装Nginx
+
+```bash
+sudo yum install nginx  # CentOS
+sudo apt update && sudo apt install nginx  # Ubuntu/Debian
+```
+
+- 将[dist]目录或者您的生产环境目录放置于 `/var/www/` 目录下
+
+- 修改Nginx配置文件 `nginx.conf`
+
+```bash
+sudo vi /etc/nginx/nginx.conf
+```
+
+- 示例Nginx配置文件部分：
+
+```bash
+    server {
+        listen       80;
+        listen       [::]:80;
+        server_name  your_server_name;  # 您的服务器IP地址或域名
+        root         /var/www/dist/index.html; # 您的生产环境目录文件
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+            proxy_pass http://127.0.0.1:serve_port;  # 这里的端口为执行serve后结果
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        # API路径配置代理
+        location /api/ {
+            proxy_pass http://127.0.0.1:3000;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        error_page 404 /404.html;
+        location = /404.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+    }
+```
+
+- 重启Nginx
+
+```bash
+sudo systemctl restart nginx
+```
 
 ## 开发日志
 

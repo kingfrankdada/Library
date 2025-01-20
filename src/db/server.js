@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const WebSocket = require('ws');
 const system = require('systeminformation');
 const schedule = require('node-schedule');
@@ -81,7 +81,7 @@ function broadcastOnlineUsers() {
 
 // 将 WebSocket 服务器与 HTTP 服务器连接
 const server = app.listen(wsport, () => {
-  console.log(`WebSocket服务正在监听 http://localhost:${wsport}`);
+  console.log(`WebSocket服务正在监听 ${wsport} 端口`);
 });
 
 server.on('upgrade', (request, socket, head) => {
@@ -1620,7 +1620,7 @@ function recordOverCheck(today) {
 }
 
 app.listen(port, () => {
-  console.log(`服务器正在监听 http://localhost:${port}`);
+  console.log(`服务器正在监听 ${port} 端口`);
   console.log('当前环境:', process.env.NODE_ENV);
   console.log('数据库配置:', {
     host: process.env.DB_HOST,
