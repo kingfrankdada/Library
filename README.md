@@ -125,22 +125,22 @@ DB_NAME=your_database_name
 
 ### 4. **如何部署生产环境？**
 
-- Linux 系统：
+- 安装说明将以 CentOS 7.6 为例，可根据实际情况进行调整
 
-- 安装nodejs
+- 安装 `nodejs`
 
 ```bash
 sudo curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 sudo yum install -y nodejs
 ```
 
-- 安装yarn
+- 安装 `yarn`
 
 ```bash
 sudo npm install -g yarn
 ```
 
-- 安装 serve
+- 安装 `serve`
 
 ```bash
 yarn global add serve
@@ -152,19 +152,19 @@ yarn global add serve
 yarn install
 ```
 
-- 项目根目录`Library-main`先启动后端nodemon服务
+- (可选) 项目根目录 `Library-main` 先启动后端nodemon服务
 
 ```bash
 yarn start-server-prod
 ```
 
-- 生产环境目录`dist`启动前端生产环境
+- (可选) 生产环境目录 `dist` 启动前端生产环境
 
 ```bash
 serve -s .
 ```
 
-- 启动成功后将会看到如下
+- (可选) 测试启动成功后将会看到如下（示例）
 
 ```bash
    ┌──────────────────────────────────────────┐
@@ -172,29 +172,29 @@ serve -s .
    │   Serving!                               │
    │                                          │
    │   - Local:    http://localhost:3000      │
-   │   - Network:  http://172.16.0.237:3000   │
+   │   - Network:  http://192.168.0.1:3000    │
    │                                          │
    └──────────────────────────────────────────┘
    ```
 
-- 安装Nginx
+- 安装 `Nginx`
 
 ```bash
-sudo yum install nginx  # CentOS
-sudo apt update && sudo apt install nginx  # Ubuntu/Debian
+sudo yum install nginx
 ```
 
-- 将[dist]目录或者您的生产环境目录放置于 `/var/www/` 目录下
+- 将 `dist` 目录或者您的生产环境目录放置于 `/var/www/` 目录下
 
 - 修改Nginx配置文件 `nginx.conf`
 
 ```bash
-sudo vi /etc/nginx/nginx.conf
+sudo vim /etc/nginx/nginx.conf
 ```
 
-- 示例Nginx配置文件部分：
+- 示例Nginx配置文件 `nginx.conf` 部分：
 
 ```bash
+# nginx.conf (Part)
     server {
         listen       80;
         listen       [::]:80;
@@ -226,6 +226,73 @@ sudo vi /etc/nginx/nginx.conf
 
 ```bash
 sudo systemctl restart nginx
+```
+
+### 5. **如何部署系统服务？**
+
+- 在 `/root` 下创建 [start-fullstack.sh](./start-fullstack.sh) 启动脚本（包含日志输出）
+
+```bash
+#!/bin/bash
+# start-fullstack.sh
+
+# 启动前端和后端服务
+cd /root/Library-main
+# 替换为实际node项目根目录
+/usr/bin/yarn start-server-prod &
+
+cd /var/www/dist
+# 替换为实际生产环境目录
+/usr/local/bin/serve -s . &
+
+# 重启Nginx
+sudo systemctl restart nginx
+
+wait
+```
+
+- 为 `start-fullstack.sh` 添加执行权限
+
+```bash
+chmod +x start-fullstack.sh
+```
+
+- 创建 [start-fullstack.service](./start-fullstack.service) 服务文件
+
+```bash
+# start-fullstack.service
+
+[Unit]
+Description=Start Fullstack (Frontend and Backend) Library Servers
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/start-fullstack.sh # 替换为实际上述启动脚本路径
+WorkingDirectory=/root # 替换为实际项目根目录
+StandardOutput=journal # 可使用journalctl -u start-fullstack.service -f查看日志
+StandardError=journal
+Restart=always
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin # 设置环境变量以及yarn路径
+Environment=NODE_ENV=production
+User=root
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- 启动 `start-fullstack` 服务并执行状态检查
+
+```bash
+systemctl daemon-reload
+systemctl start start-fullstack.service
+systemctl status start-fullstack.service
+```
+
+- （可选）设置为开机自启动
+
+```bash
+sudo systemctl enable start-fullstack.service
 ```
 
 ## 开发日志

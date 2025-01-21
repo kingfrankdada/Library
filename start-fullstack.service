@@ -1,0 +1,19 @@
+# start-fullstack.service
+
+[Unit]
+Description=Start Fullstack (Frontend and Backend) Library Servers
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/start-fullstack.sh # 替换为实际上述启动脚本路径
+WorkingDirectory=/root # 替换为实际项目根目录
+StandardOutput=journal # 可使用journalctl -u start-fullstack.service -f查看日志
+StandardError=journal
+Restart=always
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin # 设置环境变量以及yarn路径
+Environment=NODE_ENV=production
+User=root
+
+[Install]
+WantedBy=multi-user.target
