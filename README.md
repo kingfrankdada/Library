@@ -158,11 +158,24 @@ yarn install
 yarn start-server-prod
 ```
 
-- 生产环境目录`dist`启动前端生产环境，记下对应运行端口。
+- 生产环境目录`dist`启动前端生产环境
 
 ```bash
 serve -s .
 ```
+
+- 启动成功后将会看到如下
+
+```bash
+   ┌──────────────────────────────────────────┐
+   │                                          │
+   │   Serving!                               │
+   │                                          │
+   │   - Local:    http://localhost:3000      │
+   │   - Network:  http://172.16.0.237:3000   │
+   │                                          │
+   └──────────────────────────────────────────┘
+   ```
 
 - 安装Nginx
 
@@ -185,14 +198,14 @@ sudo vi /etc/nginx/nginx.conf
     server {
         listen       80;
         listen       [::]:80;
-        server_name  your_server_name;  # 您的服务器IP地址或域名
-        root         /var/www/dist/index.html; # 您的生产环境目录文件
+        server_name  your_server_name;  # 服务器IP地址或域名
+        root         /var/www/dist/index.html; # 生产环境目录根页面文件
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
 
         location / {
-            proxy_pass http://127.0.0.1:serve_port;  # 这里的端口为执行serve后结果
+            proxy_pass http://127.0.0.1:3000;  # 这里的端口默认为前端3000端口
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
@@ -202,17 +215,9 @@ sudo vi /etc/nginx/nginx.conf
 
         # API路径配置代理
         location /api/ {
-            proxy_pass http://127.0.0.1:3000;
+            proxy_pass http://127.0.0.1:3001;  # 这里的端口默认为后端3001端口
             proxy_set_header Host $host;
             proxy_cache_bypass $http_upgrade;
-        }
-
-        error_page 404 /404.html;
-        location = /404.html {
-        }
-
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
         }
     }
 ```

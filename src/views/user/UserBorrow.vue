@@ -206,7 +206,7 @@ export default {
       sortOrder: "asc",
       pageSize: 10,
       currentPage: 1,
-      showRecentDays: true,
+      showRecentDays: false,
     };
   },
   computed: {

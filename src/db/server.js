@@ -9,7 +9,7 @@ const schedule = require('node-schedule');
 const os = require('os');
 
 const app = express();
-const port = 3000;
+const port = 3001; // 后端接口为3001，防止与前端生产环境冲突
 const wsport = 8081;
 const saltRounds = 10;
 
