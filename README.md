@@ -146,19 +146,19 @@ sudo npm install -g yarn
 yarn global add serve
 ```
 
-- (可选) 项目根目录`Library-main`安装依赖
+- (可选) 项目根目录`/root/Library-main`安装依赖
 
 ```bash
 yarn install
 ```
 
-- (可选) 项目根目录 `Library-main` 先启动后端nodemon服务
+- (可选) 项目根目录 `/root/Library-main` 先启动后端nodemon服务
 
 ```bash
 yarn start-server-prod
 ```
 
-- (可选) 生产环境目录 `dist` 启动前端生产环境
+- (可选) 生产环境目录 `/var/www/dist` 启动前端生产环境
 
 ```bash
 serve -s .
@@ -230,23 +230,25 @@ sudo systemctl restart nginx
 
 ### 5. **如何部署系统服务？**
 
-- 在 `/root` 下创建 [start-fullstack.sh](./start-fullstack.sh) 启动脚本（包含日志输出）
+- 在 `/root` 下创建 [start-fullstack.sh](./start-fullstack.sh) 启动脚本
 
 ```sh
 #!/bin/bash
 # start-fullstack.sh
 
 # 启动前端和后端服务
-cd /root/Library-main
 # 替换为实际node项目根目录
-/usr/bin/yarn start-server-prod &
+cd /root/Library-main
+echo "Starting Backend Server..." >> /root/start-fullstack.log
+/usr/bin/yarn start-server-prod >> /root/start-fullstack.log 2>&1 &
 
+# 替换为实际生产环境dist目录
 cd /var/www/dist
-# 替换为实际生产环境目录
-/usr/local/bin/serve -s . &
+echo "Starting Frontend Server..." >> /root/start-fullstack.log
+/usr/local/bin/serve -s . >> /root/start-fullstack.log 2>&1 &
 
-# 重启Nginx
-sudo systemctl restart nginx
+echo "Restarting Nginx..." >> /root/start-fullstack.log
+sudo systemctl restart nginx >> /root/start-fullstack.log 2>&1
 
 wait
 ```
@@ -257,7 +259,7 @@ wait
 chmod +x start-fullstack.sh
 ```
 
-- 创建 [start-fullstack.service](./start-fullstack.service) 服务文件
+- 在 `/etc/systemd/system` 创建 [start-fullstack.service](./start-fullstack.service) 服务文件
 
 ```bash
 # start-fullstack.service
@@ -270,7 +272,7 @@ After=network.target
 Type=simple
 ExecStart=/root/start-fullstack.sh # 替换为实际上述启动脚本路径
 WorkingDirectory=/root # 替换为实际项目根目录
-StandardOutput=journal # 可使用journalctl -u start-fullstack.service -f查看日志
+StandardOutput=journal # 可使用journalctl -u start-fullstack.service查看日志
 StandardError=journal
 Restart=always
 Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin # 设置环境变量以及yarn路径
