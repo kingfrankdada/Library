@@ -38,7 +38,7 @@
             <span :class="getSortIcon('days')"></span>
           </th>
           <th @click="sortBorrows('bookname')">
-            {{ $t("userBorrow.bookName") }}
+            {{ $t("userBorrow.bookname") }}
             <span :class="getSortIcon('bookname')"></span>
           </th>
           <th @click="sortBorrows('return_date')">
