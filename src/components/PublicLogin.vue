@@ -31,8 +31,31 @@
           placeholder="Enter your password"
           autocomplete="current-password"
         />
-        <button @click="handleLogin" class="login-btn" :disabled="loading">
+        <!-- <button @click="handleLogin" class="login-btn" :disabled="loading">
           {{ loading ? "Loading..." : "SUBMIT" }}
+        </button> -->
+        <button @click="handleLogin" class="login-btn" :disabled="loading">
+          <span class="button-content">
+            <!-- SVG动画 -->
+            <svg
+              v-if="loading"
+              class="spinner"
+              viewBox="0 0 50 50"
+              :style="{ height: '1em', width: '1em' }"
+            >
+              <circle
+                cx="25"
+                cy="25"
+                r="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+            </svg>
+            <span :class="{ 'loading-text': loading }">
+              {{ loading ? "Loading..." : "SUBMIT" }}
+            </span>
+          </span>
         </button>
       </div>
       <div class="reg-change-btn">
@@ -90,6 +113,12 @@ export default {
     ]),
     ...mapMutations("UserInfo", ["setUserInfo"]),
 
+    keyDown(e) {
+      if (e.key == 13) {
+        this.handleLogin();
+      }
+    },
+
     checkWindowSize() {
       this.modalSize = window.innerWidth < 1150 ? "mid" : "normal";
     },
@@ -103,6 +132,13 @@ export default {
 
     async handleLogin() {
       this.loading = true;
+
+      if(this.username === "" || this.password === "") {
+        this.alertMsg = this.$t("publicLogin.empty");
+        this.loading = false;
+        return;
+      }
+
       try {
         // 获取用户的 IP 地址
         let userIP = "127.0.0.1";
@@ -170,10 +206,12 @@ export default {
   mounted() {
     this.checkWindowSize();
     window.addEventListener("resize", this.checkWindowSize);
+    window.addEventListener("keydown", this.keyDown);
   },
 
   beforeDestroy() {
     window.removeEventListener("resize", this.checkWindowSize);
+    window.removeEventListener("keydown", this.keyDown, false);
   },
 };
 </script>
@@ -243,14 +281,39 @@ export default {
 
 .login-form button {
   cursor: pointer;
-  margin: 2%;
-  width: 30%;
+  padding: 0 20px 0 20px;
   height: 75%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
   background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
+  position: relative;
+}
+
+.spinner {
+  animation: rotate 1s linear infinite;
+}
+
+.spinner circle {
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: -35;
+  stroke-linecap: round;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  transition: opacity 0.2s;
+  opacity: 0.8;
+}
+
+.login-form button:disabled .spinner {
+  opacity: 0.8;
 }
 
 .login-form button:hover {
@@ -261,7 +324,9 @@ export default {
 
 .login-form button:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  background-color: var(--first-color);
+  color: var(--white-color);
+  opacity: 0.8;
 }
 
 .reg-change-btn {

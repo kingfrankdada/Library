@@ -9,6 +9,7 @@ export default {
     logo: "高校図書管理システム",
     changeReg: "アカウントがないですか？今すぐ登録",
     loginError: "ユーザー名またはパスワードが間違っています",
+    empty: "ユーザー名とパスワードは必須です",
   },
 
   publicReg: {

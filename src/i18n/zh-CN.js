@@ -9,6 +9,7 @@ export default {
     logo: "高校图书管理系统",
     changeReg: "没有账户？立刻注册",
     loginError: "用户名或密码错误",
+    empty: "用户名和密码不能为空",
   },
 
   publicReg: {

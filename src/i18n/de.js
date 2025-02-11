@@ -9,6 +9,7 @@ export default {
     logo: "S.O.L.A.R",
     changeReg: "Haben Sie kein Konto? Jetzt registrieren",
     loginError: "Benutzername oder Passwort falsch",
+    empty: "Benutzername und Passwort erforderlich",
   },
 
   publicReg: {

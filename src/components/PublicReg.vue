@@ -37,8 +37,31 @@
         type="email"
         placeholder="Enter your email"
       />
-      <button @click="handleReg" class="reg-btn" :disabled="loading">
+      <!-- <button @click="handleReg" class="reg-btn" :disabled="loading">
         {{ loading ? "Loading..." : "SUBMIT" }}
+      </button> -->
+      <button @click="handleReg" class="reg-btn" :disabled="loading">
+        <span class="button-content">
+          <!-- SVG动画 -->
+          <svg
+            v-if="loading"
+            class="spinner"
+            viewBox="0 0 50 50"
+            :style="{ height: '1em', width: '1em' }"
+          >
+            <circle
+              cx="25"
+              cy="25"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+            />
+          </svg>
+          <span :class="{ 'loading-text': loading }">
+            {{ loading ? "Loading..." : "SUBMIT" }}
+          </span>
+        </span>
       </button>
     </div>
     <div class="login-change-btn">
@@ -260,14 +283,40 @@ export default {
 
 .reg-form button {
   cursor: pointer;
-  width: 30%;
-  margin: 1%;
+  padding: 0 20px 0 20px;
+  margin-top: 10px;
   height: 35%;
   border: 1px solid var(--first-color);
   border-radius: 5px;
   background-color: var(--card-color);
   color: var(--first-color);
   font-weight: var(--font-medium);
+  position: relative;
+}
+
+.spinner {
+  animation: rotate 1s linear infinite;
+}
+
+.spinner circle {
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: -35;
+  stroke-linecap: round;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  transition: opacity 0.2s;
+  opacity: 0.8;
+}
+
+.reg-form button:disabled .spinner {
+  opacity: 0.8;
 }
 
 .reg-form button:hover {
