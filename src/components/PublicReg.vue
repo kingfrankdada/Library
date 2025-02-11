@@ -37,7 +37,9 @@
         type="email"
         placeholder="Enter your email"
       />
-      <button @click="handleReg" class="reg-btn">SUBMIT</button>
+      <button @click="handleReg" class="reg-btn" :disabled="loading">
+        {{ loading ? "Loading..." : "SUBMIT" }}
+      </button>
     </div>
     <div class="login-change-btn">
       <div class="login-change-btn-item" @click="changeLoginModal">
@@ -86,6 +88,7 @@ export default {
       alertMsg: "",
       adddate: "",
       message: "",
+      loading: false,
     };
   },
 
@@ -121,6 +124,7 @@ export default {
         this.alertMsg = this.$t("publicReg.handleReg.notMatch");
       } else {
         this.adddate = new Date().toISOString().split("T")[0];
+        this.loading = true;
         try {
           const response = await api.post(endpoints.reg, {
             username: this.username,
@@ -193,12 +197,14 @@ export default {
             username: response.data.username,
           });
 
+          this.loading = false;
           this.setRegModalVisible(false);
         } catch (error) {
           // this.alertMsg = `注册失败：${error.response.data.error}`;
           this.alertMsg = this.$t("publicReg.handleReg.fail", {
             error: error.response.data.error,
           });
+          this.loading = false;
         }
       }
     },
@@ -268,6 +274,11 @@ export default {
   background-color: var(--first-color);
   color: var(--white-color);
   transition: 0.4s;
+}
+
+.reg-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .login-change-btn {

@@ -1583,7 +1583,8 @@ function recordOverCheck(today) {
         originalCredit,
         totalPenalty
       } = userPenaltyMap[username];
-      const updated_credit = Math.max(0, originalCredit - totalPenalty);
+      const updated_credit = originalCredit - totalPenalty;
+      // const updated_credit = Math.max(0, originalCredit - totalPenalty);
 
       // 更新用户信誉分
       const updateUserQuery = `

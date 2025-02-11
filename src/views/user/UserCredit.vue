@@ -201,14 +201,14 @@ export default {
   },
 
   methods: {
-    // 动态颜色，100-75为绿色，75-25为橙色，25-0为红色
+    // 动态颜色，100-75为绿色，75-25为橙色，25以下为红色
     creditIconColor(credit) {
       const count = credit.credit_count;
       if (count >= 75) {
         return { color: "green" };
       } else if (count >= 25) {
         return { color: "orange" };
-      } else if (count >= 0) {
+      } else if (count < 25) {
         return { color: "red" };
       } else {
         return { color: "gray" };

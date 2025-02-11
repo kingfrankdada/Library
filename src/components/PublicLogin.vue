@@ -31,7 +31,9 @@
           placeholder="Enter your password"
           autocomplete="current-password"
         />
-        <button @click="handleLogin" class="login-btn">SUBMIT</button>
+        <button @click="handleLogin" class="login-btn" :disabled="loading">
+          {{ loading ? "Loading..." : "SUBMIT" }}
+        </button>
       </div>
       <div class="reg-change-btn">
         <div class="reg-change-btn-item" @click="changeRegModal">
@@ -71,6 +73,7 @@ export default {
       password: "",
       alertMsg: "",
       modalSize: "normal",
+      loading: false,
     };
   },
 
@@ -99,6 +102,7 @@ export default {
     },
 
     async handleLogin() {
+      this.loading = true;
       try {
         // 获取用户的 IP 地址
         let userIP = "127.0.0.1";
@@ -153,10 +157,12 @@ export default {
 
         await api.post(endpoints.addLog, newLog);
 
+        this.loading = false;
         this.setLoginModalVisible(false);
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = this.$t("publicLogin.loginError");
+        this.loading = false;
       }
     },
   },
@@ -251,6 +257,11 @@ export default {
   background-color: var(--first-color);
   color: var(--white-color);
   transition: 0.4s;
+}
+
+.login-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .reg-change-btn {
