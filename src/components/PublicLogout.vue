@@ -92,6 +92,7 @@ export default {
   align-items: center;
   height: 70%;
   width: 100%;
+  padding: 20px;
 }
 
 .logout-form-btn {

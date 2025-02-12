@@ -135,6 +135,11 @@
           </td>
           <td>
             <select
+              :title="
+                message.state === 1
+                  ? $t('adminForum.normal')
+                  : $t('adminForum.banned')
+              "
               :style="{ color: message.state === 1 ? 'green' : 'red' }"
               v-model="message.state"
               @change="updateMessage(message)"
@@ -147,7 +152,7 @@
               </option>
             </select>
           </td>
-          <td>{{ message.adddate }}</td>
+          <td :title="message.adddate">{{ message.adddate }}</td>
           <td>
             <button
               class="del-btn"
@@ -721,7 +726,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

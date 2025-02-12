@@ -113,6 +113,11 @@
           </td>
           <td>
             <select
+              :title="
+                user.state === 0
+                  ? $t('adminUser.banned')
+                  : $t('adminUser.normal')
+              "
               :style="{ color: user.state === 0 ? 'red' : 'green' }"
               v-model="user.state"
               @change="updateUser(user)"
@@ -131,13 +136,17 @@
               @input="updateUser(user)"
             ></InputTag>
           </td>
-          <td>{{ formatDate(user.adddate) }}</td>
+          <td :title="formatDate(user.adddate)">
+            {{ formatDate(user.adddate) }}
+          </td>
           <td>
             <button
-              :disabled="userInfo.role != 0"
+              :disabled="
+                userInfo.role != 0 || user.username === userInfo.username
+              "
               class="del-btn"
               :title="
-                userInfo.role != 0
+                userInfo.role != 0 || user.username === userInfo.username
                   ? $t('adminUser.denied')
                   : $t('adminUser.delete')
               "
@@ -715,7 +724,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

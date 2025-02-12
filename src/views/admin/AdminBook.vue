@@ -153,6 +153,9 @@
           </td>
           <td>
             <select
+              :title="
+                book.state === 1 ? $t('adminBook.open') : $t('adminBook.close')
+              "
               :style="{ color: book.state === 1 ? 'green' : 'red' }"
               v-model="book.state"
               @change="updateBook(book)"
@@ -168,7 +171,7 @@
           <td>
             <InputTag v-model="book.score" @input="updateBook(book)"></InputTag>
           </td>
-          <td>{{ book.adddate }}</td>
+          <td :title="book.adddate">{{ book.adddate }}</td>
           <td>
             <button
               class="del-btn"
@@ -728,7 +731,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

@@ -101,6 +101,11 @@
           </td>
           <td>
             <select
+              :title="
+                notice.top === 1
+                  ? $t('adminNotice.top')
+                  : $t('adminNotice.normal')
+              "
               :style="{ color: notice.top === 1 ? 'red' : 'green' }"
               v-model="notice.top"
               @change="updateNotice(notice)"
@@ -671,7 +676,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

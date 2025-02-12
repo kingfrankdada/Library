@@ -105,6 +105,11 @@ export default {
   font-weight: var(--font-medium);
 }
 
+.guide-title:hover {
+  color: var(--first-color);
+  animation: fade-in 0.5s;
+}
+
 .line {
   position: absolute;
   display: flex;

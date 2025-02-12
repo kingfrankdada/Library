@@ -61,7 +61,17 @@
             ></i>
           </p>
           <!-- echarts -->
-          <div class="user-credit-echarts" ref="creditChartRef"></div>
+          <div
+            v-if="users[0].credit_count >= 0"
+            class="user-credit-echarts"
+            ref="creditChartRef"
+          ></div>
+          <div class="user-credit-neg" v-else>
+            <i class="ri-alert-line"></i>
+            <!-- <i class="ri-error-warning-fill"></i> -->
+            {{ users[0].credit_count }}
+            <i class="ri-alert-line"></i>
+          </div>
           <p>
             <strong
               >{{ $t("userSetting.currentCredit") }}
@@ -197,7 +207,9 @@ export default {
 
     eventBus.$on("language-changed", this.setGuideList);
     this.selectUsersByUserName().then(() => {
-      this.initCreditChart();
+      if (this.users[0].credit_count >= 0) {
+        this.initCreditChart();
+      }
       this.setEditUserModalVisible(false);
       this.setDelUserModalVisible(false);
     });
@@ -500,6 +512,19 @@ export default {
 .user-credit-echarts {
   width: 100%;
   height: 250px;
+}
+
+.user-credit-neg {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin: 20px;
+}
+
+.user-credit-neg .ri-alert-line {
+  margin: 0 20px 0 20px;
+  font-weight: normal;
 }
 
 .user-info-button {

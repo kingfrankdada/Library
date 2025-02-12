@@ -70,10 +70,20 @@
             {{ record.return_date || $t("userBorrow.borrowing") }}
           </td>
           <td :title="record.record_days">{{ record.record_days || "--" }}</td>
-          <td :style="record.credit_delta > 0 ? 'color: red' : 'color: green'">
+          <td
+            :title="record.credit_delta"
+            :style="record.credit_delta > 0 ? 'color: red' : 'color: green'"
+          >
             -{{ record.credit_delta || "-" }}
           </td>
           <td
+            :title="
+              record.state === 0
+                ? $t('userBorrow.returned')
+                : record.state === 1
+                ? $t('userBorrow.borrowing')
+                : $t('userBorrow.overdue')
+            "
             :style="
               record.state === 0
                 ? 'color: green'
@@ -435,7 +445,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

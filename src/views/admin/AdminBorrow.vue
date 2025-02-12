@@ -164,6 +164,11 @@
           </td>
           <td v-if="borrow.state != 0">
             <select
+              :title="
+                borrow.state === 2
+                  ? $t('adminBorrow.overdue')
+                  : $t('adminBorrow.borrowing')
+              "
               :style="{
                 color: borrow.state === 2 ? 'red' : 'orange',
               }"
@@ -178,11 +183,16 @@
               </option>
             </select>
           </td>
-          <td v-else style="color: green">{{ $t("adminBorrow.returned") }}</td>
-          <td :style="borrow.credit_delta > 0 ? 'color: red' : 'color: green'">
+          <td v-else :title="$t('adminBorrow.returned')" style="color: green">
+            {{ $t("adminBorrow.returned") }}
+          </td>
+          <td
+            :title="borrow.credit_delta"
+            :style="borrow.credit_delta > 0 ? 'color: red' : 'color: green'"
+          >
             {{ borrow.credit_delta ? "-" + borrow.credit_delta : "-" }}
           </td>
-          <td>{{ borrow.adddate }}</td>
+          <td :title="borrow.adddate">{{ borrow.adddate }}</td>
           <td>
             <button
               class="del-btn"
@@ -703,7 +713,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
