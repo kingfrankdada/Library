@@ -113,7 +113,15 @@
                 {{ $t("userBorrow.renew") }}
               </button>
             </div>
-            <span v-else>{{ $t("userBorrow.returned") }}</span>
+            <!-- <span v-else>{{ $t("userBorrow.returned") }}</span> -->
+            <button
+              v-else
+              class="del-btn"
+              :title="$t('userBorrow.delete')"
+              @click="delBorrow(record)"
+            >
+              <i class="ri-delete-bin-5-fill"></i>
+            </button>
           </td>
         </tr>
       </tbody>
@@ -329,6 +337,18 @@ export default {
       }
     },
 
+    // 删除借阅信息
+    async delBorrow(record) {
+      try {
+        await api.post(endpoints.delBorrow(record.id), record);
+        // this.alertMsg = "删除借阅信息成功";
+      } catch (error) {
+        console.error(error.response?.data?.error || error.message);
+        this.alertMsg = this.$t("userBorrow.delBorrow.fail");
+      }
+      this.fetchBorrowBorrows();
+    },
+
     sortBorrows(column) {
       if (this.sortColumn === column) {
         this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
@@ -540,6 +560,11 @@ button:hover {
   background-color: var(--first-color);
   color: var(--card-color);
   transition: 0.4s;
+}
+
+.del-btn {
+  width: 30px;
+  height: 30px;
 }
 
 .action-buttons {

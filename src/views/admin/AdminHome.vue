@@ -178,11 +178,6 @@ export default {
 
     this.pollingInterval = setInterval(() => {
       this.getSystemInfo();
-      this.$nextTick(() => {
-        this.updateMemChart();
-        this.updateCpuChart();
-        // this.updateBookMenusChart();
-      });
     }, 5000);
   },
 
@@ -282,6 +277,11 @@ export default {
       try {
         const response = await api.get(endpoints.systemInfo);
         this.systemInfo = response.data;
+        this.$nextTick(() => {
+          this.updateMemChart();
+          this.updateCpuChart();
+          // this.updateBookMenusChart();
+        });
       } catch (error) {
         console.error("获取系统信息失败:", error);
       }

@@ -42,6 +42,7 @@
 <script>
 import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import { eventBus } from "@/utils/eventBus";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "PublicHome",
@@ -71,6 +72,7 @@ export default {
   },
 
   computed: {
+    ...mapState("UserInfo", ["userInfo"]),
     swiper() {
       return this.$refs.mySwiper;
     },
@@ -86,6 +88,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations("NormalModal", ["setLoginModalVisible"]),
     onSlideChange() {
       this.currentIndex = this.swiper.swiperInstance.realIndex;
     },
@@ -109,6 +112,12 @@ export default {
     goSetting() {
       this.$nextTick(() => {
         this.$router.push("/user");
+      });
+    },
+
+    goLogin() {
+      this.$nextTick(() => {
+        this.setLoginModalVisible(true);
       });
     },
 
@@ -140,8 +149,10 @@ export default {
           {
             title: this.$t("publicHome.title_4"),
             subtitle: this.$t("publicHome.subtitle_4"),
-            btnText: this.$t("publicHome.btnText_4"),
-            btnMethod: this.goSetting,
+            btnText: this.userInfo.usertoken
+              ? this.$t("publicHome.btnText_4")
+              : "Login",
+            btnMethod: this.userInfo.usertoken ? this.goSetting : this.goLogin,
           },
           {
             title: this.$t("publicHome.title_5"),

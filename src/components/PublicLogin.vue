@@ -195,6 +195,7 @@ export default {
 
         this.loading = false;
         this.setLoginModalVisible(false);
+        window.location.reload();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = this.$t("publicLogin.loginError");

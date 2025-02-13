@@ -321,6 +321,7 @@ export default {
     creditDelta: "信誉分变化",
     state: "状态",
     actions: "操作",
+    delete: "删除",
     borrowing: "借阅中",
     returned: "已归还",
     overdue: "已逾期",
@@ -355,6 +356,11 @@ export default {
       login: "请先登录",
       credit: "信誉分过低，无法续借",
       fail: "续借失败，请稍后再试",
+    },
+
+    delBorrow: {
+      success: "删除成功",
+      fail: "删除失败，请稍后再试",
     }
   },
 

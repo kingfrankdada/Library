@@ -320,6 +320,7 @@ export default {
     creditDelta: "Änderung der Kreditpunkte",
     state: "Status",
     actions: "Aktionen",
+    delete: "Löschen",
     borrowing: "Ausgeliehen",
     returned: "Zurückgegeben",
     overdue: "Überfällig",
@@ -354,6 +355,11 @@ export default {
       login: "Bitte zuerst einloggen",
       credit: "Zu wenig Kreditpunkte, Verlängerung nicht möglich",
       fail: "Fehler bei der Verlängerung. Bitte versuchen Sie es später erneut.",
+    },
+
+    delBorrow: {
+      success: "Ausleihdatensatz erfolgreich gelöscht",
+      fail: "Fehler beim Löschen des Ausleihdatensatzes. Bitte versuchen Sie es später erneut.",
     }
   },
 

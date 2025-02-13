@@ -321,6 +321,7 @@ export default {
     creditDelta: "信譽分變化",
     state: "狀態",
     actions: "操作",
+    delete: "刪除",
     borrowing: "借閱中",
     returned: "已歸還",
     overdue: "已逾期",
@@ -355,6 +356,11 @@ export default {
       login: "請先登錄",
       credit: "信譽分過低，無法續借",
       fail: "續借失敗，請稍後再試",
+    },
+
+    delBorrow: {
+      success: "刪除成功",
+      fail: "刪除失敗，請稍後再試",
     }
   },
 

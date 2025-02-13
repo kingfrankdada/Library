@@ -207,7 +207,7 @@ export default {
 
     eventBus.$on("language-changed", this.setGuideList);
     this.selectUsersByUserName().then(() => {
-      if (this.users[0].credit_count >= 0) {
+      if (this.users[0].credit_count >= 0 && this.$refs.creditChartRef) {
         this.initCreditChart();
       }
       this.setEditUserModalVisible(false);

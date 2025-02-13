@@ -93,6 +93,7 @@ export default {
         this.$router.push({ path: "/" });
       }
       this.setDelUserModalVisible(false);
+      window.location.reload();
     },
 
     close() {

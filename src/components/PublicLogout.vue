@@ -66,6 +66,7 @@ export default {
         if (this.$route.path !== "/home") {
           this.$router.push({ path: "/" });
         }
+        window.location.reload();
       });
     },
     close() {

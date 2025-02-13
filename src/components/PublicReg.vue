@@ -222,6 +222,7 @@ export default {
 
           this.loading = false;
           this.setRegModalVisible(false);
+          window.location.reload();
         } catch (error) {
           // this.alertMsg = `注册失败：${error.response.data.error}`;
           this.alertMsg = this.$t("publicReg.handleReg.fail", {

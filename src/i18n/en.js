@@ -211,11 +211,11 @@ export default {
   userSetting: {
     personalInfo: "Account Information",
     personalInfoTip: "The basic information you provided when you registered, including username, email, and registration date",
-    username: "用户名:",
+    username: "Username:",
     superAdmin: "[Superior Admin]",
     admin: "[Admin]",
     user: "[User]",
-    email: "email:",
+    email: "Email:",
     registerDate: "Registration Date:",
     edit: "Edit Account",
     security: "Security Information",
@@ -320,12 +320,13 @@ export default {
     startDate: "Start Date",
     overDate: "End Data",
     days: "Record Days",
-    bookName: "Book",
+    bookname: "Book",
     returnDate: "Return Date",
     recordDays: "Actual Days",
     creditDelta: "Credit Delta",
     state: "State",
     actions: "Actions",
+    delete: "Delete",
     borrowing: "Borrowing",
     returned: "Returned",
     overdue: "Overdue",
@@ -360,6 +361,11 @@ export default {
       login: "Please login first",
       credit: "Insufficient credit",
       fail: "Renew failed, please try again later",
+    },
+
+    delBorrow: {
+      success: "Delete success",
+      fail: "Delete failed, please try again later",
     }
   },
 

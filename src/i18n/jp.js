@@ -321,6 +321,7 @@ export default {
     creditDelta: "信用スコアの変化",
     state: "状態",
     actions: "操作",
+    delete: "削除",
     borrowing: "借りている",
     returned: "返却済み",
     overdue: "延滞",
@@ -355,6 +356,11 @@ export default {
       login: "ログインしてください",
       credit: "信用スコアが低すぎて延長できません",
       fail: "延長に失敗しました。後で再試行してください",
+    },
+
+    delBorrow: {
+      success: "削除に成功しました",
+      fail: "削除に失敗しました。後で再試行して，请",
     }
   },
 
@@ -415,6 +421,33 @@ export default {
     }
   },
 
+  userCredit: {
+    searchPlaceholder: "信用分明細または日付を検索",
+    showRecentDays: "最近7日間のみ表示",
+    delete: "すべて削除",
+    date: "日付",
+    creditCount: "信用分",
+    info: "詳細",
+    pageSize: "ページごとの表示数",
+    firstPage: "最初のページ",
+    prevPage: "前のページ",
+    nextPage: "次のページ",
+    lastPage: "最終ページ",
+    pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
+    defaultBoxMsg: "信用分明細を読み込んでいます...",
+
+    selectCredits: {
+      empty: "信用分明細が見つかりません",
+      error: "信用分明細の読み込みに失敗しました。後で再試行してください",
+    },
+
+    deleteAll: {
+      success: "信用分明細を正常に削除しました",
+      empty: "信用分明細が見つかりません",
+      fail: "信用分明細の削除に失敗しました。後で再試行してください",
+    },
+  },
+
   adminHome: {
     realTimeData: "リアルタイムデータ",
     onlineUsers: "オンラインユーザー",
@@ -430,22 +463,22 @@ export default {
     userActivity: "ユーザー活動度",
     borrowLog: "借阅記録",
     sysLog: "システムログ",
-  
+
     getDailyUser: {
       empty: "活動度情報が見つかりません",
       error: "活動度情報の読み込みに失敗しました。後で再試行してください",
     },
-  
+
     selectBooks: {
       empty: "図書記録が見つかりません",
       error: "図書情報の読み込みに失敗しました。後で再試行してください",
     },
-  
+
     selectLogs: {
       empty: "ログ記録が見つかりません",
       error: "ログ情報の読み込みに失敗しました。後で再試行してください",
     },
-  },  
+  },
 
   adminLeftGuide: {
     title: "管理者コンソール",
