@@ -80,6 +80,7 @@ export default {
 
   mounted() {
     eventBus.$on("language-changed", this.handleLanguageChange);
+    eventBus.$on("login-changed", this.setDocuments);
     this.setDocuments();
   },
 

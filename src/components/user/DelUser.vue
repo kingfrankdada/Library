@@ -31,6 +31,7 @@ import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
 import NormalModal from "@/components/NormalModal";
+import { eventBus } from "@/utils/eventBus";
 
 export default {
   name: "DelUser",
@@ -93,7 +94,8 @@ export default {
         this.$router.push({ path: "/" });
       }
       this.setDelUserModalVisible(false);
-      window.location.reload();
+      eventBus.$emit("login-changed");
+      // window.location.reload();
     },
 
     close() {

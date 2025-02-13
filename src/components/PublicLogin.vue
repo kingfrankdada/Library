@@ -76,6 +76,7 @@
 
 <script>
 import api from "@/api/api";
+import { eventBus } from "@/utils/eventBus";
 import { endpoints } from "@/api/endpoints";
 import { mapMutations, mapState } from "vuex";
 import axios from "axios";
@@ -195,7 +196,8 @@ export default {
 
         this.loading = false;
         this.setLoginModalVisible(false);
-        window.location.reload();
+        eventBus.$emit("login-changed");
+        // window.location.reload();
       } catch (error) {
         console.error(error.response?.data?.error || error.message);
         this.alertMsg = this.$t("publicLogin.loginError");

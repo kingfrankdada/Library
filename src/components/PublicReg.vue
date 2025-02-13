@@ -88,6 +88,7 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
+import { eventBus } from "@/utils/eventBus";
 import axios from "axios";
 import AlertBox from "@/components/AlertBox";
 import MessageBox from "./MessageBox.vue";
@@ -222,7 +223,8 @@ export default {
 
           this.loading = false;
           this.setRegModalVisible(false);
-          window.location.reload();
+          eventBus.$emit("login-changed");
+          // window.location.reload();
         } catch (error) {
           // this.alertMsg = `注册失败：${error.response.data.error}`;
           this.alertMsg = this.$t("publicReg.handleReg.fail", {

@@ -119,7 +119,11 @@
             ></InputTag>
           </td>
           <td>
-            <select v-model="book.menu" @change="updateBook(book)">
+            <select
+              :title="book.menu"
+              v-model="book.menu"
+              @change="updateBook(book)"
+            >
               <option v-for="title in menuTitles" :key="title" :value="title">
                 {{ title }}
               </option>

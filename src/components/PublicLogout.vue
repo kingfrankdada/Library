@@ -25,6 +25,7 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import { mapState, mapMutations } from "vuex";
+import { eventBus } from "@/utils/eventBus";
 import NormalModal from "@/components/NormalModal";
 
 export default {
@@ -66,7 +67,8 @@ export default {
         if (this.$route.path !== "/home") {
           this.$router.push({ path: "/" });
         }
-        window.location.reload();
+        eventBus.$emit("login-changed");
+        // window.location.reload();
       });
     },
     close() {
