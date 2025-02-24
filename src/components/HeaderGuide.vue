@@ -232,7 +232,8 @@ export default {
   display: flex;
   align-items: center;
   right: 170px;
-  animation: fadeInFromRight 0.5s ease;
+  /* animation: fadeInFromRight 0.5s ease; */
+  animation: fade-in 0.5s;
 }
 
 .nav-item {
@@ -345,4 +346,13 @@ export default {
     box-shadow: none;
   }
 } */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 </style>

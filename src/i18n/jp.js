@@ -335,6 +335,12 @@ export default {
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
     btnMsg: "図書センターで見る",
     defaultBoxMsg: "借りた記録を読み込んでいます...",
+    noBorrow: "借りた記録が見つかりません",
+
+    searchForm: {
+      bookname: "借りた本の名前を入力",
+      state: "借りた状態を選択",
+    },
 
     fetchBorrowBorrows: {
       empty: "借りた記録が見つかりません",
@@ -435,6 +441,11 @@ export default {
     lastPage: "最終ページ",
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
     defaultBoxMsg: "信用分明細を読み込んでいます...",
+    noCredit: "信用分明細がありません",
+
+    searchForm: {
+      info: "信用区分詳細を入力してください",
+    },
 
     selectCredits: {
       empty: "信用分明細が見つかりません",
@@ -527,6 +538,14 @@ export default {
     lastPage: "最後のページ",
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
     defaultBoxMsg: "図書情報を読み込み中...",
+
+    searchForm: {
+      name: "図書名を入力してください",
+      author: "著者を入力してください",
+      menu: "カテゴリを入力してください",
+      press: "出版社を入力してください",
+      state: "状態を入力してください",
+    },
 
     selectMenuTitles: {
       error: "カテゴリ情報の読み込みに失敗しました。後で再試行してください",
@@ -625,6 +644,10 @@ export default {
     defaultBoxMsg: "カテゴリ情報を読み込み中...",
     noMenu: "カテゴリが見つかりません",
 
+    searchForm: {
+      title: "カテゴリ名を入力してください",
+    },
+
     selectMenus: {
       empty: "カテゴリ記録が見つかりません",
       fail: "カテゴリ情報の読み込みに失敗しました。後で再試行してください",
@@ -690,6 +713,12 @@ export default {
     defaultBoxMsg: "借用記録を読み込み中...",
     noBorrow: "借用記録が見つかりません",
 
+    searchForm: {
+      user: "ユーザー名を入力してください",
+      book: "図書名を入力してください",
+      state: "借用状態を選択してください",
+    },
+
     selectBorrows: {
       empty: "借用記録が見つかりません",
       fail: "借用記録の読み込みに失敗しました。後で再試行してください",
@@ -748,7 +777,7 @@ export default {
   },
 
   adminNotice: {
-    searchPlaceholder: "公告名、役割または登録情報を検索",
+    searchPlaceholder: "公告名、登録者または登録情報を検索",
     add: "公告を追加",
     showRecentDays: "最近7日間のみ表示",
     enableSelection: "チェックボックスを有効にする",
@@ -769,6 +798,12 @@ export default {
     nextPage: "次のページ",
     lastPage: "最後のページ",
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
+
+    searchForm: {
+      title: "公告タイトルを入力",
+      info: "詳細内容を入力",
+      top: "トップ固定を選択",
+    },
 
     selectNotices: {
       empty: "公告の記録が見つかりません",
@@ -852,6 +887,13 @@ export default {
     lastPage: "最後のページ",
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
 
+    searchForm: {
+      title: "コメントタイトルを入力してください",
+      info: "コメント内容を入力してください",
+      adduser: "投稿ユーザーを入力してください",
+      state: "状態を選択してください",
+    },
+
     selectMessages: {
       empty: "コメントの記録が見つかりません",
       fail: "コメント情報の読み込みに失敗しました。後で再試行してください",
@@ -933,6 +975,13 @@ export default {
     lastPage: "最後のページ",
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
 
+    searchForm: {
+      username: "ユーザー名を入力してください",
+      state: "状態を選択してください",
+      email: "メールを入力してください",
+      role: "役割を選択してください",
+    },
+
     selectUsers: {
       empty: "ユーザー記録が見つかりません",
       fail: "ユーザー情報の読み込みに失敗しました。後で再試行してください",
@@ -1007,6 +1056,22 @@ export default {
     nextPage: "次のページ",
     lastPage: "最後のページ",
     pageInfo: "第 {currentPage} ページ / 全 {totalPages} ページ",
+
+    searchForm: {
+      username: "ユーザー名を入力してください",
+      type: "イベントタイプを選択してください",
+      info: "詳細を入力してください",
+      userIP: "IPを入力してください",
+      login: "ログイン",
+      logout: "ログアウト",
+      reg: "登録",
+      cancelReg: "登録取消",
+      update: "更新",
+      add: "追加",
+      delete: "削除",
+      borrow: "借りる",
+      return: "返却",
+    },
 
     toggleLog: {
       response: "ログ記録が{status}になりました",

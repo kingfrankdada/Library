@@ -1,13 +1,18 @@
 <template>
   <div class="admin-menu">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('adminMenu.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -154,6 +159,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -172,6 +179,7 @@ export default {
     InputTag,
     EditTag,
     NormalModal,
+    SearchForm,
   },
 
   data() {
@@ -183,7 +191,7 @@ export default {
       editId: null, // 存储编辑的分类 ID
       editName: "",
       menus: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
@@ -194,6 +202,11 @@ export default {
       selectPage: false, // 当页全选
       selectedMenus: [], // 选中
       isAddModalVisible: false,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -202,7 +215,6 @@ export default {
 
     // 筛选后的分类
     filteredMenus() {
-      const filterList = this.searchText.toLowerCase();
       let menus = [...this.menus];
 
       // 启用最近七天筛选
@@ -212,10 +224,21 @@ export default {
         menus = menus.filter((menu) => new Date(menu.adddate) >= sevenDaysAgo);
       }
 
+      if (this.activeSearch) {
+        menus = menus.filter((menu) => {
+          const titleMatch = menu.title
+            .toLowerCase()
+            .includes(this.searchForm.title.toLowerCase());
+          return titleMatch;
+        });
+      }
+
       // 根据搜索框内容筛选
-      return menus
-        .filter((menu) => menu.title.toLowerCase().includes(filterList))
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        menus
+          // .filter((menu) => menu.title.toLowerCase().includes(filterList))
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的分类
@@ -249,8 +272,10 @@ export default {
   },
 
   mounted() {
-    this.selectMenus();
-    this.$nextTick(() => {
+    eventBus.$on("language-changed", this.setConfig);
+
+    this.selectMenus().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("adminMenu.defaultBoxMsg");
     });
   },
@@ -285,6 +310,17 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "title",
+          label: this.$t("adminMenu.title"),
+          type: "input",
+          placeholder: this.$t("adminMenu.searchForm.title"),
+        },
+      ];
+    },
+
     // 点击单元格切换复选框
     toggleCheckbox(menuId) {
       if (this.selectedMenus.includes(menuId)) {
@@ -473,6 +509,21 @@ export default {
       }
     },
 
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.selectMenus();
+      this.selectedMenus = [];
+    },
+
     // 排序分类
     sortMenus(column) {
       if (this.sortColumn === column) {
@@ -521,6 +572,10 @@ export default {
       this.selectMenus();
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -530,7 +585,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
@@ -558,7 +613,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

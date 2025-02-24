@@ -386,6 +386,13 @@ textarea[type="text"] {
   font-size: 16px;
 }
 
+input:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid var(--first-color);
+  transition: 0.4s;
+}
+
 .image-upload-container {
   position: relative;
 }

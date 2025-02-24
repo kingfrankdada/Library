@@ -1,13 +1,18 @@
 <template>
   <div class="admin-message">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('adminForum.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -233,6 +238,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -251,6 +258,7 @@ export default {
     InputTag,
     EditTag,
     NormalModal,
+    SearchForm,
   },
 
   data() {
@@ -262,7 +270,7 @@ export default {
       editId: null, // 存储编辑的留言 ID
       editName: "",
       messages: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
@@ -273,6 +281,11 @@ export default {
       selectPage: false, // 当页全选
       selectedMessages: [], // 选中
       isAddModalVisible: false,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -281,7 +294,6 @@ export default {
 
     // 筛选后的留言
     filteredMessages() {
-      const filterList = this.searchText.toLowerCase();
       let messages = [...this.messages];
 
       // 启用最近七天筛选
@@ -293,15 +305,39 @@ export default {
         );
       }
 
+      if (this.activeSearch) {
+        messages = messages.filter((message) => {
+          const titleMatch = message.title
+            .toLowerCase()
+            .includes(this.searchForm.title.toLowerCase());
+
+          const infoMatch = message.info
+            .toLowerCase()
+            .includes(this.searchForm.info.toLowerCase());
+
+          const adduserMatch = message.adduser
+            .toLowerCase()
+            .includes(this.searchForm.adduser.toLowerCase());
+
+          const stateMatch =
+            this.searchForm.state === "" || // 如果 state 为空，匹配所有
+            message.state == this.searchForm.state;
+
+          return titleMatch && infoMatch && stateMatch && adduserMatch;
+        });
+      }
+
       // 根据搜索框内容筛选
-      return messages
-        .filter(
-          (message) =>
-            message.title.toLowerCase().includes(filterList) ||
-            message.info.toLowerCase().includes(filterList) ||
-            message.adduser.toLowerCase().includes(filterList)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        messages
+          // .filter(
+          //   (message) =>
+          //     message.title.toLowerCase().includes(filterList) ||
+          //     message.info.toLowerCase().includes(filterList) ||
+          //     message.adduser.toLowerCase().includes(filterList)
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的留言
@@ -335,8 +371,10 @@ export default {
   },
 
   mounted() {
-    this.selectMessages();
-    this.$nextTick(() => {
+    eventBus.$on("language-changed", this.setConfig);
+
+    this.selectMessages().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("adminForum.defaultBoxMsg");
     });
   },
@@ -377,6 +415,39 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "title",
+          label: this.$t("adminForum.title"),
+          type: "input",
+          placeholder: this.$t("adminForum.searchForm.title"),
+        },
+        {
+          key: "info",
+          label: this.$t("adminForum.info"),
+          type: "input",
+          placeholder: this.$t("adminForum.searchForm.info"),
+        },
+        {
+          key: "adduser",
+          label: this.$t("adminForum.adduser"),
+          type: "input",
+          placeholder: this.$t("adminForum.searchForm.adduser"),
+        },
+        {
+          key: "state",
+          label: this.$t("adminForum.state"),
+          type: "select",
+          options: [
+            { value: "1", label: this.$t("adminForum.normal"), color: "green" },
+            { value: "0", label: this.$t("adminForum.banned"), color: "red" },
+          ],
+          placeholder: this.$t("adminForum.searchForm.state"),
+        },
+      ];
+    },
+
     // 点击单元格切换复选框
     toggleCheckbox(messageId) {
       if (this.selectedMessages.includes(messageId)) {
@@ -669,6 +740,21 @@ export default {
       }
     },
 
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.sortColumn = null;
+      this.activeSearch = false;
+      this.selectMessages();
+      this.selectedMessages = [];
+    },
+
     // 排序留言
     sortMessages(column) {
       if (this.sortColumn === column) {
@@ -717,6 +803,10 @@ export default {
       this.selectMessages();
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -754,7 +844,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

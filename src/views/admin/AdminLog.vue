@@ -1,13 +1,18 @@
 <template>
   <div class="admin-log">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('adminLog.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -165,6 +170,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import { mapState, mapMutations } from "vuex";
@@ -174,6 +181,7 @@ export default {
   components: {
     AlertBox,
     MessageBox,
+    SearchForm,
   },
   data() {
     return {
@@ -182,7 +190,7 @@ export default {
       boxMsg: "",
       showCopyButton: false,
       logs: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
@@ -192,6 +200,11 @@ export default {
       selectAll: false, // 全选
       selectPage: false, // 当页全选
       selectedLogs: [], // 选中
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -200,7 +213,6 @@ export default {
     ...mapState("SysInfo", ["isLogActive"]),
     // 筛选后的日志
     filteredLogs() {
-      const filterList = this.searchText.toLowerCase();
       let logs = [...this.logs];
 
       // 启用最近七天筛选
@@ -210,17 +222,41 @@ export default {
         logs = logs.filter((log) => new Date(log.adddate) >= sevenDaysAgo);
       }
 
+      if (this.activeSearch) {
+        logs = logs.filter((log) => {
+          const usernameMatch = log.username
+            .toLowerCase()
+            .includes(this.searchForm.username.toLowerCase());
+
+          const infoMatch = log.info
+            .toLowerCase()
+            .includes(this.searchForm.info.toLowerCase());
+
+          const typeMatch = log.type
+            .toLowerCase()
+            .includes(this.searchForm.type.toLowerCase());
+
+          const ipMatch = log.user_ip
+            .toLowerCase()
+            .includes(this.searchForm.user_ip.toLowerCase());
+
+          return usernameMatch && infoMatch && typeMatch && ipMatch;
+        });
+      }
+
       // 根据搜索框内容筛选
-      return logs
-        .filter(
-          (log) =>
-            log.username.toLowerCase().includes(filterList) ||
-            log.info.toLowerCase().includes(filterList) ||
-            log.type.toLowerCase().includes(filterList) ||
-            log.user_ip.toLowerCase().includes(filterList) ||
-            log.adddate.toLowerCase().includes(filterList)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        logs
+          // .filter(
+          //   (log) =>
+          //     log.username.toLowerCase().includes(filterList) ||
+          //     log.info.toLowerCase().includes(filterList) ||
+          //     log.type.toLowerCase().includes(filterList) ||
+          //     log.user_ip.toLowerCase().includes(filterList) ||
+          //     log.adddate.toLowerCase().includes(filterList)
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的日志
@@ -257,8 +293,10 @@ export default {
     // if (this.userInfo.role != 0) {
     //   this.$router.push("/admin");
     // }
-    this.selectLogs();
-    this.$nextTick(() => {
+    eventBus.$on("language-changed", this.setConfig);
+
+    this.selectLogs().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("adminLog.defaultBoxMsg");
     });
   },
@@ -293,6 +331,82 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "username",
+          label: this.$t("adminLog.username"),
+          type: "input",
+          placeholder: this.$t("adminLog.searchForm.username"),
+        },
+        {
+          key: "info",
+          label: this.$t("adminLog.info"),
+          type: "input",
+          placeholder: this.$t("adminLog.searchForm.info"),
+        },
+        {
+          key: "user_ip",
+          label: "IP",
+          type: "input",
+          placeholder: this.$t("adminLog.searchForm.userIP"),
+        },
+        {
+          key: "type",
+          label: this.$t("adminLog.type"),
+          type: "select",
+          options: [
+            {
+              value: "登录",
+              label: this.$t("adminLog.searchForm.login"),
+              color: "green",
+            },
+            {
+              value: "登出",
+              label: this.$t("adminLog.searchForm.logout"),
+              color: "orange",
+            },
+            {
+              value: "注册",
+              label: this.$t("adminLog.searchForm.reg"),
+              color: "#00bfff",
+            },
+            {
+              value: "注销",
+              label: this.$t("adminLog.searchForm.cancelReg"),
+              color: "#ff0000",
+            },
+            {
+              value: "更新",
+              label: this.$t("adminLog.searchForm.update"),
+              color: "#ff00ff",
+            },
+            {
+              value: "新增",
+              label: this.$t("adminLog.searchForm.add"),
+              color: "limegreen",
+            },
+            {
+              value: "删除",
+              label: this.$t("adminLog.searchForm.delete"),
+              color: "#ff0000",
+            },
+            {
+              value: "借阅",
+              label: this.$t("adminLog.searchForm.borrow"),
+              color: "#964B00",
+            },
+            {
+              value: "归还",
+              label: this.$t("adminLog.searchForm.return"),
+              color: "goldenrod",
+            },
+          ],
+          placeholder: this.$t("adminLog.searchForm.type"),
+        },
+      ];
+    },
+
     ...mapMutations("SysInfo", ["setLogActive"]),
     // 动态图标
     logIconType(log) {
@@ -460,6 +574,21 @@ export default {
       }
     },
 
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.selectLogs();
+      this.selectedLogs = [];
+    },
+
     // 排序日志
     sortLogs(column) {
       if (this.sortColumn === column) {
@@ -514,6 +643,10 @@ export default {
       this.selectLogs();
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -523,7 +656,7 @@ export default {
   width: 85%;
   background: var(--background-color);
   overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
@@ -551,7 +684,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

@@ -1,13 +1,18 @@
 <template>
   <div class="admin-notice">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('adminNotice.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -198,6 +203,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -216,6 +223,7 @@ export default {
     InputTag,
     EditTag,
     NormalModal,
+    SearchForm,
   },
 
   data() {
@@ -227,7 +235,7 @@ export default {
       editId: null, // 存储编辑的公告 ID
       editName: "",
       notices: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
@@ -238,6 +246,11 @@ export default {
       selectPage: false, // 当页全选
       selectedNotices: [], // 选中
       isAddModalVisible: false,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -246,7 +259,6 @@ export default {
 
     // 筛选后的公告
     filteredNotices() {
-      const filterList = this.searchText.toLowerCase();
       let notices = [...this.notices];
 
       // 启用最近七天筛选
@@ -258,14 +270,34 @@ export default {
         );
       }
 
+      if (this.activeSearch) {
+        notices = notices.filter((notice) => {
+          const titleMatch = notice.title
+            .toLowerCase()
+            .includes(this.searchForm.title.toLowerCase());
+
+          const infoMatch = notice.info
+            .toLowerCase()
+            .includes(this.searchForm.info.toLowerCase());
+
+          const topMatch =
+            this.searchForm.top === "" || // 如果 top 为空，匹配所有
+            notice.top == this.searchForm.top;
+
+          return titleMatch && infoMatch && topMatch;
+        });
+      }
+
       // 根据搜索框内容筛选
-      return notices
-        .filter(
-          (notice) =>
-            notice.title.toLowerCase().includes(filterList) ||
-            notice.info.toLowerCase().includes(filterList)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        notices
+          // .filter(
+          //   (notice) =>
+          //     notice.title.toLowerCase().includes(filterList) ||
+          //     notice.info.toLowerCase().includes(filterList)
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的公告
@@ -299,8 +331,10 @@ export default {
   },
 
   mounted() {
-    this.selectNotices();
-    this.$nextTick(() => {
+    eventBus.$on("language-changed", this.setConfig);
+
+    this.selectNotices().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("adminNotice.defaultBoxMsg");
     });
   },
@@ -337,6 +371,41 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "title",
+          label: this.$t("adminNotice.title"),
+          type: "input",
+          placeholder: this.$t("adminNotice.searchForm.title"),
+        },
+        {
+          key: "info",
+          label: this.$t("adminNotice.info"),
+          type: "input",
+          placeholder: this.$t("adminNotice.searchForm.info"),
+        },
+        {
+          key: "top",
+          label: this.$t("adminNotice.top"),
+          type: "select",
+          options: [
+            {
+              value: "1",
+              label: this.$t("adminNotice.top"),
+              color: "red",
+            },
+            {
+              value: "0",
+              label: this.$t("adminNotice.normal"),
+              color: "green",
+            },
+          ],
+          placeholder: this.$t("adminNotice.searchForm.top"),
+        },
+      ];
+    },
+
     // 点击单元格切换复选框
     toggleCheckbox(noticeId) {
       if (this.selectedNotices.includes(noticeId)) {
@@ -619,6 +688,21 @@ export default {
       }
     },
 
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.selectNotices();
+      this.selectedNotices = [];
+    },
+
     // 排序公告
     sortNotices(column) {
       if (this.sortColumn === column) {
@@ -667,6 +751,10 @@ export default {
       this.selectNotices();
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -704,7 +792,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

@@ -1,13 +1,18 @@
 <template>
   <div class="user-borrow">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('userBorrow.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -127,7 +132,7 @@
       </tbody>
     </table>
 
-    <p v-else style="text-align: center">{{ boxMsg }}</p>
+    <p v-else style="text-align: center">{{ $t("userBorrow.noBorrow") }}</p>
 
     <!-- 分页控制 -->
     <div class="pagination">
@@ -181,6 +186,7 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import ReturnBox from "@/components/ReturnBox.vue";
@@ -195,6 +201,7 @@ export default {
     MessageBox,
     RenewBox,
     ReturnBox,
+    SearchForm,
   },
   data() {
     return {
@@ -216,7 +223,7 @@ export default {
       returnMsg: "",
       returnBook: null,
 
-      searchText: "",
+      // searchText: "",
       alertMsg: "",
       message: "",
       boxMsg: "",
@@ -225,6 +232,11 @@ export default {
       pageSize: 10,
       currentPage: 1,
       showRecentDays: false,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
   computed: {
@@ -232,7 +244,6 @@ export default {
 
     // 仅显示最近七天记录的开关
     filteredBorrows() {
-      const filter = this.searchText.toLowerCase();
       let records = [...this.records];
 
       // 如果启用了最近七天筛选
@@ -244,15 +255,31 @@ export default {
         );
       }
 
+      if (this.activeSearch) {
+        records = records.filter((record) => {
+          const booknameMatch = record.bookname
+            .toLowerCase()
+            .includes(this.searchForm.bookname.toLowerCase());
+
+          const stateMatch =
+            this.searchForm.state === "" || // 如果 state 为空，匹配所有
+            record.state == this.searchForm.state;
+
+          return booknameMatch && stateMatch;
+        });
+      }
+
       // 根据搜索框内容筛选
-      return records
-        .filter(
-          (record) =>
-            record.bookname.toLowerCase().includes(filter) ||
-            record.start_date.includes(filter) ||
-            record.over_date.includes(filter)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        records
+          // .filter(
+          //   (record) =>
+          //     record.bookname.toLowerCase().includes(filter) ||
+          //     record.start_date.includes(filter) ||
+          //     record.over_date.includes(filter)
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     sortedBorrows() {
@@ -285,9 +312,11 @@ export default {
   },
 
   mounted() {
+    eventBus.$on("language-changed", this.setConfig);
+
     this.fetchBorrowBorrows();
-    this.selectUsersByUserName();
-    this.$nextTick(() => {
+    this.selectUsersByUserName().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("userBorrow.defaultBoxMsg");
     });
   },
@@ -297,6 +326,40 @@ export default {
     },
   },
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "bookname",
+          label: this.$t("userBorrow.bookname"),
+          type: "input",
+          placeholder: this.$t("userBorrow.searchForm.bookname"),
+        },
+        {
+          key: "state",
+          label: this.$t("userBorrow.state"),
+          type: "select",
+          options: [
+            {
+              value: "1",
+              label: this.$t("userBorrow.borrowing"),
+              color: "orange",
+            },
+            {
+              value: "0",
+              label: this.$t("userBorrow.returned"),
+              color: "green",
+            },
+            {
+              value: "2",
+              label: this.$t("userBorrow.overdue"),
+              color: "red",
+            },
+          ],
+          placeholder: this.$t("userBorrow.searchForm.state"),
+        },
+      ];
+    },
+
     filterByRecentDays() {
       this.currentPage = 1; // 切换筛选时重置到第一页
     },
@@ -433,6 +496,20 @@ export default {
       this.message = this.$t("renewBox.handleRenew.success", { bookname });
     },
 
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.fetchBorrowBorrows();
+    },
+
     // 翻页
     prevPage() {
       if (this.currentPage > 1) this.currentPage--;
@@ -455,6 +532,10 @@ export default {
     lastPage() {
       this.currentPage = this.totalPages;
     },
+  },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
   },
 };
 </script>
@@ -493,7 +574,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

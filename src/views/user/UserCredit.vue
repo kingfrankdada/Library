@@ -1,13 +1,18 @@
 <template>
   <div class="credit-credit">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('userCredit.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -62,7 +67,7 @@
       </tbody>
     </table>
 
-    <p v-else style="text-align: center">{{ boxMsg }}</p>
+    <p v-else style="text-align: center">{{ $t("userCredit.noCredit") }}</p>
 
     <!-- 分页控制 -->
     <div class="pagination">
@@ -107,6 +112,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import { mapState } from "vuex";
@@ -116,6 +123,7 @@ export default {
   components: {
     AlertBox,
     MessageBox,
+    SearchForm,
   },
   data() {
     return {
@@ -123,12 +131,17 @@ export default {
       message: "",
       boxMsg: "",
       credits: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
       currentPage: 1, // 当前页
       showRecentDays: true,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -146,15 +159,25 @@ export default {
           (credit) => new Date(credit.adddate) >= sevenDaysAgo
         );
       }
-      // 根据搜索框筛选数据
-      const filterList = this.searchText.toLowerCase();
-      return credits
-        .filter(
-          (credit) =>
-            credit.info.toLowerCase().includes(filterList) ||
-            credit.adddate.toLowerCase().includes(filterList)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+
+      if (this.activeSearch) {
+        credits = credits.filter((credit) => {
+          const infoMatch = credit.info
+            .toLowerCase()
+            .includes(this.searchForm.info.toLowerCase());
+          return infoMatch;
+        });
+      }
+
+      return (
+        credits
+          // .filter(
+          //   (credit) =>
+          //     credit.info.toLowerCase().includes(filterList) ||
+          //     credit.adddate.toLowerCase().includes(filterList)
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的信誉分
@@ -188,8 +211,10 @@ export default {
   },
 
   mounted() {
-    this.selectCredits();
-    this.$nextTick(() => {
+    eventBus.$on("language-changed", this.setConfig);
+
+    this.selectCredits().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("userCredit.defaultBoxMsg");
     });
   },
@@ -201,6 +226,17 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "info",
+          label: this.$t("userCredit.info"),
+          type: "input",
+          placeholder: this.$t("userCredit.searchForm.info"),
+        },
+      ];
+    },
+
     // 动态颜色，100-75为绿色，75-25为橙色，25以下为红色
     creditIconColor(credit) {
       const count = credit.credit_count;
@@ -235,6 +271,21 @@ export default {
         this.boxMsg = this.$t("userCredit.selectCredits.error");
       }
     },
+
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.selectCredits();
+    },
+
     // 排序信誉分
     sortCredits(column) {
       if (this.sortColumn === column) {
@@ -308,6 +359,10 @@ export default {
       this.currentPage = this.totalPages;
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -317,7 +372,7 @@ export default {
   width: 85%;
   overflow-y: auto;
   background: var(--background-color);
-  scrollbar-width: none; 
+  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
@@ -345,7 +400,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

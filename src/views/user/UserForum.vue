@@ -391,6 +391,12 @@ export default {
   overflow: auto;
 }
 
+.input-title:focus,
+.input-info:focus {
+  border: 1px solid var(--first-color);
+  transition: 0.4s;
+}
+
 .bottom {
   display: flex;
   gap: 20px;

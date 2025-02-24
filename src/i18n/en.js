@@ -340,6 +340,12 @@ export default {
     pageInfo: "Page {currentPage} of {totalPages}",
     btnMsg: "View",
     defaultBoxMsg: "Loading borrow records...",
+    noBorrow: "No borrow records found",
+
+    searchForm: {
+      bookname: "Enter book name",
+      state: "Select state",
+    },
 
     fetchBorrowBorrows: {
       empty: "No borrow records found",
@@ -442,6 +448,11 @@ export default {
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
     defaultBoxMsg: "Loading credit details...",
+    noCredit: "No credit details found",
+
+    searchForm: {
+      info: "Enter details",
+    },
 
     selectCredits: {
       empty: "No credit details found",
@@ -502,7 +513,6 @@ export default {
     }
   },
 
-
   adminBook: {
     searchPlaceholder: "Search book title, author, category, publisher",
     addBook: "Add Book",
@@ -535,6 +545,14 @@ export default {
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
     defaultBoxMsg: "Loading books...",
+
+    searchForm: {
+      name: "Enter book name",
+      author: "Enter author",
+      menu: "Select category",
+      press: "Enter publisher",
+      state: "Select state",
+    },
 
     selectMenuTitles: {
       error: "Menu information loading failed",
@@ -634,6 +652,10 @@ export default {
     defaultBoxMsg: "Loading menus...",
     noMenu: "No menus found",
 
+    searchForm: {
+      title: "Enter menu title",
+    },
+
     selectMenus: {
       empty: "No menu records found",
       fail: "Menu information loading failed",
@@ -700,6 +722,12 @@ export default {
     defaultBoxMsg: "Loading borrow records...",
     noBorrow: "No borrow records found",
 
+    searchForm: {
+      user: "Enter username",
+      book: "Enter book name",
+      state: "Select state",
+    },
+
     selectBorrows: {
       empty: "No borrow records found",
       fail: "Borrow record information loading failed",
@@ -760,7 +788,7 @@ export default {
 
 
   adminNotice: {
-    searchPlaceholder: "Search notice title, role or register information",
+    searchPlaceholder: "Search notice title, info or top",
     add: "Add Notice",
     showRecentDays: "Show recent 7 days",
     enableSelection: "Enable selection",
@@ -781,6 +809,12 @@ export default {
     nextPage: "Next",
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
+
+    searchForm: {
+      title: "Enter notice title",
+      info: "Enter notice info",
+      top: "Select top",
+    },
 
     selectNotices: {
       empty: "No notice records found",
@@ -866,6 +900,13 @@ export default {
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
 
+    searchForm: {
+      title: "Enter message title",
+      info: "Enter message information",
+      adduser: "Enter author",
+      state: "Select status",
+    },
+
     selectMessages: {
       empty: "No message records found",
       fail: "Failed to load message information, please try again later",
@@ -947,6 +988,13 @@ export default {
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
 
+    searchForm: {
+      username: "Enter username",
+      state: "Select state",
+      email: "Enter email",
+      role: "Select role",
+    },
+
     selectUsers: {
       empty: "No user records found",
       fail: "Failed to load user information, please try again later",
@@ -1021,6 +1069,22 @@ export default {
     nextPage: "Next",
     lastPage: "Last",
     pageInfo: "Page {currentPage} of {totalPages}",
+
+    searchForm: {
+      username: "Enter username",
+      type: "Select type",
+      info: "Enter details",
+      userIP: "Enter IP address",
+      login: "Login",
+      logout: "Logout",
+      reg: "Registration",
+      cancelReg: "Delete Account",
+      update: "Update",
+      add: "Add",
+      delete: "Delete",
+      borrow: "Borrow",
+      return: "Return",
+    },
 
     toggleLog: {
       response: "Log recording has been {status}",

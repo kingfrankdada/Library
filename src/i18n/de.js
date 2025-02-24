@@ -334,6 +334,12 @@ export default {
     pageInfo: "Seite {currentPage} von {totalPages}",
     btnMsg: "Im Buchzentrum anzeigen",
     defaultBoxMsg: "Lade Ausleihdatensätze...",
+    noBorrow: "Keine Ausleihen gefunden",
+
+    searchForm: {
+      bookname: "Des buchtitel",
+      state: "Des status",
+    },
 
     fetchBorrowBorrows: {
       empty: "Keine Ausleihdatensätze gefunden",
@@ -434,6 +440,11 @@ export default {
     lastPage: "Letzte",
     pageInfo: "Seite {currentPage} / von {totalPages} Seiten",
     defaultBoxMsg: "Lade Kreditpunkte-Daten...",
+    noCredit: "Keine Kreditpunkte gefunden",
+
+    searchForm: {
+      info: "Details der Kreditpunkte",
+    },
 
     selectCredits: {
       empty: "Keine Kreditpunkte gefunden",
@@ -526,6 +537,14 @@ export default {
     lastPage: "Letzte",
     pageInfo: "Seite {currentPage} / von {totalPages} Seiten",
     defaultBoxMsg: "Buchinformationen werden geladen...",
+
+    searchForm: {
+      name: "Des Buches ein",
+      author: "Des Autors ein",
+      menu: "Der Kategorie ein",
+      press: "Des Verlags ein",
+      state: "Den Status ein",
+    },
 
     selectMenuTitles: {
       error: "Fehler beim Laden der Kategoriedaten. Bitte versuche es später erneut",
@@ -624,6 +643,10 @@ export default {
     defaultBoxMsg: "Kategoriedaten werden geladen...",
     noMenu: "Keine Kategorien gefunden",
 
+    searchForm: {
+      title: "Der Kategorie ein",
+    },
+
     selectMenus: {
       empty: "Keine Kategorien gefunden",
       fail: "Fehler beim Laden der Kategoriedaten. Bitte versuche es später erneut",
@@ -689,6 +712,12 @@ export default {
     defaultBoxMsg: "Ausleihdaten werden geladen...",
     noBorrow: "Keine Ausleihen gefunden",
 
+    searchForm: {
+      user: "Sie Ihren Benutzernamen ein",
+      book: "Sie einen Buchtitel ein",
+      state: "Sie den Ausleihstatus ein",
+    },
+
     selectBorrows: {
       empty: "Keine Ausleihen gefunden",
       fail: "Fehler beim Laden der Ausleihdaten. Bitte versuche es später erneut",
@@ -747,7 +776,7 @@ export default {
   },
 
   adminNotice: {
-    searchPlaceholder: "Suchen Sie nach Bekanntmachungsname, Rolle oder Registrierungsinformationen",
+    searchPlaceholder: "Suchen Sie nach Bekanntmachungsname, Bekanntmachungsdatum oder Bekanntmachungsstatus",
     add: "Bekanntmachung hinzufügen",
     showRecentDays: "Nur die letzten sieben Tage anzeigen",
     enableSelection: "Auswahlkästchen aktivieren",
@@ -768,6 +797,12 @@ export default {
     nextPage: "Nächste",
     lastPage: "Letzte",
     pageInfo: "Seite {currentPage} von {totalPages}",
+
+    searchForm: {
+      title: "Den Bekanntmachungsname ein",
+      info: "Den Detailinhalt ein",
+      top: "Die Bekanntmachungsstatus ein",
+    },
 
     selectNotices: {
       empty: "Keine Bekanntmachungen gefunden",
@@ -851,6 +886,13 @@ export default {
     lastPage: "Letzte",
     pageInfo: "Seite {currentPage} von {totalPages}",
 
+    searchForm: {
+      title: "Sie den Nachrichtentitel ein",
+      info: "Sie den Kommentarinhalt ein",
+      adduser: "Sie den Kommentarverfasser ein",
+      state: "Sie den Kommentarstatus ein",
+    },
+
     selectMessages: {
       empty: "Keine Kommentaraufzeichnungen gefunden",
       fail: "Fehler beim Laden der Kommentarinformationen, bitte später erneut versuchen"
@@ -932,6 +974,13 @@ export default {
     lastPage: "Letzte",
     pageInfo: "Seite {currentPage} von {totalPages}",
 
+    searchForm: {
+      username: "Sie Ihren Benutzernamen ein",
+      state: "Sie den Benutzerstatus ein",
+      email: "Sie die E-Mail-Adresse ein",
+      role: "Sie die Berechtigungsgruppe ein",
+    },
+
     selectUsers: {
       empty: "Keine Benutzeraufzeichnungen gefunden",
       fail: "Fehler beim Laden der Benutzerinformationen, bitte später erneut versuchen"
@@ -1006,6 +1055,22 @@ export default {
     nextPage: "Nächste",
     lastPage: "Letzte",
     pageInfo: "Seite {currentPage} von {totalPages}",
+
+    searchForm: {
+      username: "Sie Ihren Benutzernamen ein",
+      type: "Sie den Ereignistyp ein",
+      info: "Sie die Details ein",
+      userIP: "Sie die IP-Adresse ein",
+      login: "Sie das Login-Datum ein",
+      logout: "Sie das Logout-Datum ein",
+      reg: "Sie das Registrierungsdatum ein",
+      cancelReg: "Sie das Deaktivierungsdatum ein",
+      update: "Sie das Aktualisierungsdatum ein",
+      add: "Sie das Hinzufügedatum ein",
+      delete: "Sie das Löschungsdatum ein",
+      borrow: "Sie das Ausleihdatum ein",
+      return: "Sie das Rückgabedatum ein",
+    },
 
     toggleLog: {
       response: "Protokollierung ist {status}",

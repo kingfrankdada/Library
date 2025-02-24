@@ -335,6 +335,12 @@ export default {
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
     btnMsg: "在图书中心查看",
     defaultBoxMsg: "正在加载借阅记录...",
+    noBorrow: "未找到任何借阅记录",
+
+    searchForm: {
+      bookname: "请输入借阅图书名称",
+      state: "请选择借阅状态",
+    },
 
     fetchBorrowBorrows: {
       empty: "未找到任何借阅记录",
@@ -435,6 +441,11 @@ export default {
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
     defaultBoxMsg: "正在加载信誉分明细...",
+    noCredit: "未找到任何信誉分记录",
+
+    searchForm: {
+      info: "请输入信誉分明细",
+    },
 
     selectCredits: {
       empty: "未找到任何信誉分记录",
@@ -527,6 +538,14 @@ export default {
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
     defaultBoxMsg: "正在加载图书信息...",
+
+    searchForm: {
+      name: "请输入图书名称",
+      author: "请输入作者",
+      menu: "请选择分类",
+      press: "请输入出版社",
+      state: "请选择状态",
+    },
 
     selectMenuTitles: {
       error: "分类信息加载失败, 请稍后再试",
@@ -625,6 +644,10 @@ export default {
     defaultBoxMsg: "正在加载分类信息...",
     noMenu: "未找到任何分类",
 
+    searchForm: {
+      title: "请输入分类名称",
+    },
+
     selectMenus: {
       empty: "未找到任何分类记录",
       fail: "分类信息加载失败, 请稍后再试",
@@ -690,6 +713,12 @@ export default {
     defaultBoxMsg: "正在加载借阅记录...",
     noBorrow: "未找到任何借阅记录",
 
+    searchForm: {
+      user: "请输入用户名",
+      book: "请输入图书名称",
+      state: "请选择状态",
+    },
+
     selectBorrows: {
       empty: "未找到任何借阅记录",
       fail: "借阅记录加载失败，请稍后再试",
@@ -748,7 +777,7 @@ export default {
   },
 
   adminNotice: {
-    searchPlaceholder: "搜索公告名，角色或注册信息",
+    searchPlaceholder: "搜索公告名，发布者或发布信息",
     add: "添加公告",
     showRecentDays: "仅显示最近七天",
     enableSelection: "启用复选框",
@@ -769,6 +798,12 @@ export default {
     nextPage: "下一页",
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+
+    searchForm: {
+      title: "请输入公告标题",
+      info: "请输入公告内容",
+      top: "请选择是否置顶",
+    },
 
     selectNotices: {
       empty: "未找到任何公告记录",
@@ -852,6 +887,13 @@ export default {
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
 
+    searchForm: {
+      title: "请输入留言标题",
+      info: "请输入留言内容",
+      adduser: "请输入发布者",
+      state: "请选择状态",
+    },
+
     selectMessages: {
       empty: "未找到任何留言记录",
       fail: "留言信息加载失败, 请稍后再试",
@@ -933,6 +975,13 @@ export default {
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
 
+    searchForm: {
+      username: "请输入用户名",
+      state: "请选择状态",
+      email: "请输入邮箱",
+      role: "请选择权限组",
+    },
+
     selectUsers: {
       empty: "未找到任何用户记录",
       fail: "用户信息加载失败，请稍后再试",
@@ -1007,6 +1056,22 @@ export default {
     nextPage: "下一页",
     lastPage: "尾页",
     pageInfo: "第 {currentPage} 页 / 共 {totalPages} 页",
+
+    searchForm: {
+      username: "请输入用户名",
+      type: "请选择事件类型",
+      info: "请输入详情",
+      userIP: "请输入IP",
+      login: "登录",
+      logout: "登出",
+      reg: "注册",
+      cancelReg: "注销",
+      update: "更新",
+      add: "新增",
+      delete: "删除",
+      borrow: "借阅",
+      return: "归还",
+    },
 
     toggleLog: {
       response: "日志记录已{status}",

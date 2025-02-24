@@ -36,6 +36,11 @@
       :message="alertMsg"
       @close="alertMsg = null"
     ></AlertBox>
+    <MessageBox
+      v-if="message"
+      :message="message"
+      @close="message = null"
+    ></MessageBox>
   </div>
 </template>
 
@@ -43,12 +48,14 @@
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
 import AlertBox from "../AlertBox.vue";
+import MessageBox from "../MessageBox.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "AddMenu",
   components: {
     AlertBox,
+    MessageBox,
   },
 
   data() {
@@ -58,6 +65,7 @@ export default {
         state: 1,
       },
       alertMsg: "",
+      message: "",
     };
   },
 
@@ -73,7 +81,7 @@ export default {
       }
       try {
         await api.post(endpoints.addMenu, this.newMenu);
-        this.alertMsg = this.$t("addMenu.submitForm.success");
+        this.message = this.$t("addMenu.submitForm.success");
 
         // 添加更新日志
         const adddate = new Date().toLocaleString("sv-SE", {
@@ -163,6 +171,13 @@ select {
   border-radius: 4px;
   background-color: var(--card-color);
   color: var(--text-color);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid var(--first-color);
+  transition: 0.4s;
 }
 
 .close-button {

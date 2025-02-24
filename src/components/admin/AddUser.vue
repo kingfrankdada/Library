@@ -206,6 +206,13 @@ select {
   color: var(--text-color);
 }
 
+input:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid var(--first-color);
+  transition: 0.4s;
+}
+
 .close-button {
   position: absolute;
   top: 50%;

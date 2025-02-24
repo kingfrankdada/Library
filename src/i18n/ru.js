@@ -335,6 +335,12 @@ export default {
     pageInfo: "Страница {currentPage} из {totalPages}",
     btnMsg: "Просмотреть в библиотечном центре",
     defaultBoxMsg: "Загрузка записей заимствования...",
+    noBorrow: "Записи заимствования не найдены",
+
+    searchForm: {
+      bookname: "Поиск по названию книги",
+      state: "Поиск по статусу",
+    },
 
     fetchBorrowBorrows: {
       empty: "Записи заимствования не найдены",
@@ -357,7 +363,7 @@ export default {
       credit: "Недостаточно рейтинга для продления",
       fail: "Ошибка продления, попробуйте позже",
     },
-    
+
     delBorrow: {
       success: "Успешное удаление",
       fail: "Ошибка удаления, попробуйте позже",
@@ -435,6 +441,11 @@ export default {
     lastPage: "Последняя",
     pageInfo: "Страница {currentPage} из {totalPages}",
     defaultBoxMsg: "Загрузка данных рейтинга...",
+    noCredit: "Нет записей рейтинга",
+
+    searchForm: {
+      info: "Пожалуйста, введите разбивку кредитоспособности",
+    },
 
     selectCredits: {
       empty: "Записи рейтинга не найдены",
@@ -527,6 +538,14 @@ export default {
     lastPage: "Последняя",
     pageInfo: "Страница {currentPage} из {totalPages}",
     defaultBoxMsg: "Загрузка информации о книгах...",
+
+    searchForm: {
+      name: "Введите название книги",
+      author: "Введите автора",
+      menu: "Выберите классификацию",
+      press: "Введите издательство",
+      state: "Выберите статус",
+    },
 
     selectMenuTitles: {
       error: "Не удалось загрузить данные категорий, попробуйте позже",
@@ -625,6 +644,10 @@ export default {
     defaultBoxMsg: "Загрузка информации о категориях...",
     noMenu: "Категории не найдены",
 
+    searchForm: {
+      title: "Введите название категории",
+    },
+
     selectMenus: {
       empty: "Категории не найдены",
       fail: "Не удалось загрузить данные категорий, попробуйте позже",
@@ -690,6 +713,12 @@ export default {
     defaultBoxMsg: "Загрузка данных о заимствованиях...",
     noBorrow: "Записи о заимствованиях не найдены",
 
+    searchForm: {
+      user: "Введите имя пользователя",
+      book: "Введите название книги",
+      state: "Выберите статус заимствования",
+    },
+
     selectBorrows: {
       empty: "Записи о заимствованиях не найдены",
       fail: "Не удалось загрузить данные о заимствованиях, попробуйте позже",
@@ -748,7 +777,7 @@ export default {
   },
 
   adminNotice: {
-    searchPlaceholder: "Поиск по названию объявления, роли или регистрационной информации",
+    searchPlaceholder: "Поиск по названию объявления, содержанию или имени пользователя",
     add: "Добавить объявление",
     showRecentDays: "Показывать только за последние семь дней",
     enableSelection: "Включить флажки",
@@ -769,6 +798,12 @@ export default {
     nextPage: "Следующая",
     lastPage: "Последняя",
     pageInfo: "Страница {currentPage} из {totalPages}",
+
+    searchForm: {
+      title: "Введите название объявления",
+      info: "Введите содержимое объявления",
+      top: "Выберите закрепление",
+    },
 
     selectNotices: {
       empty: "Не найдено записей о объявлениях",
@@ -852,6 +887,13 @@ export default {
     lastPage: "Последняя",
     pageInfo: "Страница {currentPage} из {totalPages}",
 
+    searchForm: {
+      title: "Введите заголовок сообщения",
+      info: "Введите содержимое сообщения",
+      adduser: "Введите имя пользователя",
+      state: "Выберите состояние",
+    },
+
     selectMessages: {
       empty: "Не найдено записей о сообщениях",
       fail: "Ошибка загрузки информации о сообщениях, попробуйте позже",
@@ -933,6 +975,13 @@ export default {
     lastPage: "Последняя",
     pageInfo: "Страница {currentPage} из {totalPages}",
 
+    searchForm: {
+      username: "Введите имя пользователя",
+      state: "Выберите состояние",
+      email: "Введите электронную почту",
+      role: "Выберите роль",
+    },
+
     selectUsers: {
       empty: "Не найдено записей о пользователях",
       fail: "Ошибка загрузки информации о пользователях, попробуйте позже",
@@ -1007,6 +1056,22 @@ export default {
     nextPage: "Следующая",
     lastPage: "Последняя",
     pageInfo: "Страница {currentPage} из {totalPages}",
+
+    searchForm: {
+      username: "Введите имя пользователя",
+      type: "Выберите тип события",
+      info: "Введите детали",
+      userIP: "Введите IP",
+      login: "Логин",
+      logout: "Выход",
+      reg: "Регистрация",
+      cancelReg: "Отмена регистрации",
+      update: "Обновление",
+      add: "Добавление",
+      delete: "Удаление",
+      borrow: "Выдача",
+      return: "Возврат",
+    },
 
     toggleLog: {
       response: "Запись журналов {status}",

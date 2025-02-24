@@ -1,13 +1,18 @@
 <template>
   <div class="admin-user">
     <!-- 搜索框 -->
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('adminUser.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -215,6 +220,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -231,6 +238,7 @@ export default {
     MessageBox,
     InputTag,
     NormalModal,
+    SearchForm,
   },
 
   data() {
@@ -239,7 +247,7 @@ export default {
       message: "",
       boxMsg: "",
       users: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
@@ -250,6 +258,11 @@ export default {
       selectPage: false, // 当页全选
       selectedUsers: [], // 选中
       isAddModalVisible: false,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -258,7 +271,6 @@ export default {
 
     // 筛选后的用户
     filteredUsers() {
-      const filterList = this.searchText.toLowerCase();
       let users = [...this.users];
 
       // 启用最近七天筛选
@@ -273,15 +285,39 @@ export default {
         users = users.filter((user) => user.role != 0);
       }
 
+      if (this.activeSearch) {
+        users = users.filter((user) => {
+          const usernameMatch = user.username
+            .toLowerCase()
+            .includes(this.searchForm.username.toLowerCase());
+
+          const roleMatch = user.role
+            .toLowerCase()
+            .includes(this.searchForm.role.toLowerCase());
+
+          const emailMatch = user.email
+            .toLowerCase()
+            .includes(this.searchForm.email.toLowerCase());
+
+          const stateMatch =
+            this.searchForm.state === "" || // 如果 state 为空，匹配所有
+            user.state == this.searchForm.state;
+
+          return usernameMatch && roleMatch && stateMatch && emailMatch;
+        });
+      }
+
       // 根据搜索框内容筛选
-      return users
-        .filter(
-          (user) =>
-            user.username.toLowerCase().includes(filterList) ||
-            user.role.toLowerCase().includes(filterList) ||
-            user.email.toLowerCase().includes(filterList)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        users
+          // .filter(
+          //   (user) =>
+          //     user.username.toLowerCase().includes(filterList) ||
+          //     user.role.toLowerCase().includes(filterList) ||
+          //     user.email.toLowerCase().includes(filterList)
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的用户
@@ -315,8 +351,10 @@ export default {
   },
 
   mounted() {
-    this.selectUsers();
-    this.$nextTick(() => {
+    eventBus.$on("language-changed", this.setConfig);
+
+    this.selectUsers().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("adminUser.defaultBoxMsg");
     });
   },
@@ -351,6 +389,56 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "username",
+          label: this.$t("adminUser.username"),
+          type: "input",
+          placeholder: this.$t("adminUser.searchForm.username"),
+        },
+        {
+          key: "role",
+          label: this.$t("adminUser.role"),
+          type: "select",
+          options: [
+            {
+              value: "0",
+              label: this.$t("adminUser.superAdmin"),
+              color: "red",
+            },
+            {
+              value: "1",
+              label: this.$t("adminUser.admin"),
+              color: "orange",
+            },
+            {
+              value: "2",
+              label: this.$t("adminUser.user"),
+              color: "green",
+            },
+          ],
+          placeholder: this.$t("adminUser.searchForm.role"),
+        },
+        {
+          key: "email",
+          label: this.$t("adminUser.email"),
+          type: "input",
+          placeholder: this.$t("adminUser.searchForm.email"),
+        },
+        {
+          key: "state",
+          label: this.$t("adminUser.state"),
+          type: "select",
+          options: [
+            { value: "1", label: this.$t("adminUser.normal"), color: "green" },
+            { value: "0", label: this.$t("adminUser.banned"), color: "red" },
+          ],
+          placeholder: this.$t("adminUser.searchForm.state"),
+        },
+      ];
+    },
+
     // 点击单元格切换复选框
     toggleCheckbox(userId) {
       if (this.selectedUsers.includes(userId)) {
@@ -667,6 +755,20 @@ export default {
       }
     },
 
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.selectUsers();
+      this.selectedUsers = [];
+    },
+
     // 排序用户
     sortUsers(column) {
       if (this.sortColumn === column) {
@@ -715,6 +817,10 @@ export default {
       this.selectUsers();
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -752,7 +858,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {

@@ -1,13 +1,19 @@
 <template>
   <div class="admin-book">
     <!-- 搜索框 -->
-    <div class="search-box">
+
+    <!-- <div class="search-box">
       <input
         type="text"
         v-model="searchText"
         :placeholder="$t('adminBook.searchPlaceholder')"
       />
-    </div>
+    </div> -->
+    <SearchForm
+      :searchConfig="searchConfig"
+      @search="search"
+      @reSelect="reSelect"
+    />
 
     <!-- 工具栏 -->
     <div class="toolbar">
@@ -253,6 +259,8 @@
 <script>
 import api from "@/api/api";
 import { endpoints } from "@/api/endpoints";
+import { eventBus } from "@/utils/eventBus";
+import SearchForm from "@/components/SearchForm.vue";
 import AlertBox from "@/components/AlertBox.vue";
 import MessageBox from "@/components/MessageBox.vue";
 import InputTag from "@/components/InputTag.vue";
@@ -271,6 +279,7 @@ export default {
     InputTag,
     EditTag,
     NormalModal,
+    SearchForm,
   },
 
   data() {
@@ -283,7 +292,7 @@ export default {
       editName: "",
       books: [],
       menuTitles: [],
-      searchText: "",
+      // searchText: "",
       sortColumn: null,
       sortOrder: "asc",
       pageSize: 10, // 每页显示的条数
@@ -294,6 +303,11 @@ export default {
       selectPage: false, // 当页全选
       selectedBooks: [], // 选中
       isAddModalVisible: false,
+
+      // 搜索配置
+      activeSearch: false,
+      searchConfig: [],
+      searchForm: {},
     };
   },
 
@@ -302,7 +316,6 @@ export default {
 
     // 筛选后的图书
     filteredBooks() {
-      const filterList = this.searchText.toLowerCase();
       let books = [...this.books];
 
       // 启用最近七天筛选
@@ -312,16 +325,47 @@ export default {
         books = books.filter((book) => new Date(book.adddate) >= sevenDaysAgo);
       }
 
+      if (this.activeSearch) {
+        books = books.filter((book) => {
+          const nameMatch = book.name
+            .toLowerCase()
+            .includes(this.searchForm.name.toLowerCase());
+
+          const authorMatch = book.author
+            .toLowerCase()
+            .includes(this.searchForm.author.toLowerCase());
+
+          const pressMatch = book.press
+            .toLowerCase()
+            .includes(this.searchForm.press.toLowerCase());
+
+          const menuMatch = book.menu
+            .toLowerCase()
+            .includes(this.searchForm.menu.toLowerCase());
+
+          const stateMatch =
+            this.searchForm.state === "" || // 如果 state 为空，匹配所有
+            book.state == this.searchForm.state;
+
+          return (
+            nameMatch && authorMatch && stateMatch && pressMatch && menuMatch
+          );
+        });
+      }
+
       // 根据搜索框内容筛选
-      return books
-        .filter(
-          (book) =>
-            book.name.toLowerCase().includes(filterList) ||
-            book.author.toLowerCase().includes(filterList) ||
-            book.press.toLowerCase().includes(filterList) ||
-            book.menu.toLowerCase().includes(filterList)
-        )
-        .sort((a, b) => new Date(b.id) - new Date(a.id));
+      return (
+        books
+          // .filter(
+          //   (book) =>
+          //     book.name.toLowerCase().includes(filterList) ||
+          //     book.author.toLowerCase().includes(filterList) ||
+          //     book.press.toLowerCase().includes(filterList) ||
+          //     book.menu.toLowerCase().includes(filterList) ||
+          //     book.state == (this.searchForm.state || (1 && 0))
+          // )
+          .sort((a, b) => new Date(b.id) - new Date(a.id))
+      );
     },
 
     // 排序后的图书
@@ -355,9 +399,11 @@ export default {
   },
 
   mounted() {
+    eventBus.$on("language-changed", this.setConfig);
+
     this.selectBooks();
-    this.selectMenuTitles();
-    this.$nextTick(() => {
+    this.selectMenuTitles().then(() => {
+      this.setConfig();
       this.boxMsg = this.$t("adminBook.defaultBoxMsg");
     });
   },
@@ -392,6 +438,51 @@ export default {
   },
 
   methods: {
+    setConfig() {
+      this.searchConfig = [
+        {
+          key: "name",
+          label: this.$t("adminBook.name"),
+          type: "input",
+          placeholder: this.$t("adminBook.searchForm.name"),
+        },
+        {
+          key: "author",
+          label: this.$t("adminBook.author"),
+          type: "input",
+          placeholder: this.$t("adminBook.searchForm.author"),
+        },
+        {
+          key: "press",
+          label: this.$t("adminBook.press"),
+          type: "input",
+          placeholder: this.$t("adminBook.searchForm.press"),
+        },
+        {
+          key: "menu",
+          label: this.$t("adminBook.menu"),
+          type: "select",
+          options: [
+            ...this.menuTitles.map((title) => ({
+              value: title,
+              label: title,
+            })),
+          ],
+          placeholder: this.$t("adminBook.searchForm.menu"),
+        },
+        {
+          key: "state",
+          label: this.$t("adminBook.state"),
+          type: "select",
+          options: [
+            { value: "1", label: this.$t("adminBook.open"), color: "green" },
+            { value: "0", label: this.$t("adminBook.close"), color: "red" },
+          ],
+          placeholder: this.$t("adminBook.searchForm.state"),
+        },
+      ];
+    },
+
     // 点击单元格切换复选框
     toggleCheckbox(bookId) {
       if (this.selectedBooks.includes(bookId)) {
@@ -678,6 +769,21 @@ export default {
       }
     },
 
+    // 接收搜索组件传值，搜索
+    search(searchForm) {
+      this.reSelect();
+      this.searchForm = searchForm;
+      this.activeSearch = true;
+    },
+
+    reSelect() {
+      this.currentPage = 1;
+      this.activeSearch = false;
+      this.sortColumn = null;
+      this.selectBooks();
+      this.selectedBooks = [];
+    },
+
     // 排序图书
     sortBooks(column) {
       if (this.sortColumn === column) {
@@ -726,6 +832,10 @@ export default {
       this.selectBooks();
     },
   },
+
+  beforeDestroy() {
+    eventBus.$off("language-changed", this.setConfig);
+  },
 };
 </script>
 
@@ -763,7 +873,7 @@ export default {
   display: flex;
   justify-content: left;
   align-items: center;
-  margin-left: 20px;
+  margin: 0 0 10px 20px;
 }
 
 .toolbar label {
