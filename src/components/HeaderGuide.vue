@@ -8,7 +8,11 @@
 
       <!-- 登陆后显示用户信息 -->
       <div class="nav-userinfo" v-if="userInfo.usertoken">
-        <i class="ri-user-line login-button" style="padding-right: 5px"></i>
+        <i
+          class="ri-user-line login-button"
+          style="padding-right: 5px"
+          @click="gotoUser"
+        ></i>
         {{ userInfo.username }}
       </div>
 
@@ -165,6 +169,12 @@ export default {
     openSetting() {
       this.settingMsg = "设置";
     },
+
+    gotoUser() {
+      if (this.$route.path != "/user") {
+        this.$router.push("/user");
+      }
+    },
   },
 
   mounted() {
@@ -233,6 +243,12 @@ export default {
   align-items: center;
   right: 170px;
   /* animation: fadeInFromRight 0.5s ease; */
+  animation: fade-in 0.5s;
+}
+
+.nav-userinfo i:hover {
+  color: var(--first-color);
+  cursor: pointer;
   animation: fade-in 0.5s;
 }
 
